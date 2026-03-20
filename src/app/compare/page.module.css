@@ -1,0 +1,46 @@
+.heroSurface {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.heroTopline {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.heroPills,
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.phaseTabs,
+.sectionHeading {
+  margin-top: 0.35rem;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.summaryCard {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.summaryLabel,
+.summaryValue {
+  margin: 0;
+}
+
+.summaryLabel {
+  color: var(--color-muted-foreground);
+  font-size: 0.88rem;
+}
+
+.summaryValue {
+  font-weight: 800;
+}

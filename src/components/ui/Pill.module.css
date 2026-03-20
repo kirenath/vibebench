@@ -1,0 +1,51 @@
+.base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.1rem;
+  padding: 0.42rem 0.82rem;
+  border: 1px solid rgba(222, 216, 207, 0.8);
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--color-muted-foreground);
+  box-shadow: 0 8px 24px -20px rgba(93, 112, 82, 0.3);
+}
+
+.neutral {
+  color: var(--color-muted-foreground);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.ok {
+  color: #24553b;
+  background: rgba(93, 112, 82, 0.14);
+  border-color: rgba(93, 112, 82, 0.22);
+}
+
+.warn {
+  color: #8b5b31;
+  background: rgba(193, 140, 93, 0.16);
+  border-color: rgba(193, 140, 93, 0.3);
+}
+
+.moss {
+  color: var(--color-primary);
+  background: rgba(93, 112, 82, 0.12);
+  border-color: rgba(93, 112, 82, 0.22);
+}
+
+.clay {
+  color: #9b6437;
+  background: rgba(193, 140, 93, 0.14);
+  border-color: rgba(193, 140, 93, 0.26);
+}
+
+.sand {
+  color: var(--color-accent-foreground);
+  background: rgba(230, 220, 205, 0.58);
+  border-color: rgba(222, 216, 207, 0.9);
+}
