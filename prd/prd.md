@@ -229,14 +229,12 @@ erDiagram
 #### 横评对比 `/compare`
 
 - 选择一个赛题
-- 选择 2 到 4 个参赛项（`模型版本 x 渠道`）
+- 选择 2 个参赛项进行 1v1 对比（`模型版本 x 渠道`）
 - 选择 phase
 - 并排 iframe 实时对比效果
 - URL 参数设计：`/compare?challenge=receipt&phase=phase1&entries=gpt-5.4-pro@web,claude-sonnet-4@api`
 - 布局策略：
-  - 2 参赛项：左右 50/50 分栏
-  - 3 参赛项：三栏等宽
-  - 4 参赛项：2x2 宫格
+  - 桌面端：左右 50/50 分栏
   - 移动端：纵向堆叠 + 标签切换，一次只渲染 1 个 iframe
 - 对比页头部展示当前规则摘要，避免分享出去后别人不知道比较基准
 - 若某个 submission 为人工修订版本，对应对比面板顶部显示显著标记
