@@ -10,7 +10,7 @@ export default function SandboxIframe({
   const src = `/s/${submissionId}/index.html`;
 
   return (
-    <div className="w-full h-full min-h-[400px] rounded-lg overflow-hidden border border-gray-200 bg-white">
+    <div className="w-full h-full min-h-[400px] rounded-organic overflow-hidden border border-organic-border/50 bg-white shadow-soft">
       <iframe
         src={src}
         title={title || "Submission Preview"}

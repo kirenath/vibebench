@@ -75,46 +75,49 @@ export default function AdminSubmissionsPage() {
     loadData();
   }
 
+  const selectClass = "w-full border border-organic-border rounded-full h-10 px-4 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-1 outline-none transition-all duration-300";
+  const inputClass = "w-full border border-organic-border rounded-full h-10 px-4 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-1 outline-none transition-all duration-300";
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Submissions</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-heading font-bold text-organic-fg">Submissions</h1>
         <button onClick={() => setShowForm(!showForm)}
-          className="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-brand-600">
+          className="bg-organic-primary text-organic-primary-fg px-6 py-2.5 rounded-full text-sm font-bold hover:scale-105 hover:shadow-[0_6px_24px_-4px_rgba(93,112,82,0.25)] active:scale-95 transition-all duration-300 shadow-soft">
           {showForm ? "Cancel" : "New Submission"}
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 space-y-4">
+        <div className="bg-organic-card border border-organic-border/50 rounded-organic p-6 mb-8 space-y-4 shadow-soft">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Challenge</label>
-              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={form.challenge_id}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Challenge</label>
+              <select className={selectClass} value={form.challenge_id}
                 onChange={e => setForm({ ...form, challenge_id: e.target.value, challenge_phase_id: "" })}>
                 <option value="">Select...</option>
                 {challenges.map((c: any) => <option key={c.id} value={c.id}>{c.title}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Phase</label>
-              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={form.challenge_phase_id}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Phase</label>
+              <select className={selectClass} value={form.challenge_phase_id}
                 onChange={e => setForm({ ...form, challenge_phase_id: e.target.value })}>
                 <option value="">Select...</option>
                 {phases.map((p: any) => <option key={p.id} value={p.id}>{p.phase_label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Model Variant</label>
-              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={form.model_variant_id}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Model Variant</label>
+              <select className={selectClass} value={form.model_variant_id}
                 onChange={e => setForm({ ...form, model_variant_id: e.target.value })}>
                 <option value="">Select...</option>
                 {variants.map((v: any) => <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Channel</label>
-              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={form.channel_id}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Channel</label>
+              <select className={selectClass} value={form.channel_id}
                 onChange={e => setForm({ ...form, channel_id: e.target.value })}>
                 <option value="">Select...</option>
                 {channels.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -123,18 +126,18 @@ export default function AdminSubmissionsPage() {
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Iterations</label>
-              <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.iteration_count}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Iterations</label>
+              <input type="number" className={inputClass} value={form.iteration_count}
                 onChange={e => setForm({ ...form, iteration_count: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Duration (ms)</label>
-              <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.duration_ms}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Duration (ms)</label>
+              <input type="number" className={inputClass} value={form.duration_ms}
                 onChange={e => setForm({ ...form, duration_ms: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Timing Method</label>
-              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={form.timing_method}
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">Timing Method</label>
+              <select className={selectClass} value={form.timing_method}
                 onChange={e => setForm({ ...form, timing_method: e.target.value })}>
                 <option value="">None</option>
                 <option value="manual">Manual</option>
@@ -144,66 +147,66 @@ export default function AdminSubmissionsPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm font-medium text-organic-fg">
               <input type="checkbox" checked={form.manual_touched}
-                onChange={e => setForm({ ...form, manual_touched: e.target.checked })} />
+                onChange={e => setForm({ ...form, manual_touched: e.target.checked })} className="accent-organic-primary" />
               Manual Touched
             </label>
             {form.manual_touched && (
-              <input placeholder="Manual notes..." className="flex-1 border rounded-lg px-3 py-2 text-sm"
+              <input placeholder="Manual notes..." className="flex-1 border border-organic-border rounded-full h-10 px-4 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-1 outline-none transition-all duration-300"
                 value={form.manual_notes} onChange={e => setForm({ ...form, manual_notes: e.target.value })} />
             )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">HTML File</label>
-              <input type="file" ref={fileHtmlRef} accept=".html,.htm" className="text-sm" />
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">HTML File</label>
+              <input type="file" ref={fileHtmlRef} accept=".html,.htm" className="text-sm text-organic-muted-fg" />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">PRD File</label>
-              <input type="file" ref={filePrdRef} accept=".md,.txt" className="text-sm" />
+              <label className="block text-xs text-organic-muted-fg mb-1.5 font-semibold">PRD File</label>
+              <input type="file" ref={filePrdRef} accept=".md,.txt" className="text-sm text-organic-muted-fg" />
             </div>
           </div>
           <button onClick={handleCreate}
-            className="bg-brand-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-brand-600">Create</button>
+            className="bg-organic-primary text-organic-primary-fg px-8 py-2.5 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft">Create</button>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
+          <thead className="bg-organic-muted/50 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-500">Challenge</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Phase</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Model</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Channel</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Artifacts</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Actions</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Challenge</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Phase</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Model</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Channel</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Artifacts</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Status</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-organic-border/30">
             {submissions.map((s: any) => (
-              <tr key={s.submission_id}>
-                <td className="px-4 py-3">{s.challenge_title}</td>
-                <td className="px-4 py-3">{s.phase_label}</td>
-                <td className="px-4 py-3">{s.model_variant_name}</td>
-                <td className="px-4 py-3">{s.channel_name}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-1">
-                    {s.has_html && <span className="text-xs px-1.5 py-0.5 rounded bg-green-50 text-green-600">HTML</span>}
-                    {s.has_prd && <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">PRD</span>}
-                    {s.has_screenshot && <span className="text-xs px-1.5 py-0.5 rounded bg-purple-50 text-purple-600">IMG</span>}
+              <tr key={s.submission_id} className="hover:bg-organic-muted/20 transition-colors duration-200">
+                <td className="px-5 py-3.5 text-organic-fg">{s.challenge_title}</td>
+                <td className="px-5 py-3.5 text-organic-fg">{s.phase_label}</td>
+                <td className="px-5 py-3.5 text-organic-fg font-medium">{s.model_variant_name}</td>
+                <td className="px-5 py-3.5 text-organic-fg">{s.channel_name}</td>
+                <td className="px-5 py-3.5">
+                  <div className="flex gap-1.5">
+                    {s.has_html && <span className="text-xs px-2.5 py-1 rounded-full bg-organic-primary/10 text-organic-primary font-medium">HTML</span>}
+                    {s.has_prd && <span className="text-xs px-2.5 py-1 rounded-full bg-organic-secondary/10 text-organic-secondary font-medium">PRD</span>}
+                    {s.has_screenshot && <span className="text-xs px-2.5 py-1 rounded-full bg-organic-accent text-organic-accent-fg font-medium">IMG</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <button onClick={() => togglePublish(s)}
-                    className={`text-xs px-2 py-1 rounded ${s.submission_is_published ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full font-bold transition-all duration-300 ${s.submission_is_published ? "bg-organic-primary/10 text-organic-primary" : "bg-organic-muted text-organic-muted-fg"}`}>
                     {s.submission_is_published ? "Published" : "Draft"}
                   </button>
                 </td>
-                <td className="px-4 py-3">
-                  <button onClick={() => handleDelete(s.submission_id)} className="text-xs text-red-500 hover:text-red-700">Delete</button>
+                <td className="px-5 py-3.5">
+                  <button onClick={() => handleDelete(s.submission_id)} className="text-xs text-organic-destructive font-bold hover:text-organic-destructive/80 transition-colors duration-300">Delete</button>
                 </td>
               </tr>
             ))}

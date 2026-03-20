@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -25,7 +23,7 @@ export default function AdminLoginPage() {
         setError(data.error?.message || "Login failed");
         return;
       }
-      router.push("/admin");
+      window.location.href = "/admin";
     } catch {
       setError("Network error");
     } finally {
@@ -34,23 +32,25 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-organic-bg relative">
+      <div className="absolute top-1/4 left-1/3 w-72 h-72 bg-organic-primary/10 rounded-blob blur-3xl -z-10" />
+      <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-organic-secondary/10 rounded-blob blur-3xl -z-10" />
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center text-gray-900 mb-8">Admin Login</h1>
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <h1 className="text-3xl font-heading font-bold text-center text-organic-fg mb-8">Admin Login</h1>
+        <form onSubmit={handleSubmit} className="bg-organic-card p-8 rounded-organic border border-organic-border/50 shadow-float">
+          <label className="block text-sm font-semibold text-organic-fg mb-2">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            className="w-full border border-organic-border rounded-full h-12 px-5 mb-5 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300"
             required
           />
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {error && <p className="text-organic-destructive text-sm mb-4 font-medium">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand-500 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-600 disabled:opacity-50 transition-colors"
+            className="w-full bg-organic-primary text-organic-primary-fg rounded-full h-12 text-sm font-bold hover:scale-105 hover:shadow-[0_6px_24px_-4px_rgba(93,112,82,0.25)] active:scale-95 disabled:opacity-50 transition-all duration-300 shadow-soft"
           >
             {loading ? "Logging in..." : "Login"}
           </button>

@@ -17,10 +17,10 @@ export default function PhaseSelector({
         <button
           key={phase.phase_key}
           onClick={() => onSelect(phase.phase_key)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
             activePhase === phase.phase_key
-              ? "bg-brand-500 text-white shadow-sm"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-organic-primary text-organic-primary-fg shadow-soft"
+              : "bg-organic-muted text-organic-muted-fg hover:bg-organic-primary/10 hover:text-organic-primary"
           }`}
         >
           {phase.phase_label}

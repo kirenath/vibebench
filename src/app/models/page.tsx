@@ -30,25 +30,25 @@ export default async function ModelsPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Models</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+      <h1 className="text-4xl md:text-5xl font-heading font-bold text-organic-fg mb-12">Models</h1>
 
       {vendors.filter((v: any) => parseInt(v.variant_count) > 0).map((vendor: any) => (
-        <section key={vendor.id} className="mb-10">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{vendor.name}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <section key={vendor.id} className="mb-12">
+          <h2 className="text-2xl font-heading font-semibold text-organic-fg mb-6">{vendor.name}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {variants
               .filter((v: any) => v.vendor_id === vendor.id)
               .map((variant: any) => (
                 <Link
                   key={variant.id}
                   href={`/models/${variant.id}`}
-                  className="block p-5 rounded-xl border border-gray-200 bg-white hover:shadow-md transition-shadow"
+                  className="block p-6 rounded-organic border border-organic-border/50 bg-organic-card shadow-soft hover:-translate-y-1 hover:shadow-soft-hover transition-all duration-300"
                 >
-                  <p className="font-medium text-gray-900">{variant.name}</p>
-                  <p className="text-sm text-gray-400 mt-1">{variant.family_name}</p>
+                  <p className="font-heading font-semibold text-organic-fg">{variant.name}</p>
+                  <p className="text-sm text-organic-muted-fg mt-1">{variant.family_name}</p>
                   {variant.description && (
-                    <p className="text-sm text-gray-500 mt-2 line-clamp-2">{variant.description}</p>
+                    <p className="text-sm text-organic-muted-fg/80 mt-2 line-clamp-2">{variant.description}</p>
                   )}
                 </Link>
               ))}
@@ -57,7 +57,7 @@ export default async function ModelsPage() {
       ))}
 
       {variants.length === 0 && (
-        <p className="text-gray-400 text-center py-12">No models with published submissions yet.</p>
+        <p className="text-organic-muted-fg text-center py-12">No models with published submissions yet.</p>
       )}
     </div>
   );

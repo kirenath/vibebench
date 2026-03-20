@@ -12,12 +12,12 @@ export default function CompareGrid({ submissions }: { submissions: SubmissionOv
       : "grid-cols-1 md:grid-cols-2";
 
   return (
-    <div className={`grid ${gridClass} gap-4 h-full`}>
+    <div className={`grid ${gridClass} gap-6 h-full`}>
       {submissions.map((sub) => (
         <div key={sub.submission_id} className="flex flex-col min-h-[500px]">
-          <div className="flex items-center gap-2 mb-2 px-1">
-            <span className="font-medium text-sm text-gray-900">{sub.model_variant_name}</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <span className="font-heading font-semibold text-sm text-organic-fg">{sub.model_variant_name}</span>
+            <span className="text-xs px-3 py-1 rounded-full bg-organic-accent text-organic-accent-fg font-medium">
               {sub.channel_name}
             </span>
             {sub.manual_touched && <ManualTouchedBadge notes={sub.manual_notes} />}

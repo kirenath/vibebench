@@ -39,36 +39,42 @@ export default async function HomePage() {
   const [stats, challenges] = await Promise.all([getStats(), getChallenges()]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <section className="text-center mb-16">
-        <h1 className="text-5xl font-bold tracking-tight text-gray-900 mb-4">
-          VibeBench
-        </h1>
-        <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-          Same challenge, different AI models. See who vibes the best.
-        </p>
-      </section>
+    <div className="relative">
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-organic-primary/10 rounded-blob blur-3xl -z-10" />
+      <div className="absolute top-40 right-1/4 w-80 h-80 bg-organic-secondary/10 rounded-blob blur-3xl -z-10" />
 
-      <section className="mb-16">
-        <StatsCards stats={stats} />
-      </section>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+        <section className="text-center mb-20">
+          <h1 className="text-5xl md:text-7xl font-heading font-bold tracking-tight text-organic-fg mb-6">
+            VibeBench
+          </h1>
+          <p className="text-xl text-organic-muted-fg max-w-2xl mx-auto leading-relaxed">
+            Same challenge, different AI models. See who vibes the best.
+          </p>
+        </section>
 
-      <section>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Challenges</h2>
-        {challenges.length === 0 ? (
-          <p className="text-gray-400 text-center py-12">No challenges published yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {challenges.map((challenge: Challenge & { submission_count: string }) => (
-              <ChallengeCard
-                key={challenge.id}
-                challenge={challenge}
-                submissionCount={parseInt(challenge.submission_count)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+        <section className="mb-20">
+          <StatsCards stats={stats} />
+        </section>
+
+        <section>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-organic-fg mb-8">Challenges</h2>
+          {challenges.length === 0 ? (
+            <p className="text-organic-muted-fg text-center py-12">No challenges published yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {challenges.map((challenge: Challenge & { submission_count: string }, index: number) => (
+                <ChallengeCard
+                  key={challenge.id}
+                  challenge={challenge}
+                  submissionCount={parseInt(challenge.submission_count)}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

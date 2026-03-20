@@ -9,14 +9,14 @@ export default function StatsCards({
     { label: "Submissions", value: stats.published_submissions },
   ];
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-6">
       {items.map((item) => (
         <div
           key={item.label}
-          className="text-center p-6 rounded-xl bg-gradient-to-br from-brand-50 to-white border border-brand-100"
+          className="group text-center p-8 rounded-organic bg-organic-card border border-organic-border/50 shadow-soft hover:-translate-y-1 hover:shadow-soft-hover transition-all duration-300"
         >
-          <p className="text-3xl font-bold text-brand-600">{item.value}</p>
-          <p className="text-sm text-gray-500 mt-1">{item.label}</p>
+          <p className="text-4xl font-bold font-heading text-organic-primary group-hover:scale-110 transition-transform duration-300">{item.value}</p>
+          <p className="text-sm text-organic-muted-fg mt-2 font-medium">{item.label}</p>
         </div>
       ))}
     </div>

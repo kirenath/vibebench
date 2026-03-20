@@ -48,42 +48,42 @@ export default async function ModelDetailPage({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <header className="mb-8">
-        <p className="text-sm text-gray-400 mb-1">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+      <header className="mb-10">
+        <p className="text-sm text-organic-muted-fg mb-2">
           {variant.vendor_name} / {variant.family_name}
         </p>
-        <h1 className="text-4xl font-bold text-gray-900">{variant.name}</h1>
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-organic-fg">{variant.name}</h1>
         {variant.description && (
-          <p className="text-lg text-gray-500 mt-2">{variant.description}</p>
+          <p className="text-lg text-organic-muted-fg mt-3 leading-relaxed">{variant.description}</p>
         )}
       </header>
 
       {Object.entries(grouped).length === 0 ? (
-        <p className="text-gray-400 text-center py-12">No published submissions yet.</p>
+        <p className="text-organic-muted-fg text-center py-12">No published submissions yet.</p>
       ) : (
         Object.entries(grouped).map(([challengeId, subs]) => (
-          <section key={challengeId} className="mb-10">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              <Link href={`/challenges/${challengeId}`} className="hover:text-brand-600">
+          <section key={challengeId} className="mb-12">
+            <h2 className="text-2xl font-heading font-semibold text-organic-fg mb-5">
+              <Link href={`/challenges/${challengeId}`} className="hover:text-organic-primary transition-colors duration-300">
                 {subs[0].challenge_title}
               </Link>
             </h2>
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               {subs.map((sub: any) => (
-                <div key={sub.submission_id} className="p-4 rounded-lg border border-gray-200 bg-white">
+                <div key={sub.submission_id} className="p-5 rounded-organic border border-organic-border/50 bg-organic-card shadow-soft hover:-translate-y-0.5 transition-all duration-300">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">{sub.phase_label}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                    <span className="text-sm font-semibold text-organic-fg">{sub.phase_label}</span>
+                    <span className="text-xs px-3 py-1 rounded-full bg-organic-accent text-organic-accent-fg font-medium">
                       {sub.channel_name}
                     </span>
-                    {sub.has_html && <span className="text-xs px-2 py-0.5 rounded bg-green-50 text-green-600">HTML</span>}
+                    {sub.has_html && <span className="text-xs px-2.5 py-1 rounded-full bg-organic-primary/10 text-organic-primary font-medium">HTML</span>}
                     {sub.manual_touched && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">Manual Edit</span>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-organic-secondary/10 text-organic-secondary font-medium">Manual Edit</span>
                     )}
                   </div>
                   {sub.duration_ms != null && (
-                    <p className="text-xs text-gray-400 mt-1">Duration: {(sub.duration_ms / 1000).toFixed(1)}s</p>
+                    <p className="text-xs text-organic-muted-fg mt-2">Duration: {(sub.duration_ms / 1000).toFixed(1)}s</p>
                   )}
                 </div>
               ))}

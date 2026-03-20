@@ -51,14 +51,18 @@ export default function AdminModelsPage() {
     { key: "channels" as const, label: "Channels" },
   ];
 
+  const inputClass = "border border-organic-border rounded-full h-9 px-3 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-1 outline-none transition-all duration-300";
+  const selectClass = "border border-organic-border rounded-full h-9 px-3 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-1 outline-none transition-all duration-300";
+  const addBtnClass = "bg-organic-primary text-organic-primary-fg px-5 py-2 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft";
+
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Models</h1>
+      <h1 className="text-3xl font-heading font-bold text-organic-fg mb-6">Models</h1>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-8">
         {tabs.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === t.key ? "bg-brand-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${tab === t.key ? "bg-organic-primary text-organic-primary-fg shadow-soft" : "bg-organic-muted text-organic-muted-fg hover:bg-organic-primary/10 hover:text-organic-primary"}`}>
             {t.label}
           </button>
         ))}
@@ -66,20 +70,20 @@ export default function AdminModelsPage() {
 
       {tab === "vendors" && (
         <div>
-          <div className="bg-white border rounded-xl p-4 mb-4 flex gap-3 items-end">
-            <div><label className="block text-xs text-gray-500 mb-1">ID</label>
-              <input className="border rounded px-2 py-1 text-sm" value={vendorForm.id} onChange={e => setVendorForm({ ...vendorForm, id: e.target.value })} /></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Name</label>
-              <input className="border rounded px-2 py-1 text-sm" value={vendorForm.name} onChange={e => setVendorForm({ ...vendorForm, name: e.target.value })} /></div>
+          <div className="bg-organic-card border border-organic-border/50 rounded-organic p-5 mb-5 flex gap-3 items-end shadow-soft">
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">ID</label>
+              <input className={inputClass} value={vendorForm.id} onChange={e => setVendorForm({ ...vendorForm, id: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Name</label>
+              <input className={inputClass} value={vendorForm.name} onChange={e => setVendorForm({ ...vendorForm, name: e.target.value })} /></div>
             <button onClick={() => { createItem("/api/vendors", vendorForm); setVendorForm({ id: "", name: "", description: "" }); }}
-              className="bg-brand-500 text-white px-4 py-1.5 rounded text-sm">Add</button>
+              className={addBtnClass}>Add</button>
           </div>
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-gray-500">ID</th><th className="px-4 py-2 text-left text-gray-500">Name</th><th className="px-4 py-2">Actions</th></tr></thead>
-              <tbody className="divide-y">{vendors.map(v => (
-                <tr key={v.id}><td className="px-4 py-2 font-mono">{v.id}</td><td className="px-4 py-2">{v.name}</td>
-                  <td className="px-4 py-2 text-center"><button onClick={() => deleteItem(`/api/vendors/${v.id}`)} className="text-xs text-red-500">Delete</button></td></tr>
+              <thead className="bg-organic-muted/50"><tr><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">ID</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Name</th><th className="px-5 py-3 font-semibold text-organic-muted-fg">Actions</th></tr></thead>
+              <tbody className="divide-y divide-organic-border/30">{vendors.map(v => (
+                <tr key={v.id} className="hover:bg-organic-muted/20 transition-colors duration-200"><td className="px-5 py-3 font-mono text-organic-muted-fg">{v.id}</td><td className="px-5 py-3 text-organic-fg font-medium">{v.name}</td>
+                  <td className="px-5 py-3 text-center"><button onClick={() => deleteItem(`/api/vendors/${v.id}`)} className="text-xs text-organic-destructive font-bold hover:text-organic-destructive/80 transition-colors duration-300">Delete</button></td></tr>
               ))}</tbody>
             </table>
           </div>
@@ -88,23 +92,23 @@ export default function AdminModelsPage() {
 
       {tab === "families" && (
         <div>
-          <div className="bg-white border rounded-xl p-4 mb-4 flex gap-3 items-end flex-wrap">
-            <div><label className="block text-xs text-gray-500 mb-1">ID</label>
-              <input className="border rounded px-2 py-1 text-sm" value={familyForm.id} onChange={e => setFamilyForm({ ...familyForm, id: e.target.value })} /></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Vendor</label>
-              <select className="border rounded px-2 py-1 text-sm" value={familyForm.vendor_id} onChange={e => setFamilyForm({ ...familyForm, vendor_id: e.target.value })}>
+          <div className="bg-organic-card border border-organic-border/50 rounded-organic p-5 mb-5 flex gap-3 items-end flex-wrap shadow-soft">
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">ID</label>
+              <input className={inputClass} value={familyForm.id} onChange={e => setFamilyForm({ ...familyForm, id: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Vendor</label>
+              <select className={selectClass} value={familyForm.vendor_id} onChange={e => setFamilyForm({ ...familyForm, vendor_id: e.target.value })}>
                 <option value="">Select...</option>{vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}</select></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Name</label>
-              <input className="border rounded px-2 py-1 text-sm" value={familyForm.name} onChange={e => setFamilyForm({ ...familyForm, name: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Name</label>
+              <input className={inputClass} value={familyForm.name} onChange={e => setFamilyForm({ ...familyForm, name: e.target.value })} /></div>
             <button onClick={() => { createItem("/api/model-families", familyForm); setFamilyForm({ id: "", vendor_id: "", name: "", description: "" }); }}
-              className="bg-brand-500 text-white px-4 py-1.5 rounded text-sm">Add</button>
+              className={addBtnClass}>Add</button>
           </div>
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-gray-500">ID</th><th className="px-4 py-2 text-left text-gray-500">Vendor</th><th className="px-4 py-2 text-left text-gray-500">Name</th><th className="px-4 py-2">Actions</th></tr></thead>
-              <tbody className="divide-y">{families.map(f => (
-                <tr key={f.id}><td className="px-4 py-2 font-mono">{f.id}</td><td className="px-4 py-2">{f.vendor_name}</td><td className="px-4 py-2">{f.name}</td>
-                  <td className="px-4 py-2 text-center"><button onClick={() => deleteItem(`/api/model-families/${f.id}`)} className="text-xs text-red-500">Delete</button></td></tr>
+              <thead className="bg-organic-muted/50"><tr><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">ID</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Vendor</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Name</th><th className="px-5 py-3 font-semibold text-organic-muted-fg">Actions</th></tr></thead>
+              <tbody className="divide-y divide-organic-border/30">{families.map(f => (
+                <tr key={f.id} className="hover:bg-organic-muted/20 transition-colors duration-200"><td className="px-5 py-3 font-mono text-organic-muted-fg">{f.id}</td><td className="px-5 py-3 text-organic-fg">{f.vendor_name}</td><td className="px-5 py-3 text-organic-fg font-medium">{f.name}</td>
+                  <td className="px-5 py-3 text-center"><button onClick={() => deleteItem(`/api/model-families/${f.id}`)} className="text-xs text-organic-destructive font-bold hover:text-organic-destructive/80 transition-colors duration-300">Delete</button></td></tr>
               ))}</tbody>
             </table>
           </div>
@@ -113,23 +117,23 @@ export default function AdminModelsPage() {
 
       {tab === "variants" && (
         <div>
-          <div className="bg-white border rounded-xl p-4 mb-4 flex gap-3 items-end flex-wrap">
-            <div><label className="block text-xs text-gray-500 mb-1">ID</label>
-              <input className="border rounded px-2 py-1 text-sm" value={variantForm.id} onChange={e => setVariantForm({ ...variantForm, id: e.target.value })} /></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Family</label>
-              <select className="border rounded px-2 py-1 text-sm" value={variantForm.family_id} onChange={e => setVariantForm({ ...variantForm, family_id: e.target.value })}>
+          <div className="bg-organic-card border border-organic-border/50 rounded-organic p-5 mb-5 flex gap-3 items-end flex-wrap shadow-soft">
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">ID</label>
+              <input className={inputClass} value={variantForm.id} onChange={e => setVariantForm({ ...variantForm, id: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Family</label>
+              <select className={selectClass} value={variantForm.family_id} onChange={e => setVariantForm({ ...variantForm, family_id: e.target.value })}>
                 <option value="">Select...</option>{families.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}</select></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Name</label>
-              <input className="border rounded px-2 py-1 text-sm" value={variantForm.name} onChange={e => setVariantForm({ ...variantForm, name: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Name</label>
+              <input className={inputClass} value={variantForm.name} onChange={e => setVariantForm({ ...variantForm, name: e.target.value })} /></div>
             <button onClick={() => { createItem("/api/model-variants", variantForm); setVariantForm({ id: "", family_id: "", name: "", description: "" }); }}
-              className="bg-brand-500 text-white px-4 py-1.5 rounded text-sm">Add</button>
+              className={addBtnClass}>Add</button>
           </div>
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-gray-500">ID</th><th className="px-4 py-2 text-left text-gray-500">Family</th><th className="px-4 py-2 text-left text-gray-500">Name</th><th className="px-4 py-2">Actions</th></tr></thead>
-              <tbody className="divide-y">{variants.map(v => (
-                <tr key={v.id}><td className="px-4 py-2 font-mono">{v.id}</td><td className="px-4 py-2">{v.family_name}</td><td className="px-4 py-2">{v.name}</td>
-                  <td className="px-4 py-2 text-center"><button onClick={() => deleteItem(`/api/model-variants/${v.id}`)} className="text-xs text-red-500">Delete</button></td></tr>
+              <thead className="bg-organic-muted/50"><tr><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">ID</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Family</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Name</th><th className="px-5 py-3 font-semibold text-organic-muted-fg">Actions</th></tr></thead>
+              <tbody className="divide-y divide-organic-border/30">{variants.map(v => (
+                <tr key={v.id} className="hover:bg-organic-muted/20 transition-colors duration-200"><td className="px-5 py-3 font-mono text-organic-muted-fg">{v.id}</td><td className="px-5 py-3 text-organic-fg">{v.family_name}</td><td className="px-5 py-3 text-organic-fg font-medium">{v.name}</td>
+                  <td className="px-5 py-3 text-center"><button onClick={() => deleteItem(`/api/model-variants/${v.id}`)} className="text-xs text-organic-destructive font-bold hover:text-organic-destructive/80 transition-colors duration-300">Delete</button></td></tr>
               ))}</tbody>
             </table>
           </div>
@@ -138,20 +142,20 @@ export default function AdminModelsPage() {
 
       {tab === "channels" && (
         <div>
-          <div className="bg-white border rounded-xl p-4 mb-4 flex gap-3 items-end">
-            <div><label className="block text-xs text-gray-500 mb-1">ID</label>
-              <input className="border rounded px-2 py-1 text-sm" value={channelForm.id} onChange={e => setChannelForm({ ...channelForm, id: e.target.value })} /></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Name</label>
-              <input className="border rounded px-2 py-1 text-sm" value={channelForm.name} onChange={e => setChannelForm({ ...channelForm, name: e.target.value })} /></div>
+          <div className="bg-organic-card border border-organic-border/50 rounded-organic p-5 mb-5 flex gap-3 items-end shadow-soft">
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">ID</label>
+              <input className={inputClass} value={channelForm.id} onChange={e => setChannelForm({ ...channelForm, id: e.target.value })} /></div>
+            <div><label className="block text-xs text-organic-muted-fg mb-1 font-semibold">Name</label>
+              <input className={inputClass} value={channelForm.name} onChange={e => setChannelForm({ ...channelForm, name: e.target.value })} /></div>
             <button onClick={() => { createItem("/api/channels", channelForm); setChannelForm({ id: "", name: "", description: "" }); }}
-              className="bg-brand-500 text-white px-4 py-1.5 rounded text-sm">Add</button>
+              className={addBtnClass}>Add</button>
           </div>
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-gray-500">ID</th><th className="px-4 py-2 text-left text-gray-500">Name</th><th className="px-4 py-2">Actions</th></tr></thead>
-              <tbody className="divide-y">{channels.map(c => (
-                <tr key={c.id}><td className="px-4 py-2 font-mono">{c.id}</td><td className="px-4 py-2">{c.name}</td>
-                  <td className="px-4 py-2 text-center"><button onClick={() => deleteItem(`/api/channels/${c.id}`)} className="text-xs text-red-500">Delete</button></td></tr>
+              <thead className="bg-organic-muted/50"><tr><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">ID</th><th className="px-5 py-3 text-left text-organic-muted-fg font-semibold">Name</th><th className="px-5 py-3 font-semibold text-organic-muted-fg">Actions</th></tr></thead>
+              <tbody className="divide-y divide-organic-border/30">{channels.map(c => (
+                <tr key={c.id} className="hover:bg-organic-muted/20 transition-colors duration-200"><td className="px-5 py-3 font-mono text-organic-muted-fg">{c.id}</td><td className="px-5 py-3 text-organic-fg font-medium">{c.name}</td>
+                  <td className="px-5 py-3 text-center"><button onClick={() => deleteItem(`/api/channels/${c.id}`)} className="text-xs text-organic-destructive font-bold hover:text-organic-destructive/80 transition-colors duration-300">Delete</button></td></tr>
               ))}</tbody>
             </table>
           </div>

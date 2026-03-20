@@ -3,7 +3,7 @@
 export default function ManualTouchedBadge({ notes }: { notes: string | null }) {
   return (
     <span
-      className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 cursor-help"
+      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-organic-secondary/10 text-organic-secondary border border-organic-secondary/20 cursor-help font-medium"
       title={notes || "This submission was manually modified"}
     >
       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

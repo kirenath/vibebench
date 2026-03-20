@@ -54,76 +54,76 @@ export default function AdminChallengesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Challenges</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-heading font-bold text-organic-fg">Challenges</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-brand-600"
+          className="bg-organic-primary text-organic-primary-fg px-6 py-2.5 rounded-full text-sm font-bold hover:scale-105 hover:shadow-[0_6px_24px_-4px_rgba(93,112,82,0.25)] active:scale-95 transition-all duration-300 shadow-soft"
         >
           {showForm ? "Cancel" : "New Challenge"}
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 space-y-4">
+        <div className="bg-organic-card border border-organic-border/50 rounded-organic p-6 mb-8 space-y-4 shadow-soft">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID (slug)</label>
-              <input className="w-full border rounded-lg px-3 py-2 text-sm" value={form.id}
+              <label className="block text-sm font-semibold text-organic-fg mb-1.5">ID (slug)</label>
+              <input className="w-full border border-organic-border rounded-full h-10 px-4 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300" value={form.id}
                 onChange={(e) => setForm({ ...form, id: e.target.value })} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-              <input className="w-full border rounded-lg px-3 py-2 text-sm" value={form.title}
+              <label className="block text-sm font-semibold text-organic-fg mb-1.5">Title</label>
+              <input className="w-full border border-organic-border rounded-full h-10 px-4 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300" value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea className="w-full border rounded-lg px-3 py-2 text-sm" rows={2} value={form.description}
+            <label className="block text-sm font-semibold text-organic-fg mb-1.5">Description</label>
+            <textarea className="w-full border border-organic-border rounded-2xl px-4 py-3 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300" rows={2} value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Rules (Markdown)</label>
-            <textarea className="w-full border rounded-lg px-3 py-2 text-sm font-mono" rows={4} value={form.rules_markdown}
+            <label className="block text-sm font-semibold text-organic-fg mb-1.5">Rules (Markdown)</label>
+            <textarea className="w-full border border-organic-border rounded-2xl px-4 py-3 text-sm font-mono bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300" rows={4} value={form.rules_markdown}
               onChange={(e) => setForm({ ...form, rules_markdown: e.target.value })} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prompt (Markdown)</label>
-            <textarea className="w-full border rounded-lg px-3 py-2 text-sm font-mono" rows={4} value={form.prompt_markdown}
+            <label className="block text-sm font-semibold text-organic-fg mb-1.5">Prompt (Markdown)</label>
+            <textarea className="w-full border border-organic-border rounded-2xl px-4 py-3 text-sm font-mono bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300" rows={4} value={form.prompt_markdown}
               onChange={(e) => setForm({ ...form, prompt_markdown: e.target.value })} />
           </div>
           <button onClick={handleCreate}
-            className="bg-brand-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-brand-600">
+            className="bg-organic-primary text-organic-primary-fg px-8 py-2.5 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft">
             Create
           </button>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-organic-card rounded-organic border border-organic-border/50 overflow-hidden shadow-soft">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
+          <thead className="bg-organic-muted/50 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-500">ID</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Title</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Actions</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">ID</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Title</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Status</th>
+              <th className="px-5 py-3.5 font-semibold text-organic-muted-fg">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-organic-border/30">
             {challenges.map((c) => (
-              <tr key={c.id}>
-                <td className="px-4 py-3 font-mono text-gray-600">{c.id}</td>
-                <td className="px-4 py-3 text-gray-900">{c.title}</td>
-                <td className="px-4 py-3">
+              <tr key={c.id} className="hover:bg-organic-muted/20 transition-colors duration-200">
+                <td className="px-5 py-3.5 font-mono text-organic-muted-fg">{c.id}</td>
+                <td className="px-5 py-3.5 text-organic-fg font-medium">{c.title}</td>
+                <td className="px-5 py-3.5">
                   <button onClick={() => togglePublish(c)}
-                    className={`text-xs px-2 py-1 rounded ${c.is_published ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full font-bold transition-all duration-300 ${c.is_published ? "bg-organic-primary/10 text-organic-primary" : "bg-organic-muted text-organic-muted-fg"}`}>
                     {c.is_published ? "Published" : "Draft"}
                   </button>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <button onClick={() => handleDelete(c.id)}
-                    className="text-xs text-red-500 hover:text-red-700">Delete</button>
+                    className="text-xs text-organic-destructive hover:text-organic-destructive/80 font-bold transition-colors duration-300">Delete</button>
                 </td>
               </tr>
             ))}

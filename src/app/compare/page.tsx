@@ -71,14 +71,14 @@ export default function ComparePage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Compare</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+      <h1 className="text-4xl md:text-5xl font-heading font-bold text-organic-fg mb-10">Compare</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Challenge</label>
+          <label className="block text-sm font-semibold text-organic-fg mb-2">Challenge</label>
           <select
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border border-organic-border rounded-full px-5 py-3 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300"
             value={challengeId}
             onChange={(e) => updateUrl({ challenge: e.target.value, phase: "", entries: "" })}
           >
@@ -89,9 +89,9 @@ export default function ComparePage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phase</label>
+          <label className="block text-sm font-semibold text-organic-fg mb-2">Phase</label>
           <select
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border border-organic-border rounded-full px-5 py-3 text-sm bg-white/50 focus-visible:ring-2 focus-visible:ring-organic-primary/30 ring-offset-2 outline-none transition-all duration-300"
             value={phaseKey}
             onChange={(e) => updateUrl({ phase: e.target.value, entries: "" })}
           >
@@ -102,7 +102,7 @@ export default function ComparePage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-organic-fg mb-2">
             Entries ({entries.length}/4)
           </label>
           <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -113,10 +113,10 @@ export default function ComparePage() {
                 <button
                   key={s.submission_id}
                   onClick={() => toggleEntry(s.model_variant_id, s.channel_id)}
-                  className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  className={`text-xs px-4 py-2 rounded-full border font-bold transition-all duration-300 ${
                     isSelected
-                      ? "bg-brand-500 text-white border-brand-500"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-brand-300"
+                      ? "bg-organic-primary text-organic-primary-fg border-organic-primary shadow-soft"
+                      : "bg-white text-organic-muted-fg border-organic-border hover:border-organic-primary/50 hover:text-organic-primary"
                   }`}
                 >
                   {s.model_variant_name} ({s.channel_name})
@@ -132,7 +132,7 @@ export default function ComparePage() {
           <CompareGrid submissions={selected} />
         </div>
       ) : (
-        <div className="text-center py-20 text-gray-400">
+        <div className="text-center py-20 text-organic-muted-fg">
           {entries.length < 2
             ? "Select at least 2 entries to start comparing."
             : "Loading comparison..."}
