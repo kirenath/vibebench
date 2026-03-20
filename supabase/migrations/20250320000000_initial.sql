@@ -143,11 +143,21 @@ create table public.submission_artifacts (
     check (file_size is null or file_size >= 0)
 );
 
+create index vendors_sort_idx
+  on public.vendors (sort_order, name);
+
+create index channels_sort_idx
+  on public.channels (sort_order, name);
+
 create index model_families_vendor_sort_idx
   on public.model_families (vendor_id, sort_order, name);
 
 create index model_variants_family_sort_idx
   on public.model_variants (family_id, sort_order, name);
+
+create index challenges_published_sort_idx
+  on public.challenges (is_published, sort_order, title)
+  where is_published;
 
 create index challenge_phases_challenge_sort_idx
   on public.challenge_phases (challenge_id, sort_order, phase_label);
