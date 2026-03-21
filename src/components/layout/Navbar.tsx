@@ -3,15 +3,16 @@ import { Sparkles, BarChart2, Briefcase } from "lucide-react";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center px-4 md:px-8">
-        <Link href="/" className="mr-8 flex items-center space-x-2 transition-opacity hover:opacity-80">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="size-4" />
-          </div>
-          <span className="font-bold tracking-tight text-lg">VibeBench</span>
-        </Link>
-        <nav className="flex flex-1 items-center space-x-6 text-sm font-medium">
+    <div className="sticky top-4 z-50 w-full px-4 md:px-8 mt-4">
+      <header className="mx-auto w-full max-w-5xl rounded-full border border-border/50 bg-card/80 backdrop-blur-md shadow-soft">
+        <div className="flex h-16 items-center px-6 md:px-8">
+          <Link href="/" className="mr-8 flex items-center space-x-3 transition-opacity hover:opacity-80">
+            <div className="flex aspect-square size-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+              <Sparkles className="size-5" />
+            </div>
+            <span className="font-serif font-bold tracking-tight text-xl">VibeBench</span>
+          </Link>
+          <nav className="flex flex-1 items-center space-x-6 text-sm font-bold">
           <Link href="/" className="transition-colors hover:text-primary text-foreground/80">
             Challenges
           </Link>
@@ -25,7 +26,8 @@ export function Navbar() {
             <span className="hidden sm:inline-block">Admin</span>
           </Link>
         </div>
-      </div>
-    </header>
+        </div>
+      </header>
+    </div>
   );
 }
