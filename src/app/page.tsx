@@ -96,12 +96,15 @@ export default async function HomePage() {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground/60 mb-10">同一道题，你 pick 谁的 vibe？</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/challenges" className="btn-primary btn-lg">
+            <Link href="/challenges" className="btn-secondary btn-lg">
               浏览赛题
-              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
-            <Link href="/compare" className="btn-secondary btn-lg">
+            <Link href="/models" className="btn-secondary btn-lg">
+              探索模型
+            </Link>
+            <Link href="/compare" className="btn-primary btn-lg group">
               开始对比
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
         </div>

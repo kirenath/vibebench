@@ -40,15 +40,15 @@
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground font-bold
-           px-8 h-12 text-base shadow-soft
-           hover:scale-105 hover:shadow-soft-lg active:scale-95
+           px-8 h-12 text-base shadow-soft cursor-pointer
+           hover:scale-105 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-soft-lg active:scale-95
            transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-full border-2 border-secondary text-secondary
-           bg-transparent font-bold px-8 h-12 text-base
-           hover:bg-secondary hover:text-secondary-foreground hover:scale-105
+           bg-white/60 font-bold px-8 h-12 text-base shadow-soft cursor-pointer
+           hover:bg-secondary/10 hover:scale-105 hover:-translate-y-0.5 hover:shadow-soft-lg
            active:scale-95 transition-all duration-300;
   }
 
@@ -70,7 +70,7 @@
   }
 
   .btn-lg {
-    @apply h-14 px-10 text-lg;
+    @apply h-16 px-12 text-lg;
   }
 
   .card {
@@ -105,7 +105,7 @@
   }
 
   .badge {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm;
   }
 
   .badge-primary {
