@@ -1,0 +1,24 @@
+export const siteConfig = {
+  name: "VibeBench",
+  slogan: "探索 AI 编程的美学界限，发现每个模型的独特风格。",
+  description:
+    "同一道前端题，让不同 AI 模型拿出各自的作品，横向看风格、方法和完成度。",
+  repoUrl: "https://github.com/kirenath/vibebench",
+  submitChallengeUrl: "https://github.com/kirenath/vibebench/pulls",
+  requestModelsUrl: "https://github.com/kirenath/vibebench/discussions",
+  communityUrl: "https://linux.do",
+  contactEmail: "kirenath@tuta.io",
+  contactEmailHref: "mailto:kirenath@tuta.io",
+  faqUrl: "/faq",
+  changelogUrl: "/changelog",
+  apiDocsUrl: "/docs/api",
+  termsUrl: "/terms",
+  privacyUrl: "/privacy",
+  licenseUrl: "/license",
+  updatedAt: "2026 年 3 月 21 日",
+  poweredBy: [
+    { label: "Next.js", href: "https://nextjs.org" },
+    { label: "PostgreSQL", href: "https://www.postgresql.org" },
+    { label: "Tailwind CSS", href: "https://tailwindcss.com" },
+  ],
+} as const;
