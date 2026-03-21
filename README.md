@@ -31,32 +31,32 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 
 ## 当前状态
 
-当前仓库还处在 **产品定义 + 数据结构落地** 阶段，不是完整可运行的 Web 应用。
+当前仓库已完成 **MVP 应用骨架**，包含完整的前后端代码：
 
-目前已经提交到仓库的内容主要是：
-
-- 产品需求文档（PRD）
-- PostgreSQL 初始 Schema
-- 项目级 README
-
-还没有提交的内容包括：
-
-- Next.js 应用代码
-- Admin 后台实现
-- 上传与沙箱渲染逻辑
-- 环境变量模板、启动脚本和迁移脚本
-
-如果你是第一次打开这个仓库，建议把它理解为：**一个正在成形的项目骨架**，而不是已经可以 `npm install && npm run dev` 的成品仓库。
+- Next.js 15 (App Router + TypeScript) 应用
+- 公开页面：首页、赛题列表/详情、模型目录/详情、横评对比
+- Admin 后台：登录、赛题管理、模型管理、作品管理
+- 完整 REST API（CRUD for challenges, models, submissions, artifacts）
+- HTML 作品沙箱渲染
+- Organic/Natural 设计系统（Fraunces + Nunito 字体、grain texture）
+- PostgreSQL 初始 Schema + 环境变量模板
 
 ## 仓库内容
 
 ```text
 vibebench/
-├── README.md
+├── src/
+│   ├── app/              # Next.js App Router pages & API routes
+│   ├── components/       # Shared UI components
+│   └── lib/              # DB, auth, upload, constants
 ├── prd/
-│   └── prd.md
-└── sql/
-    └── 001_initial_schema.sql
+│   ├── prd.md            # Product requirements
+│   └── design.md         # Design system spec
+├── sql/
+│   └── 001_initial_schema.sql
+├── .env.example
+├── package.json
+└── tailwind.config.ts
 ```
 
 ### `prd/prd.md`
@@ -149,33 +149,48 @@ Challenge → Challenge Phase → Submission → Artifact
 
 更完整的字段设计和业务约束见 [prd/prd.md](prd/prd.md) 与 [sql/001_initial_schema.sql](sql/001_initial_schema.sql)。
 
-## 本地查看
+## 本地开发
 
-当前仓库没有应用代码，因此不存在完整的开发启动流程。
+### 1. 安装依赖
 
-如果你现在想本地查看这个项目，主要有两种方式：
+```bash
+npm install
+```
 
-### 1. 阅读 PRD
-
-直接打开 [prd/prd.md](prd/prd.md)，查看完整的产品和实现规划。
-
-### 2. 初始化数据库 Schema
-
-如果你想先验证数据结构，可以在本地 PostgreSQL 中执行：
+### 2. 初始化数据库
 
 ```bash
 psql "$DATABASE_URL" -f sql/001_initial_schema.sql
 ```
 
-执行后你会得到项目当前定义的表、索引、触发器和 `submission_overview` 视图。
+### 3. 配置环境变量
+
+```bash
+cp .env.example .env.local
+# 编辑 .env.local 填入实际值
+```
+
+生成管理员密码哈希：
+
+```bash
+node -e "const bcrypt = require('bcryptjs'); bcrypt.hash('your-password', 12).then(h => console.log(h))"
+```
+
+### 4. 启动开发服务器
+
+```bash
+npm run dev
+```
+
+打开 [http://localhost:3000](http://localhost:3000)。
 
 ## 下一步计划
 
-- 提交首版 Next.js 应用骨架
-- 落地公开页面：首页、赛题详情页、横评对比页
-- 落地 Admin 登录与内容管理后台
-- 接入基于文件的 HTML 作品存储与沙箱渲染
-- 补齐 `.env.example`、脚本、许可证和贡献文档
+- 编写 `receipt` 赛题数据迁移脚本 `scripts/migrate-receipt.ts`
+- 缩略图预览（自动截图）
+- 动态 Open Graph 图片
+- 模型目录筛选功能完善
+- 对比页同步滚动
 
 ## 贡献建议
 

@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    position: relative;
+  }
+
+  /* Grain texture overlay */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground font-bold
+           px-8 h-12 text-base shadow-soft
+           hover:scale-105 hover:shadow-soft-lg active:scale-95
+           transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border-2 border-secondary text-secondary
+           bg-transparent font-bold px-8 h-12 text-base
+           hover:bg-secondary hover:text-secondary-foreground hover:scale-105
+           active:scale-95 transition-all duration-300;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full bg-transparent text-primary font-bold
+           px-8 h-12 text-base
+           hover:bg-primary/10 hover:scale-105 active:scale-95
+           transition-all duration-300;
+  }
+
+  .btn-destructive {
+    @apply inline-flex items-center justify-center rounded-full bg-destructive text-white font-bold
+           px-8 h-12 text-base
+           hover:scale-105 active:scale-95 transition-all duration-300;
+  }
+
+  .btn-sm {
+    @apply h-10 px-6 text-sm;
+  }
+
+  .btn-lg {
+    @apply h-14 px-10 text-lg;
+  }
+
+  .card {
+    @apply bg-card border border-border/50 rounded-[2rem] shadow-soft
+           transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-soft-hover;
+  }
+
+  .input {
+    @apply w-full rounded-full border border-border bg-white/50 px-5 h-12 text-sm font-body
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
+           transition-all duration-300 placeholder:text-muted-foreground;
+  }
+
+  .textarea {
+    @apply w-full rounded-3xl border border-border bg-white/50 px-5 py-3 text-sm font-body min-h-[120px]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
+           transition-all duration-300 placeholder:text-muted-foreground resize-y;
+  }
+
+  .select {
+    @apply w-full rounded-full border border-border bg-white/50 px-5 h-12 text-sm font-body appearance-none
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
+           transition-all duration-300;
+  }
+
+  .label {
+    @apply text-sm font-semibold text-foreground;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary/10 text-primary;
+  }
+
+  .badge-secondary {
+    @apply badge bg-secondary/10 text-secondary;
+  }
+
+  .badge-destructive {
+    @apply badge bg-destructive/10 text-destructive;
+  }
+
+  .badge-muted {
+    @apply badge bg-muted text-muted-foreground;
+  }
+
+  .section {
+    @apply py-20 md:py-32 px-4 sm:px-6 lg:px-8;
+  }
+
+  .blob {
+    @apply absolute blur-3xl opacity-20 pointer-events-none;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
