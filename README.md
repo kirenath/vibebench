@@ -154,7 +154,7 @@ Challenge → Challenge Phase → Submission → Artifact
 ### 1. 安装依赖
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. 初始化数据库
@@ -179,7 +179,7 @@ node -e "const bcrypt = require('bcryptjs'); bcrypt.hash('your-password', 12).th
 ### 4. 启动开发服务器
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 打开 [http://localhost:3000](http://localhost:3000)。
