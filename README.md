@@ -22,7 +22,7 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 
 - 浏览同一题下不同模型的作品
 - 按阶段（Phase）切换结果
-- 发起 2 到 4 个作品的并排对比
+- 发起 2 个作品的并排对比
 - 查看每个作品的实现说明、生成背景和人工修订标记
 
 > 这不是跑分 Benchmark，没有统一评分体系。  
@@ -33,7 +33,7 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 
 当前仓库已完成 **MVP 应用骨架**，包含完整的前后端代码：
 
-- Next.js 15 (App Router + TypeScript) 应用
+- Next.js 16 (App Router + TypeScript) 应用
 - 公开页面：首页、赛题列表/详情、模型目录/详情、横评对比
 - Admin 后台：登录、赛题管理、模型管理、作品管理
 - 完整 REST API（CRUD for challenges, models, submissions, artifacts）
@@ -121,7 +121,7 @@ vibebench/
 
 | 层 | 方案 |
 |---|---|
-| 前端 | Next.js（App Router + TypeScript） |
+| 前端 | Next.js 16（App Router + TypeScript） |
 | 数据库 | PostgreSQL（优先 Supabase） |
 | 文件存储 | 本地 `uploads/`，后续可迁移 S3 / R2 |
 | 认证 | 单管理员密码 + JWT Cookie |
