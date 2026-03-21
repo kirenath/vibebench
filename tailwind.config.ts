@@ -32,8 +32,8 @@ const config: Config = {
         card: "#FEFEFA",
       },
       fontFamily: {
-        heading: ["Fraunces", "Georgia", "serif"],
-        body: ["Nunito", "system-ui", "sans-serif"],
+        heading: ["var(--font-heading)", "Georgia", "serif", "var(--font-cjk)"],
+        body: ["var(--font-body)", "system-ui", "sans-serif", "var(--font-cjk)"],
       },
       borderRadius: {
         organic: "60% 40% 30% 70% / 60% 30% 70% 40%",

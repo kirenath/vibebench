@@ -124,7 +124,7 @@ function CompareContent() {
         <div className="mb-12">
           <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4 flex items-center gap-3">
             <Columns2 className="h-10 w-10 text-primary" />
-            横评对比
+            展示对比
           </h1>
           <p className="text-muted-foreground text-lg">
             选择一个赛题，挑选 2 个作品进行 1v1 并排对比

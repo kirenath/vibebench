@@ -53,7 +53,7 @@ export default async function ChallengesPage() {
               赛题列表
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl">
-              每道赛题围绕一个前端挑战，收集不同模型的作品进行横评对比
+              每道赛题围绕一个前端挑战，收集不同模型的作品进行展示对比
             </p>
           </div>
 

@@ -14,7 +14,7 @@ export default function Footer() {
               <span className="font-heading font-bold text-lg">VibeBench</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              同一道前端题，让不同 AI 来做，看看谁 vibe 得最好。
+              围绕不同的前端挑战，收集不同 AI 模型的产出，并排对比效果，发现每个模型的独特风格。
             </p>
           </div>
           <div>
@@ -42,7 +42,7 @@ export default function Footer() {
                 href="/compare"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                横评对比
+                展示对比
               </Link>
             </div>
           </div>

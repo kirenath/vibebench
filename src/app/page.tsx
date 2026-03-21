@@ -62,7 +62,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative section pt-24 md:pt-40 pb-20">
+      <section className="relative section pt-12 md:pt-16 pb-20">
         {/* Background wash that extends behind navbar to eliminate the dividing line */}
         <div
           className="absolute inset-0 -top-24 pointer-events-none"
@@ -85,19 +85,16 @@ export default async function HomePage() {
         />
 
         <div className="relative max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 badge-primary mb-6">
+          <div className="inline-flex items-center gap-2 badge-primary mb-6 text-sm">
             <Sparkles className="h-4 w-4" />
-            AI Vibe Coding 横评平台
+            AI Vibe Coding 横向展示平台
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-foreground leading-tight text-balance mb-6">
-            同一道题，
+          <h1 className="font-[family-name:var(--font-display)] text-6xl md:text-8xl font-bold text-foreground leading-tight text-balance mb-3">
+            Same Challenge,
             <br />
-            <span className="text-primary">看谁 vibe 得最好</span>
+            <span className="text-primary">Different Vibes</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            围绕同一道前端挑战，收集不同 AI
-            模型的产出，并排对比效果，发现每个模型的独特风格。
-          </p>
+          <p className="text-lg md:text-xl text-muted-foreground/60 mb-10">同一道题，你 pick 谁的 vibe？</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/challenges" className="btn-primary btn-lg">
               浏览赛题
@@ -153,7 +150,7 @@ export default async function HomePage() {
               赛题列表
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              每道赛题围绕一个前端挑战，收集不同模型的作品进行横评对比
+              每道赛题围绕一个前端挑战，收集不同模型的作品进行展示对比
             </p>
           </div>
 
