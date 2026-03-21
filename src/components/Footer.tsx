@@ -2,26 +2,30 @@
 
 import { Leaf, Github, MessageSquare, Mail, ArrowUpRight, ChevronUp, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function Footer() {
   const [status, setStatus] = useState<"operational" | "degraded" | "checking">("checking");
 
-  useEffect(() => {
-    async function checkHealth() {
-      try {
-        const res = await fetch("/api/health");
-        if (res.ok) {
-          setStatus("operational");
-        } else {
-          setStatus("degraded");
-        }
-      } catch (e) {
+  const checkHealth = useCallback(async () => {
+    setStatus("checking");
+    const minDelay = new Promise((r) => setTimeout(r, 800));
+    try {
+      const [res] = await Promise.all([fetch("/api/health"), minDelay]);
+      if (res.ok) {
+        setStatus("operational");
+      } else {
         setStatus("degraded");
       }
+    } catch (e) {
+      await minDelay;
+      setStatus("degraded");
     }
-    checkHealth();
   }, []);
+
+  useEffect(() => {
+    checkHealth();
+  }, [checkHealth]);
   return (
     <footer className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -181,15 +185,21 @@ export default function Footer() {
             <Link href="/license" className="hover:text-primary hover:underline underline-offset-4 transition-colors">开源协议</Link>
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-muted-foreground order-1 md:order-3 bg-background/50 border border-border/50 px-4 py-2 rounded-full shadow-sm hover:bg-background transition-colors">
+          <button
+            onClick={checkHealth}
+            className="flex items-center gap-3 text-sm text-muted-foreground order-1 md:order-3 bg-background/50 border border-border/50 px-4 py-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-all cursor-pointer select-none"
+            title="点击重新检测系统状态"
+          >
             <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${status === 'operational' ? 'bg-emerald-400' : status === 'checking' ? 'bg-amber-400' : 'bg-red-400'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${status === 'operational' ? 'bg-emerald-500' : status === 'checking' ? 'bg-amber-500' : 'bg-red-500'}`}></span>
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors duration-500 ${status === 'operational' ? 'bg-emerald-400' : status === 'checking' ? 'bg-amber-400' : 'bg-red-400'}`}></span>
+              <span className={`relative inline-flex rounded-full h-2 w-2 transition-colors duration-500 ${status === 'operational' ? 'bg-emerald-500' : status === 'checking' ? 'bg-amber-500' : 'bg-red-500'}`}></span>
             </span>
-            <span className="font-medium tracking-wide">
-              {status === 'operational' ? '系统运行正常' : status === 'checking' ? '正在检查系统状态...' : '服务暂不可用'}
+            <span className="grid font-medium tracking-wide">
+              <span className={`col-start-1 row-start-1 transition-opacity duration-300 ${status === 'operational' ? 'opacity-100' : 'opacity-0'}`}>系统运行正常</span>
+              <span className={`col-start-1 row-start-1 transition-opacity duration-300 ${status === 'checking' ? 'opacity-70' : 'opacity-0'}`}>正在检查系统状态...</span>
+              <span className={`col-start-1 row-start-1 transition-opacity duration-300 ${status === 'degraded' ? 'opacity-100' : 'opacity-0'}`}>服务暂不可用</span>
             </span>
-          </div>
+          </button>
         </div>
       </div>
       </div>
