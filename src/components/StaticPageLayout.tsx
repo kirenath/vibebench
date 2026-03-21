@@ -17,7 +17,7 @@ export default function StaticPageLayout({
   children,
 }: StaticPageLayoutProps) {
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-clip">
       {/* Background wash that extends behind navbar to eliminate dividing line */}
       <div
         className="absolute inset-0 -top-24 pointer-events-none"
@@ -39,7 +39,7 @@ export default function StaticPageLayout({
         shapeIndex={1}
       />
 
-      <section className="section pt-24">
+      <section className="section !pt-8 md:!pt-12">
         <div className="mx-auto max-w-4xl">
           <div className="mb-10 md:mb-12">
             <span className="badge-primary mb-4 inline-flex">{eyebrow}</span>
