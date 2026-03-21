@@ -8,6 +8,7 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     position: relative;
+    overflow-x: hidden;
   }
 
   /* Grain texture overlay */
