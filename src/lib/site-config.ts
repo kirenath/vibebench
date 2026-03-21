@@ -15,6 +15,8 @@ export const siteConfig = {
   termsUrl: "/terms",
   privacyUrl: "/privacy",
   licenseUrl: "/license",
+  poweredByUrl: "/powered-by",
+  creditsUrl: "/credits",
   updatedAt: "2026 年 3 月 21 日",
   poweredBy: [
     { label: "Next.js", href: "https://nextjs.org" },

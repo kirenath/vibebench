@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Terms of Service — VibeBench",
-  description: "VibeBench 的服务条款占位页。",
+  description: "使用 VibeBench 平台前请阅读的服务条款与使用规范。",
 };
 
 export default function TermsPage() {
@@ -12,8 +12,8 @@ export default function TermsPage() {
     <StaticPageLayout
       eyebrow="Legal"
       title="服务条款"
-      description="当前版本以简要说明为主，用于明确平台用途、投稿责任和基础使用边界。"
-      updatedAt={siteConfig.updatedAt}
+      description="使用 VibeBench 平台前请阅读的服务条款与使用规范。"
+      updatedAt="2026 年 3 月 22 日"
     >
       <h2>平台性质</h2>
       <p>

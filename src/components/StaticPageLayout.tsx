@@ -17,7 +17,15 @@ export default function StaticPageLayout({
   children,
 }: StaticPageLayoutProps) {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-x-hidden">
+      {/* Background wash that extends behind navbar to eliminate dividing line */}
+      <div
+        className="absolute inset-0 -top-24 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 20% 50%, rgba(93,112,82,0.10) 0%, transparent 70%), radial-gradient(ellipse 60% 60% at 85% 30%, rgba(193,140,93,0.08) 0%, transparent 70%)",
+        }}
+      />
       <Blob
         color="bg-primary"
         size="w-72 h-72"
