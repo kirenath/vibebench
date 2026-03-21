@@ -1,6 +1,6 @@
 "use client";
 
-import { Leaf, Github, MessageSquare, Mail, ArrowUpRight, ChevronUp } from "lucide-react";
+import { Leaf, Github, MessageSquare, Mail, ArrowUpRight, ChevronUp, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -82,7 +82,7 @@ export default function Footer() {
                 className="group flex flex-col gap-1 transition-colors"
               >
                 <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">
-                  提交评测产物 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  提交评测产物 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </span>
                 <span className="text-xs text-muted-foreground/70">通过 GitHub PR 提交题目、HTML 产物及元数据。</span>
               </a>
@@ -93,7 +93,7 @@ export default function Footer() {
                 className="group flex flex-col gap-1 transition-colors"
               >
                 <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">
-                  提议赛题方向 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  提议赛题方向 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </span>
                 <span className="text-xs text-muted-foreground/70">在 Discussion 提出新赛题想法，或请求测试新模型。</span>
               </a>
@@ -104,7 +104,7 @@ export default function Footer() {
                 className="group flex flex-col gap-1 transition-colors"
               >
                 <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">
-                  参与社区讨论 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  参与社区讨论 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </span>
                 <span className="text-xs text-muted-foreground/70">前往 Linux.do 参与社区反馈与讨论。</span>
               </a>
@@ -113,7 +113,7 @@ export default function Footer() {
                 className="group flex flex-col gap-1 transition-colors"
               >
                 <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">
-                  通过邮件联系 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  通过邮件联系 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </span>
                 <span className="text-xs text-muted-foreground/70">通过邮件发送提示词、素材授权或相关代码文件。</span>
               </a>
@@ -128,28 +128,28 @@ export default function Footer() {
                 href="/faq"
                 className="group flex flex-col gap-1 transition-colors"
               >
-                <span className="text-sm text-foreground/80 group-hover:text-primary">常见问题</span>
+                <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">常见问题 <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" /></span>
                 <span className="text-xs text-muted-foreground/70">解释评测边界、展示规则和人工修订标记。</span>
               </Link>
               <Link
                 href="/changelog"
                 className="group flex flex-col gap-1 transition-colors"
               >
-                <span className="text-sm text-foreground/80 group-hover:text-primary">更新日志</span>
+                <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">更新日志 <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" /></span>
                 <span className="text-xs text-muted-foreground/70">记录站点迭代、入口调整和公开信息更新。</span>
               </Link>
               <Link
                 href="/powered-by"
                 className="group flex flex-col gap-1 transition-colors"
               >
-                <span className="text-sm text-foreground/80 group-hover:text-primary">技术支持</span>
+                <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">技术支持 <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" /></span>
                 <span className="text-xs text-muted-foreground/70">驱动平台底层的技术栈与基础设施。</span>
               </Link>
               <Link
                 href="/credits"
                 className="group flex flex-col gap-1 transition-colors"
               >
-                <span className="text-sm text-foreground/80 group-hover:text-primary">特别鸣谢</span>
+                <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">特别鸣谢 <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" /></span>
                 <span className="text-xs text-muted-foreground/70">感谢开源社区、初创素材授权者与反馈用户。</span>
               </Link>
             </div>
@@ -174,11 +174,11 @@ export default function Footer() {
           </div>
           
           <div className="flex items-center gap-6 text-sm text-muted-foreground order-2 md:order-2 opacity-80">
-            <Link href="/terms" className="hover:text-primary transition-colors">服务条款</Link>
+            <Link href="/terms" className="hover:text-primary hover:underline underline-offset-4 transition-colors">服务条款</Link>
             <span className="w-1 h-1 rounded-full bg-border/80"></span>
-            <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
+            <Link href="/privacy" className="hover:text-primary hover:underline underline-offset-4 transition-colors">隐私政策</Link>
             <span className="w-1 h-1 rounded-full bg-border/80"></span>
-            <Link href="/license" className="hover:text-primary transition-colors">开源协议</Link>
+            <Link href="/license" className="hover:text-primary hover:underline underline-offset-4 transition-colors">开源协议</Link>
           </div>
 
           <div className="flex items-center gap-3 text-sm text-muted-foreground order-1 md:order-3 bg-background/50 border border-border/50 px-4 py-2 rounded-full shadow-sm hover:bg-background transition-colors">
