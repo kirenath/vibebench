@@ -27,6 +27,7 @@ Thumbs.db
 # Project specific
 uploads/
 prd/
+challenge/
 
 # AI agent config
 AGENTS.md
