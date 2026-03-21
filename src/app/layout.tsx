@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Kalnia, Nunito, Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import LayoutShell from "@/components/LayoutShell";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -43,9 +42,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className={`${fraunces.variable} ${displayFont.variable} ${nunito.variable} ${notoSansSC.variable}`}>
       <body className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
