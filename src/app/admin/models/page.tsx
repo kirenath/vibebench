@@ -6,6 +6,7 @@ import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 import { Pencil, Trash2, Package } from "lucide-react";
+import CustomSelect from "@/components/CustomSelect";
 
 interface Vendor { id: string; name: string; description: string | null; sort_order: number; }
 interface Family { id: string; vendor_id: string; name: string; description: string | null; sort_order: number; vendor_name?: string; }
@@ -272,10 +273,12 @@ export default function AdminModelsPage() {
           <div className="space-y-4">
             <div><label className="label mb-1 block">ID</label><input className="input" value={familyForm.id} disabled={editMode} onChange={e => setFamilyForm({...familyForm, id: e.target.value})} placeholder="chatgpt" /></div>
             <div><label className="label mb-1 block">所属厂商</label>
-              <select className="select" value={familyForm.vendor_id} onChange={e => setFamilyForm({...familyForm, vendor_id: e.target.value})}>
-                <option value="">选择厂商...</option>
-                {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-              </select>
+              <CustomSelect
+                options={vendors.map(v => ({ value: v.id, label: v.name }))}
+                value={familyForm.vendor_id}
+                onChange={v => setFamilyForm({...familyForm, vendor_id: v})}
+                placeholder="选择厂商..."
+              />
             </div>
             <div><label className="label mb-1 block">名称</label><input className="input" value={familyForm.name} onChange={e => setFamilyForm({...familyForm, name: e.target.value})} placeholder="ChatGPT" /></div>
             <div><label className="label mb-1 block">排序</label><input className="input" type="number" value={familyForm.sort_order} onChange={e => setFamilyForm({...familyForm, sort_order: parseInt(e.target.value)||0})} /></div>
@@ -286,10 +289,12 @@ export default function AdminModelsPage() {
           <div className="space-y-4">
             <div><label className="label mb-1 block">ID</label><input className="input" value={variantForm.id} disabled={editMode} onChange={e => setVariantForm({...variantForm, id: e.target.value})} placeholder="gpt-5.4-pro" /></div>
             <div><label className="label mb-1 block">所属产品线</label>
-              <select className="select" value={variantForm.family_id} onChange={e => setVariantForm({...variantForm, family_id: e.target.value})}>
-                <option value="">选择产品线...</option>
-                {families.map(f => <option key={f.id} value={f.id}>{f.vendor_name} / {f.name}</option>)}
-              </select>
+              <CustomSelect
+                options={families.map(f => ({ value: f.id, label: `${f.vendor_name} / ${f.name}` }))}
+                value={variantForm.family_id}
+                onChange={v => setVariantForm({...variantForm, family_id: v})}
+                placeholder="选择产品线..."
+              />
             </div>
             <div><label className="label mb-1 block">名称</label><input className="input" value={variantForm.name} onChange={e => setVariantForm({...variantForm, name: e.target.value})} placeholder="GPT-5.4 Pro" /></div>
             <div><label className="label mb-1 block">排序</label><input className="input" type="number" value={variantForm.sort_order} onChange={e => setVariantForm({...variantForm, sort_order: parseInt(e.target.value)||0})} /></div>

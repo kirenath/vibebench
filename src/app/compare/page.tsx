@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Columns2 } from "lucide-react";
+import CustomSelect from "@/components/CustomSelect";
 import Link from "next/link";
 
 interface Challenge {
@@ -135,40 +136,28 @@ function CompareContent() {
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           <div>
             <label className="label mb-2 block">赛题</label>
-            <select
-              className="select"
+            <CustomSelect
+              options={challenges.map((c) => ({ value: c.id, label: c.title }))}
               value={selectedChallenge}
-              onChange={(e) => {
-                setSelectedChallenge(e.target.value);
+              onChange={(v) => {
+                setSelectedChallenge(v);
                 setSelectedPhase("");
                 setSelectedEntries([]);
               }}
-            >
-              <option value="">选择赛题...</option>
-              {challenges.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
+              placeholder="选择赛题..."
+            />
           </div>
           <div>
             <label className="label mb-2 block">Phase</label>
-            <select
-              className="select"
+            <CustomSelect
+              options={phases.map((p) => ({ value: p.phase_key, label: p.phase_label }))}
               value={selectedPhase}
-              onChange={(e) => {
-                setSelectedPhase(e.target.value);
+              onChange={(v) => {
+                setSelectedPhase(v);
                 setSelectedEntries([]);
               }}
-            >
-              <option value="">选择 Phase...</option>
-              {phases.map((p) => (
-                <option key={p.id} value={p.phase_key}>
-                  {p.phase_label}
-                </option>
-              ))}
-            </select>
+              placeholder="选择 Phase..."
+            />
           </div>
           <div>
             <label className="label mb-2 block">

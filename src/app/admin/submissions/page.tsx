@@ -6,6 +6,7 @@ import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2 } from "lucide-react";
+import CustomSelect from "@/components/CustomSelect";
 
 interface Challenge { id: string; title: string; }
 interface Phase { id: string; phase_key: string; phase_label: string; }
@@ -229,31 +230,39 @@ export default function AdminSubmissionsPage() {
         <div className="space-y-4">
           <div>
             <label className="label mb-1 block">赛题</label>
-            <select className="select" value={selectedChallenge} onChange={e => setSelectedChallenge(e.target.value)}>
-              <option value="">选择赛题...</option>
-              {challenges.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-            </select>
+            <CustomSelect
+              options={challenges.map(c => ({ value: c.id, label: c.title }))}
+              value={selectedChallenge}
+              onChange={setSelectedChallenge}
+              placeholder="选择赛题..."
+            />
           </div>
           <div>
             <label className="label mb-1 block">Phase</label>
-            <select className="select" value={form.challenge_phase_id} onChange={e => setForm({...form, challenge_phase_id: e.target.value})}>
-              <option value="">选择 Phase...</option>
-              {phases.map(p => <option key={p.id} value={p.id}>{p.phase_label}</option>)}
-            </select>
+            <CustomSelect
+              options={phases.map(p => ({ value: p.id, label: p.phase_label }))}
+              value={form.challenge_phase_id}
+              onChange={v => setForm({...form, challenge_phase_id: v})}
+              placeholder="选择 Phase..."
+            />
           </div>
           <div>
             <label className="label mb-1 block">模型版本</label>
-            <select className="select" value={form.model_variant_id} onChange={e => setForm({...form, model_variant_id: e.target.value})}>
-              <option value="">选择模型...</option>
-              {variants.map(v => <option key={v.id} value={v.id}>{v.vendor_name} / {v.name}</option>)}
-            </select>
+            <CustomSelect
+              options={variants.map(v => ({ value: v.id, label: `${v.vendor_name} / ${v.name}` }))}
+              value={form.model_variant_id}
+              onChange={v => setForm({...form, model_variant_id: v})}
+              placeholder="选择模型..."
+            />
           </div>
           <div>
             <label className="label mb-1 block">渠道</label>
-            <select className="select" value={form.channel_id} onChange={e => setForm({...form, channel_id: e.target.value})}>
-              <option value="">选择渠道...</option>
-              {channels.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <CustomSelect
+              options={channels.map(c => ({ value: c.id, label: c.name }))}
+              value={form.channel_id}
+              onChange={v => setForm({...form, channel_id: v})}
+              placeholder="选择渠道..."
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -267,12 +276,17 @@ export default function AdminSubmissionsPage() {
           </div>
           <div>
             <label className="label mb-1 block">计时方式</label>
-            <select className="select" value={form.timing_method} onChange={e => setForm({...form, timing_method: e.target.value})}>
-              <option value="">无</option>
-              <option value="manual">手动</option>
-              <option value="measured">测量</option>
-              <option value="estimated">估算</option>
-            </select>
+            <CustomSelect
+              options={[
+                { value: "", label: "无" },
+                { value: "manual", label: "手动" },
+                { value: "measured", label: "测量" },
+                { value: "estimated", label: "估算" },
+              ]}
+              value={form.timing_method}
+              onChange={v => setForm({...form, timing_method: v})}
+              placeholder="选择计时方式..."
+            />
           </div>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 text-sm">
@@ -300,11 +314,16 @@ export default function AdminSubmissionsPage() {
         <div className="space-y-4">
           <div>
             <label className="label mb-1 block">类型</label>
-            <select className="select" value={artifactType} onChange={e => setArtifactType(e.target.value)}>
-              <option value="html">HTML</option>
-              <option value="prd">PRD</option>
-              <option value="screenshot">Screenshot</option>
-            </select>
+            <CustomSelect
+              options={[
+                { value: "html", label: "HTML" },
+                { value: "prd", label: "PRD" },
+                { value: "screenshot", label: "Screenshot" },
+              ]}
+              value={artifactType}
+              onChange={setArtifactType}
+              placeholder="选择类型..."
+            />
           </div>
           <div>
             <label className="label mb-1 block">文件</label>
