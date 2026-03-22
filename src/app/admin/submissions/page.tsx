@@ -124,7 +124,7 @@ export default function AdminSubmissionsPage() {
     try {
       const res = await fetch(`/api/submissions/${subId}`);
       const json = await res.json();
-      if (!json.success) return;
+      if (!res.ok || !json.data) return;
       const d = json.data;
       setEditForm({
         is_published: d.submission_is_published ?? d.is_published ?? false,
