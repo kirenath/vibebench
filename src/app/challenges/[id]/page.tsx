@@ -4,13 +4,10 @@ import { query, queryOne } from "@/lib/db";
 import Blob from "@/components/Blob";
 import {
   ArrowLeft,
-  Clock,
-  RefreshCw,
-  AlertTriangle,
   FileText,
-  ExternalLink,
 } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
+import SubmissionCard, { type PhaseSubmission } from "@/components/SubmissionCard";
 
 interface ChallengeRow {
   id: string;
@@ -30,6 +27,8 @@ interface PhaseRow {
 
 interface SubmissionRow {
   submission_id: string;
+  phase_key: string;
+  phase_label: string;
   model_variant_id: string;
   model_variant_name: string;
   vendor_name: string;
@@ -66,16 +65,17 @@ async function getPhases(challengeId: string) {
   }
 }
 
-async function getSubmissions(phaseId: string) {
+async function getAllSubmissions(challengeId: string) {
   try {
     return await query<SubmissionRow>(
-      `SELECT submission_id, model_variant_id, model_variant_name, vendor_name,
+      `SELECT submission_id, phase_key, phase_label,
+              model_variant_id, model_variant_name, vendor_name,
               channel_id, channel_name, manual_touched, manual_notes,
               duration_ms, iteration_count, updated_at, has_html, has_prd
        FROM submission_overview
-       WHERE challenge_phase_id = $1 AND submission_is_published = true
-       ORDER BY vendor_name, model_variant_name`,
-      [phaseId]
+       WHERE challenge_id = $1 AND submission_is_published = true
+       ORDER BY vendor_name, model_variant_name, phase_key`,
+      [challengeId]
     );
   } catch {
     return [];
@@ -96,33 +96,74 @@ export async function generateMetadata({
   };
 }
 
+/** Group submissions by model_variant_id + channel_id */
+interface GroupedModel {
+  modelName: string;
+  vendorName: string;
+  channelName: string;
+  phase1: PhaseSubmission | null;
+  phase2: PhaseSubmission | null;
+}
+
+function groupByModel(submissions: SubmissionRow[]): GroupedModel[] {
+  const map = new Map<string, GroupedModel>();
+
+  for (const s of submissions) {
+    const key = `${s.model_variant_id}__${s.channel_id}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        modelName: s.model_variant_name,
+        vendorName: s.vendor_name,
+        channelName: s.channel_name,
+        phase1: null,
+        phase2: null,
+      });
+    }
+    const group = map.get(key)!;
+    const sub: PhaseSubmission = {
+      submission_id: s.submission_id,
+      duration_ms: s.duration_ms,
+      iteration_count: s.iteration_count,
+      has_html: s.has_html,
+      has_prd: s.has_prd,
+      manual_touched: s.manual_touched,
+      manual_notes: s.manual_notes,
+    };
+
+    if (s.phase_key.startsWith("phase2")) {
+      group.phase2 = sub;
+    } else {
+      group.phase1 = sub;
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 export default async function ChallengeDetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ phase?: string }>;
 }) {
   const { id } = await params;
-  const { phase: phaseParam } = await searchParams;
 
   const challenge = await getChallenge(id);
   if (!challenge) notFound();
 
   const phases = await getPhases(id);
-  const activePhase =
-    phases.find((p) => p.phase_key === phaseParam) ||
-    phases.find((p) => p.is_default) ||
-    phases[0];
+  const submissions = await getAllSubmissions(id);
+  const groupedModels = groupByModel(submissions);
 
-  const submissions = activePhase
-    ? await getSubmissions(activePhase.id)
-    : [];
+  const rawPrompt = challenge.prompt_markdown || "";
+  const phase2Step1 = `以下是一个设计需求：\n"${rawPrompt}"\n请你根据这个需求，撰写一份详细的产品需求文档（PRD），不要写代码，只输出 PRD。`;
+  const phase2Step2 = "根据你自己的 PRD 文档，请输出完整的HTML。";
+
+  const hasPhase2 = phases.some((p) => p.phase_key.startsWith("phase2"));
 
   return (
     <div className="relative">
       <section className="relative section pt-24">
-        {/* Background wash that extends behind navbar to eliminate the dividing line */}
+        {/* Background wash */}
         <div
           className="absolute inset-0 -top-24 pointer-events-none"
           style={{
@@ -157,19 +198,13 @@ export default async function ChallengeDetailPage({
           </div>
 
           {/* Rules & Prompt accordion */}
-          {(challenge.rules_markdown || challenge.prompt_markdown) && (() => {
-            const isPhase2 = activePhase?.phase_key?.startsWith("phase2");
-            const rawPrompt = challenge.prompt_markdown || "";
-            const phase2Step1 = `以下是一个设计需求：\n"${rawPrompt}"\n请你根据这个需求，撰写一份详细的产品需求文档（PRD），不要写代码，只输出 PRD。`;
-            const phase2Step2 = "根据你自己的 PRD 文档，请输出完整的HTML。";
-
-            return (
+          {(challenge.rules_markdown || challenge.prompt_markdown) && (
             <div className="grid md:grid-cols-2 gap-6 mb-12 items-start">
               {challenge.rules_markdown && (
-                <details className="card p-6 group">
+                <details className="card p-6 group" open>
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
                     <FileText className="h-5 w-5 text-primary" />
-                    规则说明
+                    📋 规则说明
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
@@ -180,150 +215,85 @@ export default async function ChallengeDetailPage({
                 </details>
               )}
               {challenge.prompt_markdown && (
-                <details className="card p-6 group">
+                <details className="card p-6 group" open>
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
                     <FileText className="h-5 w-5 text-secondary" />
-                    Prompt
-                    {!isPhase2 && <CopyButton text={challenge.prompt_markdown!} />}
+                    📝 Prompt
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
                   </summary>
 
-                  {!isPhase2 ? (
-                    /* Phase1: show original prompt */
-                    <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
-                      {challenge.prompt_markdown}
-                    </div>
-                  ) : (
-                    /* Phase2: show two-step prompt flow */
-                    <div className="mt-4 space-y-4">
-                      {/* Step 1 */}
-                      <div className="rounded-2xl border border-border/50 bg-muted/30 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">1</span>
-                          <span className="font-heading font-semibold text-sm">生成 PRD</span>
-                          <CopyButton text={phase2Step1} />
-                        </div>
-                        <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                          {phase2Step1}
-                        </div>
+                  <div className="mt-4 space-y-3">
+                    {/* Phase 1 prompt — expanded by default */}
+                    <details className="rounded-2xl border border-border/50 bg-muted/30" open>
+                      <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
+                        Phase 1（初版）提示词
+                        <CopyButton text={rawPrompt} />
+                        <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                      </summary>
+                      <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                        {rawPrompt}
                       </div>
-                      {/* Step 2 */}
-                      <div className="rounded-2xl border border-border/50 bg-muted/30 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
-                          <span className="font-heading font-semibold text-sm">根据 PRD 生成代码</span>
-                          <CopyButton text={phase2Step2} />
+                    </details>
+
+                    {/* Phase 2 prompt — collapsed by default */}
+                    {hasPhase2 && (
+                      <details className="rounded-2xl border border-border/50 bg-muted/30">
+                        <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
+                          Phase 2（改版）提示词
+                          <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                        </summary>
+                        <div className="px-4 pb-4 space-y-3">
+                          {/* Step 1 */}
+                          <div className="rounded-xl border border-border/30 bg-background/50 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">1</span>
+                              <span className="font-heading font-semibold text-sm">生成 PRD</span>
+                              <CopyButton text={phase2Step1} />
+                            </div>
+                            <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                              {phase2Step1}
+                            </div>
+                          </div>
+                          {/* Step 2 */}
+                          <div className="rounded-xl border border-border/30 bg-background/50 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
+                              <span className="font-heading font-semibold text-sm">根据 PRD 生成代码</span>
+                              <CopyButton text={phase2Step2} />
+                            </div>
+                            <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                              {phase2Step2}
+                            </div>
+                          </div>
                         </div>
-                        <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                          {phase2Step2}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                      </details>
+                    )}
+                  </div>
                 </details>
               )}
             </div>
-            );
-          })()}
-
-          {/* Phase tabs */}
-          {phases.length > 1 && (
-            <div className="flex flex-wrap gap-2 mb-8">
-              {phases.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/challenges/${id}?phase=${p.phase_key}`}
-                  className={`rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300 ${
-                    activePhase?.id === p.id
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
-                  }`}
-                >
-                  {p.phase_label}
-                </Link>
-              ))}
-            </div>
           )}
 
-          {/* Submissions grid */}
-          {submissions.length === 0 ? (
+          {/* Submissions grid — grouped by model */}
+          {groupedModels.length === 0 ? (
             <div className="card p-12 text-center">
               <p className="text-muted-foreground">
-                当前 phase 暂无已发布作品
+                暂无已发布作品
               </p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {submissions.map((s) => (
-                <div
-                  key={s.submission_id}
-                  className="card p-6 card-hover group relative"
-                >
-                  {s.manual_touched && (
-                    <div className="absolute top-4 right-4">
-                      <span
-                        className="badge-destructive flex items-center gap-1"
-                        title={s.manual_notes || "人工修订"}
-                      >
-                        <AlertTriangle className="h-3 w-3" />
-                        人工修订
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mb-4">
-                    <h3 className="font-heading font-bold text-lg">
-                      {s.model_variant_name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {s.vendor_name} · {s.channel_name}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mb-4">
-                    {s.duration_ms && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {(parseInt(s.duration_ms) / 1000).toFixed(1)}s
-                      </span>
-                    )}
-                    {s.iteration_count != null && (
-                      <span className="flex items-center gap-1">
-                        <RefreshCw className="h-3 w-3" />
-                        {s.iteration_count} 次迭代
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-auto">
-                    {s.has_html && (
-                      <Link
-                        href={`/s/${s.submission_id}/index.html`}
-                        target="_blank"
-                        className="btn-primary btn-sm !h-9 !px-4 text-xs"
-                      >
-                        查看效果
-                        <ExternalLink className="ml-1 h-3 w-3" />
-                      </Link>
-                    )}
-                    {s.has_prd && (
-                      <Link
-                        href={`/api/submissions/${s.submission_id}/artifacts/prd`}
-                        target="_blank"
-                        className="btn-ghost btn-sm !h-9 !px-4 text-xs"
-                      >
-                        PRD
-                      </Link>
-                    )}
-                    {!s.has_html && (
-                      <span className="text-xs text-muted-foreground">
-                        暂无可对比作品
-                      </span>
-                    )}
-                  </div>
-                </div>
+              {groupedModels.map((g) => (
+                <SubmissionCard
+                  key={`${g.modelName}__${g.channelName}`}
+                  modelName={g.modelName}
+                  vendorName={g.vendorName}
+                  channelName={g.channelName}
+                  phase1={g.phase1}
+                  phase2={g.phase2}
+                />
               ))}
             </div>
           )}
