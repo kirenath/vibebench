@@ -46,10 +46,14 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const baseDir = path.dirname(artifact.file_path);
+    // Normalize backslashes to forward slashes for cross-platform compatibility
+    // (paths stored on Windows use backslashes, but Linux needs forward slashes)
+    const normalizedPath = artifact.file_path.replace(/\\/g, "/");
+    const baseDir = path.dirname(normalizedPath);
     const filePath = path.resolve(baseDir, requestedFile);
 
-    if (!filePath.startsWith(path.resolve(baseDir))) {
+    const resolvedBase = path.resolve(baseDir);
+    if (!filePath.startsWith(resolvedBase)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

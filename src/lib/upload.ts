@@ -59,7 +59,8 @@ export async function saveFile(
   const filePath = path.join(dirPath, safeName);
   const checksum = computeChecksum(buffer);
   await fs.writeFile(filePath, buffer);
-  return { filePath, checksum, fileSize: buffer.length };
+  // Always store forward slashes for cross-platform compatibility
+  return { filePath: filePath.replace(/\\/g, "/"), checksum, fileSize: buffer.length };
 }
 
 export async function deleteDir(dirPath: string): Promise<void> {
