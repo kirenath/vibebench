@@ -32,11 +32,14 @@ export async function GET(
     }
 
     const buffer = await fs.readFile(artifact.file_path);
+    const mime = artifact.mime_type || "application/octet-stream";
+    // Add charset for text-based content to avoid CJK garbled text
+    const contentType = mime.startsWith("text/") ? `${mime}; charset=utf-8` : mime;
 
     return new NextResponse(buffer, {
       status: 200,
       headers: {
-        "Content-Type": artifact.mime_type || "application/octet-stream",
+        "Content-Type": contentType,
         "Content-Disposition": `inline; filename="${artifact.file_name}"`,
         "Cache-Control": "public, max-age=3600",
       },
