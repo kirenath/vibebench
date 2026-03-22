@@ -57,6 +57,7 @@ vibebench/
 │   ├── 002_eval_votes.sql
 │   └── 003_security_fixes.sql
 ├── .env.example
+├── LICENSE
 ├── package.json
 └── tailwind.config.ts
 ```
@@ -164,3 +165,14 @@ pnpm dev
 - 🎨 设计和用户体验反馈
 - 🔧 技术方案探讨
 - 💬 挑战题提议和社区投稿意向
+
+## 许可证
+
+本项目基于 [AGPL-3.0](LICENSE) 许可证开源。
+
+- **平台代码**：以 AGPL-3.0 许可证开源
+- **维护者内容**：赛题提示词、HTML 评测成果及相关说明文档，同样适用 AGPL-3.0
+- **第三方贡献内容**：版权归原作者所有，不纳入平台开源范围
+- **品牌与第三方素材**：分别归属于各自的权利人
+
+详见 [许可与版权](https://vibebench.app/license) 页面。
