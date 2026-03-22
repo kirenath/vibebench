@@ -46,13 +46,28 @@ export default function AdminSubmissionsPage() {
   const [form, setForm] = useState({
     challenge_phase_id: "", model_variant_id: "", channel_id: "",
     is_published: false, manual_touched: false, manual_notes: "",
-    iteration_count: "", duration_ms: "", timing_method: "", notes: "",
+    iteration_count: "", duration_min: "", duration_sec: "", timing_method: "", notes: "",
   });
 
   const [editForm, setEditForm] = useState({
     is_published: false, manual_touched: false, manual_notes: "",
-    iteration_count: "", duration_ms: "", timing_method: "", notes: "",
+    iteration_count: "", duration_min: "", duration_sec: "", timing_method: "", notes: "",
   });
+
+  const toDurationMs = (min: string, sec: string): number | null => {
+    const m = parseInt(min) || 0;
+    const s = parseFloat(sec) || 0;
+    if (m === 0 && s === 0) return null;
+    return Math.round((m * 60 + s) * 1000);
+  };
+
+  const fromDurationMs = (ms: number | null | string): { min: string; sec: string } => {
+    if (ms == null) return { min: "", sec: "" };
+    const total = Number(ms) / 1000;
+    const m = Math.floor(total / 60);
+    const s = +(total % 60).toFixed(1);
+    return { min: m > 0 ? String(m) : "", sec: s > 0 ? String(s) : "" };
+  };
 
   const [selectedChallenge, setSelectedChallenge] = useState("");
   const [artifactType, setArtifactType] = useState("html");
@@ -77,10 +92,11 @@ export default function AdminSubmissionsPage() {
   }, [selectedChallenge]);
 
   const handleSave = async () => {
+    const { duration_min, duration_sec, ...rest } = form;
     const body = {
-      ...form,
+      ...rest,
       iteration_count: form.iteration_count ? parseInt(form.iteration_count) : null,
-      duration_ms: form.duration_ms ? parseInt(form.duration_ms) : null,
+      duration_ms: toDurationMs(duration_min, duration_sec),
       timing_method: form.timing_method || null,
     };
     const res = await fetch("/api/submissions", {
@@ -91,7 +107,7 @@ export default function AdminSubmissionsPage() {
     if (res.ok) toast("作品已创建", "success");
     else toast("创建失败", "error");
     setDrawerOpen(false);
-    setForm({ challenge_phase_id: "", model_variant_id: "", channel_id: "", is_published: false, manual_touched: false, manual_notes: "", iteration_count: "", duration_ms: "", timing_method: "", notes: "" });
+    setForm({ challenge_phase_id: "", model_variant_id: "", channel_id: "", is_published: false, manual_touched: false, manual_notes: "", iteration_count: "", duration_min: "", duration_sec: "", timing_method: "", notes: "" });
     load();
   };
 
@@ -126,12 +142,14 @@ export default function AdminSubmissionsPage() {
       const json = await res.json();
       if (!res.ok || !json.data) return;
       const d = json.data;
+      const dur = fromDurationMs(d.duration_ms);
       setEditForm({
         is_published: d.submission_is_published ?? d.is_published ?? false,
         manual_touched: d.manual_touched ?? false,
         manual_notes: d.manual_notes ?? "",
         iteration_count: d.iteration_count != null ? String(d.iteration_count) : "",
-        duration_ms: d.duration_ms != null ? String(d.duration_ms) : "",
+        duration_min: dur.min,
+        duration_sec: dur.sec,
         timing_method: d.timing_method ?? "",
         notes: d.notes ?? "",
       });
@@ -144,10 +162,11 @@ export default function AdminSubmissionsPage() {
 
   const handleUpdate = async () => {
     if (!editTarget) return;
+    const { duration_min, duration_sec, ...rest } = editForm;
     const body = {
-      ...editForm,
+      ...rest,
       iteration_count: editForm.iteration_count ? parseInt(editForm.iteration_count) : null,
-      duration_ms: editForm.duration_ms ? parseInt(editForm.duration_ms) : null,
+      duration_ms: toDurationMs(duration_min, duration_sec),
       timing_method: editForm.timing_method || null,
     };
     const res = await fetch(`/api/submissions/${editTarget}`, {
@@ -358,14 +377,18 @@ export default function AdminSubmissionsPage() {
               placeholder="选择渠道..."
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="label mb-1 block">迭代次数</label>
               <input className="input" type="number" value={form.iteration_count} onChange={e => setForm({...form, iteration_count: e.target.value})} />
             </div>
             <div>
-              <label className="label mb-1 block">耗时 (ms)</label>
-              <input className="input" type="number" value={form.duration_ms} onChange={e => setForm({...form, duration_ms: e.target.value})} />
+              <label className="label mb-1 block">耗时 (分)</label>
+              <input className="input" type="number" min="0" value={form.duration_min} onChange={e => setForm({...form, duration_min: e.target.value})} placeholder="0" />
+            </div>
+            <div>
+              <label className="label mb-1 block">耗时 (秒)</label>
+              <input className="input" type="number" min="0" step="0.1" value={form.duration_sec} onChange={e => setForm({...form, duration_sec: e.target.value})} placeholder="0" />
             </div>
           </div>
           <div>
@@ -563,14 +586,18 @@ export default function AdminSubmissionsPage() {
       {/* Edit submission drawer */}
       <Drawer open={editDrawerOpen} onClose={() => { setEditDrawerOpen(false); setEditTarget(null); }} title="编辑作品">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="label mb-1 block">迭代次数</label>
               <input className="input" type="number" value={editForm.iteration_count} onChange={e => setEditForm({...editForm, iteration_count: e.target.value})} />
             </div>
             <div>
-              <label className="label mb-1 block">耗时 (ms)</label>
-              <input className="input" type="number" value={editForm.duration_ms} onChange={e => setEditForm({...editForm, duration_ms: e.target.value})} />
+              <label className="label mb-1 block">耗时 (分)</label>
+              <input className="input" type="number" min="0" value={editForm.duration_min} onChange={e => setEditForm({...editForm, duration_min: e.target.value})} placeholder="0" />
+            </div>
+            <div>
+              <label className="label mb-1 block">耗时 (秒)</label>
+              <input className="input" type="number" min="0" step="0.1" value={editForm.duration_sec} onChange={e => setEditForm({...editForm, duration_sec: e.target.value})} placeholder="0" />
             </div>
           </div>
           <div>
