@@ -24,7 +24,7 @@ interface Submission {
 
 export default function FreestylePage() {
   return (
-    <Suspense fallback={<div className="section pt-24 text-center text-muted-foreground">加载中...</div>}>
+    <Suspense fallback={<div className="section pt-12 text-center text-muted-foreground">加载中...</div>}>
       <FreestyleContent />
     </Suspense>
   );
@@ -87,7 +87,7 @@ function FreestyleContent() {
   };
 
   return (
-    <div className="section pt-24">
+    <div className="section pt-12">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/compare"

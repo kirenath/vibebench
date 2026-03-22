@@ -127,7 +127,7 @@ export default async function ChallengeDetailPage({
         shapeIndex={3}
       />
 
-      <section className="section pt-24">
+      <section className="section pt-12">
         <div className="max-w-7xl mx-auto">
           <Link
             href="/challenges"

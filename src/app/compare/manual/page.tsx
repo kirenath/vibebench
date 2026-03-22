@@ -30,7 +30,7 @@ interface Entry {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<div className="section pt-24 text-center text-muted-foreground">加载中...</div>}>
+    <Suspense fallback={<div className="section pt-12 text-center text-muted-foreground">加载中...</div>}>
       <CompareContent />
     </Suspense>
   );
@@ -112,7 +112,7 @@ function CompareContent() {
   );
 
   return (
-    <div className="section pt-24">
+    <div className="section pt-12">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/compare"
