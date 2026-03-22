@@ -10,6 +10,7 @@ import {
   FileText,
   ExternalLink,
 } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 interface ChallengeRow {
   id: string;
@@ -177,6 +178,7 @@ export default async function ChallengeDetailPage({
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
                     <FileText className="h-5 w-5 text-secondary" />
                     Prompt
+                    <CopyButton text={challenge.prompt_markdown!} />
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
