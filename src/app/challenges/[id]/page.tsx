@@ -157,7 +157,7 @@ export default async function ChallengeDetailPage({
 
           {/* Rules & Prompt accordion */}
           {(challenge.rules_markdown || challenge.prompt_markdown) && (
-            <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <div className="grid md:grid-cols-2 gap-6 mb-12 items-start">
               {challenge.rules_markdown && (
                 <details className="card p-6 group">
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
