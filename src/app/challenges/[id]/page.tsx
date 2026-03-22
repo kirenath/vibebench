@@ -157,7 +157,13 @@ export default async function ChallengeDetailPage({
           </div>
 
           {/* Rules & Prompt accordion */}
-          {(challenge.rules_markdown || challenge.prompt_markdown) && (
+          {(challenge.rules_markdown || challenge.prompt_markdown) && (() => {
+            const isPhase2 = activePhase?.phase_key?.startsWith("phase2");
+            const rawPrompt = challenge.prompt_markdown || "";
+            const phase2Step1 = `以下是一个设计需求：\n"${rawPrompt}"\n请你根据这个需求，撰写一份详细的产品需求文档（PRD），不要写代码，只输出 PRD。`;
+            const phase2Step2 = "根据你自己的 PRD 文档，请输出完整的HTML。";
+
+            return (
             <div className="grid md:grid-cols-2 gap-6 mb-12 items-start">
               {challenge.rules_markdown && (
                 <details className="card p-6 group">
@@ -178,18 +184,49 @@ export default async function ChallengeDetailPage({
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
                     <FileText className="h-5 w-5 text-secondary" />
                     Prompt
-                    <CopyButton text={challenge.prompt_markdown!} />
+                    {!isPhase2 && <CopyButton text={challenge.prompt_markdown!} />}
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
                   </summary>
-                  <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
-                    {challenge.prompt_markdown}
-                  </div>
+
+                  {!isPhase2 ? (
+                    /* Phase1: show original prompt */
+                    <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
+                      {challenge.prompt_markdown}
+                    </div>
+                  ) : (
+                    /* Phase2: show two-step prompt flow */
+                    <div className="mt-4 space-y-4">
+                      {/* Step 1 */}
+                      <div className="rounded-2xl border border-border/50 bg-muted/30 p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">1</span>
+                          <span className="font-heading font-semibold text-sm">生成 PRD</span>
+                          <CopyButton text={phase2Step1} />
+                        </div>
+                        <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                          {phase2Step1}
+                        </div>
+                      </div>
+                      {/* Step 2 */}
+                      <div className="rounded-2xl border border-border/50 bg-muted/30 p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
+                          <span className="font-heading font-semibold text-sm">根据 PRD 生成代码</span>
+                          <CopyButton text={phase2Step2} />
+                        </div>
+                        <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                          {phase2Step2}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </details>
               )}
             </div>
-          )}
+            );
+          })()}
 
           {/* Phase tabs */}
           {phases.length > 1 && (

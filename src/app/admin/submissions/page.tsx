@@ -71,10 +71,40 @@ export default function AdminSubmissionsPage() {
 
   const [selectedChallenge, setSelectedChallenge] = useState("");
   const [artifactType, setArtifactType] = useState("html");
+  const defaultFileNames: Record<string, string> = { html: "index.html", prd: "prd.md", screenshot: "screenshot.png" };
+  const handleArtifactTypeChange = (v: string) => {
+    // Auto-update filename only if it's still a default name
+    if (Object.values(defaultFileNames).includes(pasteFileName)) {
+      setPasteFileName(defaultFileNames[v] || "index.html");
+    }
+    setArtifactType(v);
+  };
   const [uploadMode, setUploadMode] = useState<"paste" | "file">("paste");
   const [pasteContent, setPasteContent] = useState("");
   const [pasteFileName, setPasteFileName] = useState("index.html");
+  const [pastedImage, setPastedImage] = useState<File | null>(null);
+  const [pastedImageUrl, setPastedImageUrl] = useState<string | null>(null);
   const [filePickerKey, setFilePickerKey] = useState(0); // force re-render on file change
+
+  const handleImagePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (file) {
+          setPastedImage(file);
+          setPastedImageUrl(URL.createObjectURL(file));
+          const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
+          if (Object.values(defaultFileNames).includes(pasteFileName)) {
+            setPasteFileName(`screenshot.${ext}`);
+          }
+        }
+        break;
+      }
+    }
+  };
 
   const load = useCallback(() => {
     fetch("/api/submissions").then(r => r.json()).then(d => setSubmissions(d.data || [])).catch(() => {});
@@ -205,6 +235,8 @@ export default function AdminSubmissionsPage() {
     setPasteContent("");
     setPasteFileName("index.html");
     setUploadMode("paste");
+    setPastedImage(null);
+    setPastedImageUrl(null);
   };
 
   const handleUpload = async () => {
@@ -217,12 +249,31 @@ export default function AdminSubmissionsPage() {
       fileToUpload = fileRef.current.files[0];
     } else {
       // paste mode
-      if (!parseResult) {
-        toast("未检测到有效的 HTML 内容", "error");
-        return;
+      if (artifactType === "screenshot") {
+        // Screenshot: use pasted image
+        if (!pastedImage) {
+          toast("请粘贴截图", "error");
+          return;
+        }
+        const fileName = pasteFileName.trim() || "screenshot.png";
+        fileToUpload = new File([pastedImage], fileName, { type: pastedImage.type });
+      } else if (artifactType === "prd") {
+        // PRD: accept raw text directly
+        if (!pasteContent.trim()) {
+          toast("请输入 PRD 文本", "error");
+          return;
+        }
+        const fileName = pasteFileName.trim() || "prd.md";
+        fileToUpload = new File([pasteContent], fileName, { type: "text/markdown" });
+      } else {
+        // HTML: parse and validate
+        if (!parseResult) {
+          toast("未检测到有效的 HTML 内容", "error");
+          return;
+        }
+        const fileName = pasteFileName.trim() || "index.html";
+        fileToUpload = new File([parseResult.html], fileName, { type: "text/html" });
       }
-      const fileName = pasteFileName.trim() || "index.html";
-      fileToUpload = new File([parseResult.html], fileName, { type: "text/html" });
     }
 
     const fd = new FormData();
@@ -439,7 +490,7 @@ export default function AdminSubmissionsPage() {
                 { value: "screenshot", label: "Screenshot" },
               ]}
               value={artifactType}
-              onChange={setArtifactType}
+              onChange={handleArtifactTypeChange}
               placeholder="选择类型..."
             />
           </div>
@@ -461,14 +512,69 @@ export default function AdminSubmissionsPage() {
                     }`}
                 >
                   {mode === "paste" ? <ClipboardPaste className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}
-                  {mode === "paste" ? "粘贴代码" : "文件上传"}
+                  {mode === "paste" ? (artifactType === "screenshot" ? "粘贴截图" : artifactType === "prd" ? "粘贴文本" : "粘贴代码") : "文件上传"}
                 </button>
               ))}
             </div>
           </div>
 
           {/* === Paste mode === */}
-          {uploadMode === "paste" && (
+          {uploadMode === "paste" && artifactType === "screenshot" && (
+            /* Screenshot paste mode */
+            <div
+              className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border
+                         bg-muted/30 px-6 py-8 cursor-pointer transition-all duration-300
+                         hover:border-primary/50 hover:bg-primary/5 focus-within:border-primary/50"
+              onPaste={handleImagePaste}
+              tabIndex={0}
+            >
+              {pastedImageUrl ? (
+                <div className="w-full space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="badge-primary text-xs">已粘贴</span>
+                      <span className="text-xs text-muted-foreground">
+                        {(pastedImage!.size / 1024).toFixed(1)} KB · {pastedImage!.type}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="h-7 w-7 rounded-full flex items-center justify-center
+                                 text-muted-foreground hover:text-destructive hover:bg-destructive/10
+                                 transition-all duration-200"
+                      onClick={() => { setPastedImage(null); setPastedImageUrl(null); }}
+                      title="移除"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <img src={pastedImageUrl} alt="粘贴的截图" className="rounded-xl max-h-48 w-full object-contain bg-muted/50" />
+                  <div>
+                    <label className="label text-xs mb-1 block">文件名</label>
+                    <input
+                      className="input !h-8 text-sm"
+                      value={pasteFileName}
+                      onChange={(e) => setPasteFileName(e.target.value)}
+                      placeholder="screenshot.png"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-center h-12 w-12 rounded-2xl bg-primary/10
+                                  group-hover:bg-primary/15 transition-colors duration-300">
+                    <ClipboardPaste className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-heading font-bold text-foreground">点击此处后按 Ctrl+V 粘贴截图</p>
+                    <p className="text-xs text-muted-foreground mt-1">支持 PNG、JPG、WebP</p>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {uploadMode === "paste" && artifactType !== "screenshot" && (
             <>
               <div>
                 <label className="label mb-1 block">文件名</label>
@@ -476,22 +582,36 @@ export default function AdminSubmissionsPage() {
                   className="input"
                   value={pasteFileName}
                   onChange={(e) => setPasteFileName(e.target.value)}
-                  placeholder="index.html"
+                  placeholder={artifactType === "prd" ? "prd.md" : "index.html"}
                 />
               </div>
               <div>
-                <label className="label mb-1 block">HTML 代码</label>
+                <label className="label mb-1 block">{artifactType === "prd" ? "PRD 文本" : "HTML 代码"}</label>
                 <textarea
                   className="textarea !min-h-[180px] font-mono text-xs leading-relaxed"
                   value={pasteContent}
                   onChange={(e) => setPasteContent(e.target.value)}
-                  placeholder="粘贴 HTML 代码..."
+                  placeholder={artifactType === "prd" ? "粘贴 PRD 文本（Markdown / 纯文本）..." : "粘贴 HTML 代码..."}
                 />
               </div>
               {/* Parse preview */}
               {pasteContent.trim() && (
                 <div className="rounded-2xl border border-border/50 bg-muted/30 p-4 space-y-2">
-                  {parseResult ? (
+                  {artifactType === "prd" ? (
+                    /* PRD: accept any text, no HTML parsing needed */
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="badge-primary text-xs">文本预览</span>
+                        <span className="text-xs text-muted-foreground">
+                          {(new Blob([pasteContent]).size / 1024).toFixed(1)} KB
+                        </span>
+                      </div>
+                      <pre className="text-xs text-muted-foreground font-mono whitespace-pre-wrap break-all leading-relaxed max-h-24 overflow-hidden">
+                        {pasteContent.split("\n").slice(0, 5).join("\n")}
+                        {pasteContent.split("\n").length > 5 && "\n..."}
+                      </pre>
+                    </>
+                  ) : parseResult ? (
                     <>
                       <div className="flex items-center gap-2">
                         <span className="badge-primary text-xs">
