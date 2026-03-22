@@ -4,7 +4,8 @@ import { query, queryOne } from "@/lib/db";
 import Blob from "@/components/Blob";
 import {
   ArrowLeft,
-  FileText,
+  ClipboardList,
+  MessageSquareText,
 } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
 import SubmissionCard, { type PhaseSubmission } from "@/components/SubmissionCard";
@@ -203,8 +204,8 @@ export default async function ChallengeDetailPage({
               {challenge.rules_markdown && (
                 <details className="card p-6 group" open>
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    📋 规则说明
+                    <ClipboardList className="h-5 w-5 text-primary" />
+                    规则说明
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
@@ -217,8 +218,8 @@ export default async function ChallengeDetailPage({
               {challenge.prompt_markdown && (
                 <details className="card p-6 group" open>
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-secondary" />
-                    📝 Prompt
+                    <MessageSquareText className="h-5 w-5 text-secondary" />
+                    Prompt
                     <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
                       ▼
                     </span>
