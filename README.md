@@ -142,13 +142,13 @@ pnpm dev
 
 ## 参与方式
 
-欢迎通过 **GitHub Issues** 或 **Discussions** 参与交流，这是目前最推荐的反馈方式。
+欢迎通过 **[GitHub Issues](https://github.com/kirenath/vibebench/issues)** 或 **[Discussions](https://github.com/kirenath/vibebench/discussions)** 参与交流，这是目前最推荐的反馈方式。
 
 > **为什么不用 PR？**  
 > GitHub PR 流程较重（需要 fork、创建分支、选择目标分支等），对于当前项目阶段来说过于繁琐。  
 > 如果你有想法或建议，直接开 Issue 或在 Discussions 里发帖就好！
 
-### 适合通过 Issue 提交的内容
+### 适合通过 [Issue](https://github.com/kirenath/vibebench/issues/new/choose) 提交的内容
 
 - 🎨 **作品投稿**（请使用 Issue 模板，附上模型、挑战题、Phase 等信息）
 - 🐛 Bug 报告（页面异常、渲染问题等）
@@ -157,7 +157,7 @@ pnpm dev
 - 🗄️ 对数据库 Schema 提命名、一致性和扩展性建议
 - ⚖️ 对展示规则、公平性规则和版权边界提出修改意见
 
-### 适合通过 Discussions 讨论的内容
+### 适合通过 [Discussions](https://github.com/kirenath/vibebench/discussions) 讨论的内容
 
 - 🤔 开放性问题和想法碰撞
 - 📊 对评测标准和展示方式的讨论
