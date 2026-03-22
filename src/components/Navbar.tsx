@@ -27,8 +27,7 @@ export default function Navbar() {
             模型
           </Link>
           <Link href="/compare" className="btn-ghost btn-sm !px-3 sm:!px-4 !h-9 text-sm">
-            <span className="md:hidden">对比</span>
-            <span className="hidden md:inline">展示对比</span>
+            对比
           </Link>
         </div>
       </div>
