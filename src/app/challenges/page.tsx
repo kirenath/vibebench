@@ -38,15 +38,22 @@ export default async function ChallengesPage() {
   const challenges = await getChallenges();
 
   return (
-    <div className="relative overflow-hidden">
-      <Blob
-        color="bg-primary"
-        size="w-72 h-72"
-        className="-top-10 -right-10"
-        shapeIndex={2}
-      />
-
-      <section className="section pt-24">
+    <div className="relative">
+      <section className="relative section pt-24">
+        {/* Background wash that extends behind navbar to eliminate the dividing line */}
+        <div
+          className="absolute inset-0 -top-24 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 50% at 80% 30%, rgba(93,112,82,0.10) 0%, transparent 70%)",
+          }}
+        />
+        <Blob
+          color="bg-primary"
+          size="w-72 h-72"
+          className="-top-10 -right-10"
+          shapeIndex={2}
+        />
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">

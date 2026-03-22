@@ -119,15 +119,22 @@ export default async function ChallengeDetailPage({
     : [];
 
   return (
-    <div className="relative overflow-hidden">
-      <Blob
-        color="bg-secondary"
-        size="w-80 h-80"
-        className="-top-20 -right-20"
-        shapeIndex={3}
-      />
-
-      <section className="section pt-24">
+    <div className="relative">
+      <section className="relative section pt-24">
+        {/* Background wash that extends behind navbar to eliminate the dividing line */}
+        <div
+          className="absolute inset-0 -top-24 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 50% at 80% 30%, rgba(193,140,93,0.08) 0%, transparent 70%)",
+          }}
+        />
+        <Blob
+          color="bg-secondary"
+          size="w-80 h-80"
+          className="-top-20 -right-20"
+          shapeIndex={3}
+        />
         <div className="max-w-7xl mx-auto">
           <Link
             href="/challenges"

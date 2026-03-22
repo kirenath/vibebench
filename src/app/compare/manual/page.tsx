@@ -30,7 +30,7 @@ interface Entry {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<div className="section pt-24 text-center text-muted-foreground">加载中...</div>}>
+    <Suspense fallback={<div className="relative section pt-24 text-center text-muted-foreground">加载中...</div>}>
       <CompareContent />
     </Suspense>
   );
@@ -112,7 +112,15 @@ function CompareContent() {
   );
 
   return (
-    <div className="section pt-24">
+    <div className="relative section pt-24">
+      {/* Background wash that extends behind navbar to eliminate the dividing line */}
+      <div
+        className="absolute inset-0 -top-24 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 30%, rgba(93,112,82,0.08) 0%, transparent 70%)",
+        }}
+      />
       <div className="max-w-7xl mx-auto">
         <Link
           href="/compare"

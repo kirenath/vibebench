@@ -151,7 +151,15 @@ export default function EvalPage() {
   };
 
   return (
-    <div className="section pt-24 pb-24">
+    <div className="relative section pt-24 pb-24">
+      {/* Background wash that extends behind navbar to eliminate the dividing line */}
+      <div
+        className="absolute inset-0 -top-24 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 30%, rgba(93,112,82,0.08) 0%, transparent 70%)",
+        }}
+      />
       <div className="max-w-7xl mx-auto px-4">
         <Link
           href="/compare"
