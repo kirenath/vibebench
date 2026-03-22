@@ -1,13 +1,12 @@
 <div align="center">
   <h1>VibeBench</h1>
-  <p>同一道前端题，让不同 AI 来做，看看各自 vibe 出了什么</p>
+  <p>同一道前端题，让不同 AI 来做，看看各自的 vibe 成果</p>
 </div>
 
 <p align="center">
   <a href="#这是什么">这是什么</a> ·
   <a href="#当前状态">当前状态</a> ·
   <a href="#仓库内容">仓库内容</a> ·
-  <a href="#计划中的核心体验">核心体验</a> ·
   <a href="#数据模型">数据模型</a> ·
   <a href="#下一步计划">下一步计划</a>
 </p>
@@ -31,15 +30,18 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 
 ## 当前状态
 
-当前仓库已完成 **MVP 应用骨架**，包含完整的前后端代码：
+项目已完成 MVP 阶段，具备较完整的展示与评测能力：
 
 - Next.js 16 (App Router + TypeScript) 应用
 - 公开页面：首页、赛题列表/详情、模型目录/详情、横评对比
-- Admin 后台：登录、赛题管理、模型管理、作品管理
+- **盲评对比（Eval）**：匿名展示两个作品，投票后揭示模型身份
+- **自由对比（Freestyle）**：任意选择两个作品进行并排对比
+- 静态页面：FAQ、Credits、Changelog、Terms、Privacy、License 等
+- Admin 后台：登录、赛题管理、模型管理、作品管理，含路由鉴权
 - 完整 REST API（CRUD for challenges, models, submissions, artifacts）
 - HTML 作品沙箱渲染
-- Organic/Natural 设计系统（Fraunces + Nunito 字体、grain texture）
-- PostgreSQL 初始 Schema + 环境变量模板
+- Organic/Natural 设计系统
+- PostgreSQL Schema（含安全加固）+ 环境变量模板
 
 ## 仓库内容
 
@@ -48,85 +50,32 @@ vibebench/
 ├── src/
 │   ├── app/              # Next.js App Router pages & API routes
 │   ├── components/       # Shared UI components
-│   └── lib/              # DB, auth, upload, constants
-├── prd/
-│   ├── prd.md            # Product requirements
-│   └── design.md         # Design system spec
+│   ├── lib/              # DB, auth, upload, constants
+│   └── middleware.ts     # Auth middleware
 ├── sql/
-│   └── 001_initial_schema.sql
+│   ├── 001_initial_schema.sql
+│   ├── 002_eval_votes.sql
+│   └── 003_security_fixes.sql
 ├── .env.example
 ├── package.json
 └── tailwind.config.ts
 ```
 
-### `prd/prd.md`
+### `sql/`
 
-完整的产品定义文档，覆盖：
+PostgreSQL 数据库结构与迁移脚本：
 
-- 项目定位与 MVP 边界
-- 核心对象与展示规则
-- 页面与后台需求
-- 安全策略、环境变量和 API 规划
+- `001_initial_schema.sql` — 初始表结构
+- `002_eval_votes.sql` — 盲评投票表
+- `003_security_fixes.sql` — 安全加固（RLS 策略等）
 
-### `sql/001_initial_schema.sql`
-
-当前版本的 PostgreSQL 初始数据库结构，包含：
-
-- `vendors`
-- `model_families`
-- `model_variants`
-- `channels`
-- `challenges`
-- `challenge_phases`
-- `submissions`
-- `submission_artifacts`
-- `submission_overview` 视图
-
-## 计划中的核心体验
-
-这些是项目要实现的核心能力，不代表它们已经全部完成：
-
-### 首页
-
-- 展示平台介绍和已发布挑战题
-- 快速进入最近更新或推荐对比
-
-### 展题详情
-
-- 展示挑战题描述、规则说明和 Prompt
-- 按 Phase 切换作品
-- 查看作品元信息、PRD 和人工修订说明
-- 在安全沙箱中实时预览 HTML 作品
-
-### 横评对比
-
-- 选择 2 个作品并排对比（1v1 横评）
-- 桌面端左右分栏布局，移动端标签切换
-- 支持分享链接复现当前对比配置
-
-### 模型目录
-
-- 按厂商、产品线、模型版本浏览
-- 查看某个模型参与过哪些挑战题
-
-### Admin 后台
-
-- 管理员登录
-- 赛题、模型、作品的 CRUD
-- 控制作品与赛题的发布状态
-
-## 技术方向
-
-以下是当前确定的技术方向，同样属于规划中的实现方案：
+## 技术栈
 
 | 层 | 方案 |
 |---|---|
 | 前端 | Next.js 16（App Router + TypeScript） |
-| 数据库 | PostgreSQL（优先 Supabase） |
-| 文件存储 | 本地 `uploads/`，后续可迁移 S3 / R2 |
+| 数据库 | PostgreSQL（Supabase） |
 | 认证 | 单管理员密码 + JWT Cookie |
-| 部署 | PM2 + Cloudflare Tunnel |
-| 域名 | Cloudflare 管理 |
 
 ## 数据模型
 
@@ -147,7 +96,7 @@ Challenge → Challenge Phase → Submission → Artifact
 - **Submission**：某个 `phase + model + channel` 下的展示单元
 - **Artifact**：Submission 的附件，如 HTML、PRD、截图
 
-更完整的字段设计和业务约束见 [prd/prd.md](prd/prd.md) 与 [sql/001_initial_schema.sql](sql/001_initial_schema.sql)。
+更完整的字段设计见 [sql/](sql/) 目录下的数据库脚本。
 
 ## 本地开发
 
@@ -186,7 +135,6 @@ pnpm dev
 
 ## 下一步计划
 
-- 编写 `receipt` 赛题数据迁移脚本 `scripts/migrate-receipt.ts`
 - 缩略图预览（自动截图）
 - 动态 Open Graph 图片
 - 模型目录筛选功能完善
