@@ -78,7 +78,7 @@ export default async function ModelDetailPage({
   const submissions = await getModelSubmissions(id);
 
   return (
-    <div className="section pt-12">
+    <div className="section pt-24">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/models"

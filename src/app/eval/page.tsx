@@ -151,7 +151,7 @@ export default function EvalPage() {
   };
 
   return (
-    <div className="section pt-12 pb-24">
+    <div className="section pt-24 pb-24">
       <div className="max-w-7xl mx-auto px-4">
         <Link
           href="/compare"
