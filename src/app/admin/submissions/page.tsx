@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import AdminPageHeader from "@/components/AdminPageHeader";
 import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
-import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2 } from "lucide-react";
+import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2, ClipboardPaste, File as FileIcon } from "lucide-react";
 import CustomSelect from "@/components/CustomSelect";
 
 interface Challenge { id: string; title: string; }
@@ -49,6 +49,10 @@ export default function AdminSubmissionsPage() {
 
   const [selectedChallenge, setSelectedChallenge] = useState("");
   const [artifactType, setArtifactType] = useState("html");
+  const [uploadMode, setUploadMode] = useState<"paste" | "file">("paste");
+  const [pasteContent, setPasteContent] = useState("");
+  const [pasteFileName, setPasteFileName] = useState("index.html");
+  const [filePickerKey, setFilePickerKey] = useState(0); // force re-render on file change
 
   const load = useCallback(() => {
     fetch("/api/submissions").then(r => r.json()).then(d => setSubmissions(d.data || [])).catch(() => {});
@@ -109,21 +113,59 @@ export default function AdminSubmissionsPage() {
     load();
   };
 
+  // --- Parse HTML from pasted input ---
+  function parseHtmlFromInput(raw: string): { html: string; source: "codeblock" | "raw" } | null {
+    const codeBlockMatch = raw.match(/```(?:html)?\s*\n([\s\S]*?)\n```/);
+    if (codeBlockMatch) {
+      return { html: codeBlockMatch[1].trim(), source: "codeblock" };
+    }
+    const trimmed = raw.trim();
+    if (trimmed.includes("<") && trimmed.includes(">")) {
+      return { html: trimmed, source: "raw" };
+    }
+    return null;
+  }
+
+  const parseResult = useMemo(() => {
+    if (!pasteContent.trim()) return null;
+    return parseHtmlFromInput(pasteContent);
+  }, [pasteContent]);
+
   const openUpload = (subId: string) => {
     setUploadSubId(subId);
     setUploadDrawerOpen(true);
+    setPasteContent("");
+    setPasteFileName("index.html");
+    setUploadMode("paste");
   };
 
   const handleUpload = async () => {
-    if (!uploadSubId || !fileRef.current?.files?.[0]) return;
+    if (!uploadSubId) return;
+
+    let fileToUpload: File | null = null;
+
+    if (uploadMode === "file") {
+      if (!fileRef.current?.files?.[0]) return;
+      fileToUpload = fileRef.current.files[0];
+    } else {
+      // paste mode
+      if (!parseResult) {
+        toast("未检测到有效的 HTML 内容", "error");
+        return;
+      }
+      const fileName = pasteFileName.trim() || "index.html";
+      fileToUpload = new File([parseResult.html], fileName, { type: "text/html" });
+    }
+
     const fd = new FormData();
-    fd.append("file", fileRef.current.files[0]);
+    fd.append("file", fileToUpload);
     fd.append("type", artifactType);
     const res = await fetch(`/api/submissions/${uploadSubId}/artifacts`, { method: "POST", body: fd });
     if (res.ok) toast("Artifact 上传成功", "success");
     else toast("上传失败", "error");
     setUploadDrawerOpen(false);
     setUploadSubId(null);
+    setPasteContent("");
     load();
   };
 
@@ -312,6 +354,7 @@ export default function AdminSubmissionsPage() {
       {/* Upload drawer */}
       <Drawer open={uploadDrawerOpen} onClose={() => { setUploadDrawerOpen(false); setUploadSubId(null); }} title="上传 Artifact">
         <div className="space-y-4">
+          {/* Type selector */}
           <div>
             <label className="label mb-1 block">类型</label>
             <CustomSelect
@@ -325,15 +368,142 @@ export default function AdminSubmissionsPage() {
               placeholder="选择类型..."
             />
           </div>
+
+          {/* Mode segmented control */}
           <div>
-            <label className="label mb-1 block">文件</label>
-            <input type="file" ref={fileRef} className="input !py-2" />
+            <label className="label mb-1 block">输入方式</label>
+            <div className="flex rounded-full bg-muted/60 p-1 gap-1">
+              {(["paste", "file"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setUploadMode(mode)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 rounded-full h-9 text-sm font-bold
+                    transition-all duration-300 cursor-pointer
+                    ${uploadMode === mode
+                      ? "bg-white text-primary shadow-soft"
+                      : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  {mode === "paste" ? <ClipboardPaste className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}
+                  {mode === "paste" ? "粘贴代码" : "文件上传"}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* === Paste mode === */}
+          {uploadMode === "paste" && (
+            <>
+              <div>
+                <label className="label mb-1 block">文件名</label>
+                <input
+                  className="input"
+                  value={pasteFileName}
+                  onChange={(e) => setPasteFileName(e.target.value)}
+                  placeholder="index.html"
+                />
+              </div>
+              <div>
+                <label className="label mb-1 block">HTML 代码</label>
+                <textarea
+                  className="textarea !min-h-[180px] font-mono text-xs leading-relaxed"
+                  value={pasteContent}
+                  onChange={(e) => setPasteContent(e.target.value)}
+                  placeholder="粘贴 HTML 代码..."
+                />
+              </div>
+              {/* Parse preview */}
+              {pasteContent.trim() && (
+                <div className="rounded-2xl border border-border/50 bg-muted/30 p-4 space-y-2">
+                  {parseResult ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="badge-primary text-xs">
+                          {parseResult.source === "codeblock" ? "已提取代码块中的 HTML" : "裸 HTML"}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {(new Blob([parseResult.html]).size / 1024).toFixed(1)} KB
+                        </span>
+                      </div>
+                      <pre className="text-xs text-muted-foreground font-mono whitespace-pre-wrap break-all leading-relaxed max-h-24 overflow-hidden">
+                        {parseResult.html.split("\n").slice(0, 5).join("\n")}
+                        {parseResult.html.split("\n").length > 5 && "\n..."}
+                      </pre>
+                    </>
+                  ) : (
+                    <p className="text-xs text-destructive font-semibold">未检测到有效的 HTML 内容</p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* === File mode === */}
+          {uploadMode === "file" && (
+            <div>
+              <label className="label mb-1 block">文件</label>
+              <input type="file" ref={fileRef} className="hidden" onChange={() => setFilePickerKey(k => k + 1)} />
+              <div
+                className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border
+                           bg-muted/30 px-6 py-6 cursor-pointer transition-all duration-300
+                           hover:border-primary/50 hover:bg-primary/5"
+                onClick={() => fileRef.current?.click()}
+              >
+                {fileRef.current?.files?.[0] ? (
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 shrink-0">
+                      <FileCode2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-heading font-bold text-foreground truncate">
+                        {fileRef.current.files[0].name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {(fileRef.current.files[0].size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="shrink-0 h-8 w-8 rounded-full flex items-center justify-center
+                                 text-muted-foreground hover:text-destructive hover:bg-destructive/10
+                                 transition-all duration-200"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (fileRef.current) { fileRef.current.value = ""; setFilePickerKey(k => k + 1); }
+                      }}
+                      title="移除文件"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-center h-12 w-12 rounded-2xl bg-primary/10
+                                    group-hover:bg-primary/15 transition-colors duration-300">
+                      <Upload className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="text-center">
+                      <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground
+                                       font-bold px-5 h-9 text-sm shadow-soft cursor-pointer
+                                       hover:scale-105 hover:brightness-110 active:scale-95
+                                       transition-all duration-300">
+                        选择文件
+                      </span>
+                      <p className="text-xs text-muted-foreground mt-2">或将文件拖放到此处</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Action buttons */}
           <div className="flex gap-2 pt-4 border-t border-border/50">
             <button onClick={handleUpload} className="btn-primary btn-sm">
               <Upload className="h-4 w-4 mr-1" />上传
             </button>
-            <button onClick={() => { setUploadDrawerOpen(false); setUploadSubId(null); }} className="btn-ghost btn-sm">取消</button>
+            <button onClick={() => { setUploadDrawerOpen(false); setUploadSubId(null); setPasteContent(""); }} className="btn-ghost btn-sm">取消</button>
           </div>
         </div>
       </Drawer>
