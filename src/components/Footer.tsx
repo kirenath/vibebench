@@ -80,7 +80,7 @@ export default function Footer() {
             <h4 className="font-heading font-semibold mb-6 text-foreground">参与共建</h4>
             <div className="flex flex-col gap-6">
               <a
-                href="https://github.com/kirenath/vibebench/pulls"
+                href="https://github.com/kirenath/vibebench/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex flex-col gap-1 transition-colors"
@@ -88,7 +88,7 @@ export default function Footer() {
                 <span className="text-sm text-foreground/80 group-hover:text-primary flex items-center gap-1">
                   提交评测产物 <ArrowUpRight className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </span>
-                <span className="text-xs text-muted-foreground/70">通过 GitHub PR 提交题目、HTML 产物及元数据。</span>
+                <span className="text-xs text-muted-foreground/70">通过 GitHub Issue 提交题目、HTML 产物及元数据。</span>
               </a>
               <a
                 href="https://github.com/kirenath/vibebench/discussions"

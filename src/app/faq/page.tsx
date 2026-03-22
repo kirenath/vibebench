@@ -37,8 +37,8 @@ export default function FaqPage() {
       <ul>
         <li>
           <strong>提交赛题或评测成果</strong>：通过{" "}
-          <a href="https://github.com/kirenath/vibebench/pulls" target="_blank" rel="noopener noreferrer">
-            GitHub PR
+          <a href="https://github.com/kirenath/vibebench/issues" target="_blank" rel="noopener noreferrer">
+            GitHub Issues
           </a>{" "}
           提交。
         </li>

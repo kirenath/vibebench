@@ -4,7 +4,7 @@ export const siteConfig = {
   description:
     "同一道前端题，让不同 AI 模型拿出各自的作品，横向看风格、方法和完成度。",
   repoUrl: "https://github.com/kirenath/vibebench",
-  submitChallengeUrl: "https://github.com/kirenath/vibebench/pulls",
+  submitChallengeUrl: "https://github.com/kirenath/vibebench/issues",
   requestModelsUrl: "https://github.com/kirenath/vibebench/discussions",
   communityUrl: "https://linux.do",
   contactEmail: "kirenath@tuta.io",

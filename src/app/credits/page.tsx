@@ -32,10 +32,10 @@ export default function CreditsPage() {
         </li>
         <li>
           所有在{" "}
-          <a href="https://github.com/kirenath/vibebench/pulls" target="_blank" rel="noopener noreferrer">
-            GitHub PR
+          <a href="https://github.com/kirenath/vibebench/issues" target="_blank" rel="noopener noreferrer">
+            GitHub Issues
           </a>{" "}
-          提交PR的贡献者和{" "}
+          提交反馈和投稿的贡献者和{" "}
           <a href="https://github.com/kirenath/vibebench/discussions" target="_blank" rel="noopener noreferrer">
             GitHub Discussions
           </a>{" "}
