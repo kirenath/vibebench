@@ -215,7 +215,7 @@ export default function EvalPage() {
                   <span className="font-heading font-bold text-lg">作品 A</span>
                   {revealLeft && (
                     <div className="text-right flex items-center gap-2">
-                      {revealLeft.manual_touched && <AlertTriangle className="h-4 w-4 text-destructive" title="人工干预" />}
+                      {revealLeft.manual_touched && <span title="人工干预" className="flex items-center"><AlertTriangle className="h-4 w-4 text-destructive" /></span>}
                       <div className="text-sm">
                         <span className="font-bold text-primary">{revealLeft.model_variant_name}</span>
                         <span className="text-xs text-muted-foreground block">{revealLeft.vendor_name} · {revealLeft.channel_name}</span>
@@ -236,7 +236,7 @@ export default function EvalPage() {
                   <span className="font-heading font-bold text-lg">作品 B</span>
                   {revealRight && (
                     <div className="text-right flex items-center gap-2">
-                      {revealRight.manual_touched && <AlertTriangle className="h-4 w-4 text-destructive" title="人工干预" />}
+                      {revealRight.manual_touched && <span title="人工干预" className="flex items-center"><AlertTriangle className="h-4 w-4 text-destructive" /></span>}
                       <div className="text-sm">
                         <span className="font-bold text-primary">{revealRight.model_variant_name}</span>
                         <span className="text-xs text-muted-foreground block">{revealRight.vendor_name} · {revealRight.channel_name}</span>
