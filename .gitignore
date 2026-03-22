@@ -33,6 +33,7 @@ uploads/
 prd/
 challenge/
 docs/
+management/
 
 # AI agent config
 AGENTS.md
