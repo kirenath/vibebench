@@ -7,7 +7,6 @@ package-lock.json
 out/
 next-env.d.ts
 
-
 # TypeScript
 *.tsbuildinfo
 
@@ -28,6 +27,9 @@ pnpm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
 
 # Project specific
 uploads/
