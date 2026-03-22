@@ -5,7 +5,7 @@ import AdminPageHeader from "@/components/AdminPageHeader";
 import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
-import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2, ClipboardPaste, File as FileIcon } from "lucide-react";
+import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2, ClipboardPaste, File as FileIcon, Pencil } from "lucide-react";
 import CustomSelect from "@/components/CustomSelect";
 
 interface Challenge { id: string; title: string; }
@@ -34,6 +34,8 @@ export default function AdminSubmissionsPage() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<string | null>(null);
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const [uploadSubId, setUploadSubId] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -43,6 +45,11 @@ export default function AdminSubmissionsPage() {
 
   const [form, setForm] = useState({
     challenge_phase_id: "", model_variant_id: "", channel_id: "",
+    is_published: false, manual_touched: false, manual_notes: "",
+    iteration_count: "", duration_ms: "", timing_method: "", notes: "",
+  });
+
+  const [editForm, setEditForm] = useState({
     is_published: false, manual_touched: false, manual_notes: "",
     iteration_count: "", duration_ms: "", timing_method: "", notes: "",
   });
@@ -110,6 +117,48 @@ export default function AdminSubmissionsPage() {
       body: JSON.stringify({ is_published: !s.submission_is_published }),
     });
     toast(s.submission_is_published ? "已取消发布" : "已发布", "success");
+    load();
+  };
+
+  const openEdit = async (subId: string) => {
+    try {
+      const res = await fetch(`/api/submissions/${subId}`);
+      const json = await res.json();
+      if (!json.success) return;
+      const d = json.data;
+      setEditForm({
+        is_published: d.submission_is_published ?? d.is_published ?? false,
+        manual_touched: d.manual_touched ?? false,
+        manual_notes: d.manual_notes ?? "",
+        iteration_count: d.iteration_count != null ? String(d.iteration_count) : "",
+        duration_ms: d.duration_ms != null ? String(d.duration_ms) : "",
+        timing_method: d.timing_method ?? "",
+        notes: d.notes ?? "",
+      });
+      setEditTarget(subId);
+      setEditDrawerOpen(true);
+    } catch {
+      toast("加载作品信息失败", "error");
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!editTarget) return;
+    const body = {
+      ...editForm,
+      iteration_count: editForm.iteration_count ? parseInt(editForm.iteration_count) : null,
+      duration_ms: editForm.duration_ms ? parseInt(editForm.duration_ms) : null,
+      timing_method: editForm.timing_method || null,
+    };
+    const res = await fetch(`/api/submissions/${editTarget}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) toast("作品已更新", "success");
+    else toast("更新失败", "error");
+    setEditDrawerOpen(false);
+    setEditTarget(null);
     load();
   };
 
@@ -250,6 +299,9 @@ export default function AdminSubmissionsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button onClick={() => openUpload(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="上传 Artifact">
                           <Upload className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => openEdit(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="编辑">
+                          <Pencil className="h-4 w-4" />
                         </button>
                         <button onClick={() => handleToggle(s)} className="btn-ghost btn-sm !h-8 !px-2" title={s.submission_is_published ? "取消发布" : "发布"}>
                           {s.submission_is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -504,6 +556,58 @@ export default function AdminSubmissionsPage() {
               <Upload className="h-4 w-4 mr-1" />上传
             </button>
             <button onClick={() => { setUploadDrawerOpen(false); setUploadSubId(null); setPasteContent(""); }} className="btn-ghost btn-sm">取消</button>
+          </div>
+        </div>
+      </Drawer>
+
+      {/* Edit submission drawer */}
+      <Drawer open={editDrawerOpen} onClose={() => { setEditDrawerOpen(false); setEditTarget(null); }} title="编辑作品">
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label mb-1 block">迭代次数</label>
+              <input className="input" type="number" value={editForm.iteration_count} onChange={e => setEditForm({...editForm, iteration_count: e.target.value})} />
+            </div>
+            <div>
+              <label className="label mb-1 block">耗时 (ms)</label>
+              <input className="input" type="number" value={editForm.duration_ms} onChange={e => setEditForm({...editForm, duration_ms: e.target.value})} />
+            </div>
+          </div>
+          <div>
+            <label className="label mb-1 block">计时方式</label>
+            <CustomSelect
+              options={[
+                { value: "", label: "无" },
+                { value: "manual", label: "手动" },
+                { value: "measured", label: "测量" },
+                { value: "estimated", label: "估算" },
+              ]}
+              value={editForm.timing_method}
+              onChange={v => setEditForm({...editForm, timing_method: v})}
+              placeholder="选择计时方式..."
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={editForm.is_published} onChange={e => setEditForm({...editForm, is_published: e.target.checked})} className="h-4 w-4" />
+              公开发布
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={editForm.manual_touched} onChange={e => setEditForm({...editForm, manual_touched: e.target.checked})} className="h-4 w-4" />
+              人工修订
+            </label>
+          </div>
+          <div>
+            <label className="label mb-1 block">人工修订说明</label>
+            <textarea className="textarea" value={editForm.manual_notes} onChange={e => setEditForm({...editForm, manual_notes: e.target.value})} placeholder="描述修订内容..." />
+          </div>
+          <div>
+            <label className="label mb-1 block">备注</label>
+            <textarea className="textarea" value={editForm.notes} onChange={e => setEditForm({...editForm, notes: e.target.value})} />
+          </div>
+          <div className="flex gap-2 pt-4 border-t border-border/50">
+            <button onClick={handleUpdate} className="btn-primary btn-sm">保存修改</button>
+            <button onClick={() => { setEditDrawerOpen(false); setEditTarget(null); }} className="btn-ghost btn-sm">取消</button>
           </div>
         </div>
       </Drawer>

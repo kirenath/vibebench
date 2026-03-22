@@ -194,13 +194,13 @@ export default function AdminChallengesPage() {
                 <h4 className="font-heading font-semibold text-sm mb-3">Phases</h4>
                 <div className="space-y-2 mb-4">
                   {phases.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between bg-muted/50 rounded-2xl px-4 py-2 text-sm">
-                      <span>{p.phase_label} <span className="text-muted-foreground">({p.phase_key})</span></span>
-                      <div className="flex items-center gap-2">
-                        {p.is_default && <span className="badge-primary text-xs">默认</span>}
-                        <span className="text-muted-foreground text-xs">排序: {p.sort_order}</span>
-                      </div>
-                    </div>
+                    <PhaseRow
+                      key={p.id}
+                      phase={p}
+                      challengeId={c.id}
+                      onUpdate={() => loadPhases(c.id)}
+                      toast={toast}
+                    />
                   ))}
                 </div>
                 <div className="flex gap-2 items-end">
@@ -292,5 +292,85 @@ export default function AdminChallengesPage() {
         variant="danger"
       />
     </>
+  );
+}
+
+function PhaseRow({ phase, challengeId, onUpdate, toast }: {
+  phase: Phase;
+  challengeId: string;
+  onUpdate: () => void;
+  toast: (msg: string, type: "success" | "error") => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    phase_key: phase.phase_key,
+    phase_label: phase.phase_label,
+    sort_order: phase.sort_order,
+    is_default: phase.is_default,
+  });
+
+  const handleSave = async () => {
+    const res = await fetch(`/api/challenges/${challengeId}/phases/${phase.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editData),
+    });
+    if (res.ok) toast("Phase 已更新", "success");
+    else toast("更新失败", "error");
+    setEditing(false);
+    onUpdate();
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("确定删除此 Phase？关联的作品可能受到影响。")) return;
+    const res = await fetch(`/api/challenges/${challengeId}/phases/${phase.id}`, { method: "DELETE" });
+    if (res.ok) toast("Phase 已删除", "success");
+    else toast("删除失败", "error");
+    onUpdate();
+  };
+
+  if (editing) {
+    return (
+      <div className="flex gap-2 items-end bg-primary/5 rounded-2xl px-4 py-2">
+        <div>
+          <label className="label text-xs mb-1 block">Key</label>
+          <input className="input !h-8 text-sm" value={editData.phase_key}
+            onChange={(e) => setEditData({ ...editData, phase_key: e.target.value })} />
+        </div>
+        <div>
+          <label className="label text-xs mb-1 block">显示名</label>
+          <input className="input !h-8 text-sm" value={editData.phase_label}
+            onChange={(e) => setEditData({ ...editData, phase_label: e.target.value })} />
+        </div>
+        <div>
+          <label className="label text-xs mb-1 block">排序</label>
+          <input className="input !h-8 text-sm w-16" type="number" value={editData.sort_order}
+            onChange={(e) => setEditData({ ...editData, sort_order: parseInt(e.target.value) || 0 })} />
+        </div>
+        <div className="flex items-center gap-1 pb-1">
+          <input type="checkbox" checked={editData.is_default}
+            onChange={(e) => setEditData({ ...editData, is_default: e.target.checked })} className="h-3 w-3" />
+          <label className="text-xs">默认</label>
+        </div>
+        <button onClick={handleSave} className="btn-primary btn-sm !h-8 !px-3 text-xs">保存</button>
+        <button onClick={() => setEditing(false)} className="btn-ghost btn-sm !h-8 !px-3 text-xs">取消</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between bg-muted/50 rounded-2xl px-4 py-2 text-sm">
+      <span>{phase.phase_label} <span className="text-muted-foreground">({phase.phase_key})</span></span>
+      <div className="flex items-center gap-2">
+        {phase.is_default && <span className="badge-primary text-xs">默认</span>}
+        <span className="text-muted-foreground text-xs">排序: {phase.sort_order}</span>
+        <button onClick={() => setEditing(true)} className="btn-ghost btn-sm !h-7 !px-1.5" title="编辑">
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={handleDelete} className="btn-ghost btn-sm !h-7 !px-1.5 text-destructive" title="删除">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </div>
   );
 }
