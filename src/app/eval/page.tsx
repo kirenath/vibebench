@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
@@ -42,6 +42,7 @@ export default function EvalPage() {
   const [data, setData] = useState<EvalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [completed, setCompleted] = useState(false);
   const [voted, setVoted] = useState(false);
   const [revealLeft, setRevealLeft] = useState<RevealData | null>(null);
   const [revealRight, setRevealRight] = useState<RevealData | null>(null);
@@ -74,6 +75,7 @@ export default function EvalPage() {
   const fetchPair = useCallback(async () => {
     setLoading(true);
     setError("");
+    setCompleted(false);
     setVoted(false);
     setRevealLeft(null);
     setRevealRight(null);
@@ -91,6 +93,11 @@ export default function EvalPage() {
       const json = await res.json();
       if (!res.ok || !json.success) {
         throw new Error(json.error || "Failed to fetch pair");
+      }
+      if (json.completed) {
+        setCompleted(true);
+        setData(null);
+        return;
       }
       setData(json.data);
       setStartTime(Date.now());
@@ -212,6 +219,13 @@ export default function EvalPage() {
         {loading ? (
           <div className="h-[600px] flex items-center justify-center text-muted-foreground bg-muted/20 rounded-2xl border border-border/50">
             <RefreshCw className="h-8 w-8 animate-spin mr-3 text-primary" /> 正在准备比赛...
+          </div>
+        ) : completed ? (
+          <div className="h-[400px] flex flex-col items-center justify-center bg-primary/5 rounded-2xl border border-primary/20 p-8 text-center">
+            <PartyPopper className="h-12 w-12 text-primary mb-4" />
+            <h2 className="font-heading text-2xl font-bold mb-2">全部投票完成！</h2>
+            <p className="text-muted-foreground mb-6">感谢你的参与，你已经对所有可用赛题完成了评审。</p>
+            <Link href="/compare" className="btn-primary">返回选择模式</Link>
           </div>
         ) : error ? (
           <div className="h-[400px] flex flex-col items-center justify-center text-destructive bg-destructive/10 rounded-2xl border border-destructive/20 p-8 text-center">

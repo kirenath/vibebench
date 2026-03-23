@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     const rows = await query(sql, params);
 
     if (rows.length < 2) {
-      return jsonError("No valid submissions found for evaluation.", 404);
+      return NextResponse.json({ success: true, completed: true, data: null });
     }
 
     // Randomize left and right for the client to prevent bias
