@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { query } from "@/lib/db";
 import Blob from "@/components/Blob";
-import { FileCode2, ArrowRight } from "lucide-react";
+import ChallengeIcon from "@/components/ChallengeIcon";
+import { ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "赛题列表 — VibeBench",
@@ -15,12 +16,13 @@ interface ChallengeRow {
   cover_image: string | null;
   published_at: string | null;
   submission_count: string;
+  metadata: Record<string, string> | null;
 }
 
 async function getChallenges() {
   try {
     return await query<ChallengeRow>(`
-      SELECT c.id, c.title, c.description, c.cover_image, c.published_at,
+      SELECT c.id, c.title, c.description, c.cover_image, c.published_at, c.metadata,
         (SELECT COUNT(*) FROM submissions s
          JOIN challenge_phases cp ON cp.id = s.challenge_phase_id
          WHERE cp.challenge_id = c.id AND s.is_published = true
@@ -91,7 +93,7 @@ export default async function ChallengesPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     ) : (
-                      <FileCode2 className="h-16 w-16 text-primary/40" />
+                      <ChallengeIcon iconName={(c.metadata as Record<string, string> | null)?.icon} className="h-16 w-16 text-primary/40" />
                     )}
                   </div>
                   <div className="p-6">

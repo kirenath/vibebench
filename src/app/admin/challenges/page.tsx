@@ -5,7 +5,10 @@ import AdminPageHeader from "@/components/AdminPageHeader";
 import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
-import { Pencil, Trash2, Eye, EyeOff, ChevronDown, ChevronUp, Trophy } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, ChevronDown, ChevronUp, Trophy, X, Search } from "lucide-react";
+import ChallengeIcon from "@/components/ChallengeIcon";
+import { PRESET_ICONS } from "@/components/ChallengeIcon";
+import { icons as allLucideIcons } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -16,6 +19,7 @@ interface Challenge {
   is_published: boolean;
   sort_order: number;
   submission_count: string;
+  metadata: Record<string, string> | null;
 }
 
 interface Phase {
@@ -28,7 +32,7 @@ interface Phase {
 
 const emptyForm = {
   id: "", title: "", description: "", rules_markdown: "",
-  prompt_markdown: "", is_published: false, sort_order: 0,
+  prompt_markdown: "", is_published: false, sort_order: 0, icon: "",
 };
 
 const emptyPhaseForm = {
@@ -66,10 +70,12 @@ export default function AdminChallengesPage() {
   const handleSave = async () => {
     const method = editId ? "PUT" : "POST";
     const url = editId ? `/api/challenges/${editId}` : "/api/challenges";
+    const { icon, ...rest } = form;
+    const metadata = icon ? { icon } : {};
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...rest, metadata }),
     });
     if (res.ok) {
       toast(editId ? "赛题已更新" : "赛题已创建", "success");
@@ -113,6 +119,7 @@ export default function AdminChallengesPage() {
       id: c.id, title: c.title, description: c.description || "",
       rules_markdown: c.rules_markdown || "", prompt_markdown: c.prompt_markdown || "",
       is_published: c.is_published, sort_order: c.sort_order,
+      icon: (c.metadata as Record<string, string> | null)?.icon || "",
     });
     setDrawerOpen(true);
   };
@@ -269,6 +276,10 @@ export default function AdminChallengesPage() {
             <input className="input" type="number" value={form.sort_order}
               onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} />
           </div>
+          <div>
+            <label className="label mb-1 block">图标</label>
+            <IconPicker value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
+          </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="published" checked={form.is_published}
               onChange={(e) => setForm({ ...form, is_published: e.target.checked })} className="h-4 w-4" />
@@ -374,3 +385,110 @@ function PhaseRow({ phase, challengeId, onUpdate, toast }: {
     </div>
   );
 }
+
+function IconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [search, setSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const isValid = !value || value in allLucideIcons;
+
+  const filteredPresets = search
+    ? PRESET_ICONS.filter((n) => n.toLowerCase().includes(search.toLowerCase()))
+    : PRESET_ICONS;
+
+  // Also search full lucide icon list when user types something not in presets
+  const extraMatches = search
+    ? Object.keys(allLucideIcons)
+        .filter(
+          (n) =>
+            n.toLowerCase().includes(search.toLowerCase()) &&
+            !PRESET_ICONS.includes(n as (typeof PRESET_ICONS)[number])
+        )
+        .slice(0, 30)
+    : [];
+
+  return (
+    <div className="relative">
+      {/* Input with preview */}
+      <div className="flex items-center gap-2">
+        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <ChallengeIcon iconName={value || null} className="h-5 w-5 text-primary" />
+        </div>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <input
+            className="input !pl-9"
+            value={value}
+            onChange={(e) => { onChange(e.target.value); setShowDropdown(true); setSearch(e.target.value); }}
+            onFocus={() => { setShowDropdown(true); setSearch(value); }}
+            placeholder="输入 lucide 图标名，如 Clock"
+          />
+          {value && (
+            <button
+              onClick={() => { onChange(""); setSearch(""); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+      {!isValid && value && (
+        <p className="text-xs text-destructive mt-1">未找到图标 &quot;{value}&quot;，将使用默认图标</p>
+      )}
+
+      {/* Dropdown */}
+      {showDropdown && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setShowDropdown(false)} />
+          <div className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-2">
+            {filteredPresets.length > 0 && (
+              <>
+                <p className="text-xs text-muted-foreground px-2 py-1">常用图标</p>
+                <div className="grid grid-cols-6 gap-1">
+                  {filteredPresets.map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => { onChange(name); setShowDropdown(false); setSearch(""); }}
+                      className={`flex flex-col items-center gap-0.5 p-2 rounded-lg hover:bg-primary/10 transition-colors ${
+                        value === name ? "bg-primary/15 ring-1 ring-primary/30" : ""
+                      }`}
+                      title={name}
+                    >
+                      <ChallengeIcon iconName={name} className="h-5 w-5 text-foreground" />
+                      <span className="text-[10px] text-muted-foreground truncate w-full text-center">{name}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+            {extraMatches.length > 0 && (
+              <>
+                <p className="text-xs text-muted-foreground px-2 py-1 mt-2">更多匹配</p>
+                <div className="grid grid-cols-6 gap-1">
+                  {extraMatches.map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => { onChange(name); setShowDropdown(false); setSearch(""); }}
+                      className={`flex flex-col items-center gap-0.5 p-2 rounded-lg hover:bg-primary/10 transition-colors ${
+                        value === name ? "bg-primary/15 ring-1 ring-primary/30" : ""
+                      }`}
+                      title={name}
+                    >
+                      <ChallengeIcon iconName={name} className="h-5 w-5 text-foreground" />
+                      <span className="text-[10px] text-muted-foreground truncate w-full text-center">{name}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+            {filteredPresets.length === 0 && extraMatches.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">未找到匹配的图标</p>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
