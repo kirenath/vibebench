@@ -90,7 +90,7 @@ export default function HtmlPreviewModal({ url, title, onClose, submissionId }: 
             src={url}
             className="w-full h-full border-0"
             title={title}
-            sandbox="allow-scripts allow-same-origin"
+            sandbox="allow-scripts allow-same-origin allow-modals"
           />
         </div>
 

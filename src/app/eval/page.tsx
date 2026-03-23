@@ -285,7 +285,7 @@ export default function EvalPage() {
                 <iframe
                   key={iframeKeyLeft}
                   src={`/api/submissions/${data.left.submission_id}/artifacts/html`}
-                  sandbox="allow-scripts"
+                  sandbox="allow-scripts allow-modals"
                   className="w-full h-[600px] border-0 bg-white"
                 />
               </div>
@@ -323,7 +323,7 @@ export default function EvalPage() {
                 <iframe
                   key={iframeKeyRight}
                   src={`/api/submissions/${data.right.submission_id}/artifacts/html`}
-                  sandbox="allow-scripts"
+                  sandbox="allow-scripts allow-modals"
                   className="w-full h-[600px] border-0 bg-white"
                 />
               </div>
