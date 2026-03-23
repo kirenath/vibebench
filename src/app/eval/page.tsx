@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
@@ -52,12 +52,12 @@ export default function EvalPage() {
   const [iframeKeyLeft, setIframeKeyLeft] = useState(0);
   const [iframeKeyRight, setIframeKeyRight] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fingerprintRef = useRef<string>("");
+  const [fingerprint, setFingerprint] = useState("");
 
   // Initialize FingerprintJS on mount
   useEffect(() => {
     FingerprintJS.load().then(fp => fp.get()).then(result => {
-      fingerprintRef.current = result.visitorId;
+      setFingerprint(result.visitorId);
     });
   }, []);
 
@@ -82,6 +82,7 @@ export default function EvalPage() {
   }, [selectedChallenge]);
 
   const fetchPair = useCallback(async () => {
+    if (!fingerprint) return; // Wait for fingerprint to be ready
     setLoading(true);
     setError("");
     setCompleted(false);
@@ -99,7 +100,7 @@ export default function EvalPage() {
       }
 
       const res = await fetch(url, {
-        headers: fingerprintRef.current ? { "X-Voter-Token": fingerprintRef.current } : {},
+        headers: { "X-Voter-Token": fingerprint },
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
@@ -117,7 +118,7 @@ export default function EvalPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedChallenge, selectedPhase]);
+  }, [selectedChallenge, selectedPhase, fingerprint]);
 
   useEffect(() => {
     fetchPair();
@@ -133,7 +134,7 @@ export default function EvalPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(fingerprintRef.current ? { "X-Voter-Token": fingerprintRef.current } : {}),
+          "X-Voter-Token": fingerprint,
         },
         body: JSON.stringify({
           challenge_phase_id: data.challenge_phase_id,
