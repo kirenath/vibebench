@@ -9,11 +9,7 @@ export async function GET(request: NextRequest) {
   const challengeId = searchParams.get("challenge");
   const phaseKey = searchParams.get("phase");
 
-  let voterToken = request.cookies.get("voter_token")?.value;
-  const needsNewCookie = !voterToken;
-  if (!voterToken) {
-    voterToken = crypto.randomUUID();
-  }
+  const voterToken = request.headers.get("x-voter-token") || "";
 
   try {
     const params: any[] = [voterToken];
@@ -96,25 +92,11 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       data: responseData,
       error: null
     });
-
-    if (needsNewCookie) {
-      // Set the voter_token as an HttpOnly cookie
-      response.cookies.set({
-        name: "voter_token",
-        value: voterToken,
-        httpOnly: true,
-        path: "/",
-        maxAge: 60 * 60 * 24 * 365, // 1 year
-        sameSite: "strict",
-      });
-    }
-
-    return response;
   } catch (err: any) {
     return jsonError(err.message, 500);
   }

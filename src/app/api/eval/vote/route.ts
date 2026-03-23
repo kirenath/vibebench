@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return jsonError("Missing required fields", 400);
     }
 
-    const voterToken = request.cookies.get("voter_token")?.value;
+    const voterToken = request.headers.get("x-voter-token");
     if (!voterToken) {
       return jsonError("Missing voter token. Please refresh the page.", 403);
     }

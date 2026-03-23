@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 interface EvalData {
   challenge_phase_id: string;
@@ -51,6 +52,14 @@ export default function EvalPage() {
   const [iframeKeyLeft, setIframeKeyLeft] = useState(0);
   const [iframeKeyRight, setIframeKeyRight] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fingerprintRef = useRef<string>("");
+
+  // Initialize FingerprintJS on mount
+  useEffect(() => {
+    FingerprintJS.load().then(fp => fp.get()).then(result => {
+      fingerprintRef.current = result.visitorId;
+    });
+  }, []);
 
   useEffect(() => {
     fetch("/api/challenges")
@@ -89,7 +98,9 @@ export default function EvalPage() {
         url += `?${params.toString()}`;
       }
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: fingerprintRef.current ? { "X-Voter-Token": fingerprintRef.current } : {},
+      });
       const json = await res.json();
       if (!res.ok || !json.success) {
         throw new Error(json.error || "Failed to fetch pair");
@@ -120,7 +131,10 @@ export default function EvalPage() {
       const duration_ms = Date.now() - startTime;
       const res = await fetch("/api/eval/vote", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(fingerprintRef.current ? { "X-Voter-Token": fingerprintRef.current } : {}),
+        },
         body: JSON.stringify({
           challenge_phase_id: data.challenge_phase_id,
           left_submission_id: data.left.submission_id,
