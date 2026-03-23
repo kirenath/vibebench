@@ -12,7 +12,7 @@ export default function PoweredByPage() {
       eyebrow="Tech Stack"
       title="技术支持"
       description="构建与运行 VibeBench 的核心技术栈、基础设施和开源依赖。"
-      updatedAt="2026 年 3 月 22 日"
+      updatedAt="2026 年 3 月 24 日"
     >
       <h2>前端框架</h2>
       <ul>
@@ -47,6 +47,12 @@ export default function PoweredByPage() {
             Supabase
           </a>
           ) — 托管数据库，存储挑战题、模型信息和作品数据
+        </li>
+        <li>
+          <a href="https://developers.cloudflare.com/r2/" target="_blank" rel="noopener noreferrer">
+            <strong>Cloudflare R2</strong>
+          </a>{" "}
+          — S3 兼容对象存储，托管静态资源（HTML 作品、PRD、截图），经 CDN 全球分发
         </li>
       </ul>
 

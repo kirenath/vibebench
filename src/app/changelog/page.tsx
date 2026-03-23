@@ -12,8 +12,23 @@ export default function ChangelogPage() {
       eyebrow="Changelog"
       title="更新日志"
       description="VibeBench 平台功能迭代、基础设施变更与内容更新的完整时间线。"
-      updatedAt="2026 年 3 月 22 日"
+      updatedAt="2026 年 3 月 24 日"
     >
+      <h2>2026 年 3 月 23 日</h2>
+      <ul>
+        <li>静态资源存储迁移至 Cloudflare R2，实现 CDN 全球加速。</li>
+        <li>新增源代码预览功能（SourceCodePreviewModal），支持 HTML 语法高亮。</li>
+        <li>盲评投票增加结果反馈界面与浏览器指纹防重投机制。</li>
+        <li>后台管理：增加 Phase 与成果编辑能力、优化上传与提交流程。</li>
+        <li>修复多项 Bug（PRD 逻辑、UTF-8 编码、导航栏布局、SVG 图标等）。</li>
+      </ul>
+
+      <h2>2026 年 3 月 22 日</h2>
+      <ul>
+        <li>新增 License 页面，补全合规信息。</li>
+        <li>Footer 导航优化、下拉选框改进。</li>
+      </ul>
+
       <h2>2026 年 3 月 21 日</h2>
       <ul>
         <li>重构 Footer，从重复路由导航切换为品牌、共建、资源和合规信息架构。</li>

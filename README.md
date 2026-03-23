@@ -39,8 +39,9 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 - 静态页面：FAQ、Credits、Changelog、Terms、Privacy、License 等
 - Admin 后台：登录、赛题管理、模型管理、作品管理，含路由鉴权
 - 完整 REST API（CRUD for challenges, models, submissions, artifacts）
-- HTML 作品沙箱渲染
+- HTML 作品沙箱渲染 + 源代码预览
 - Organic/Natural 设计系统
+- **Cloudflare R2 对象存储**：静态资源（HTML 作品、PRD、截图）托管于 R2，经 CDN 全球分发
 - PostgreSQL Schema（含安全加固）+ 环境变量模板
 
 ## 仓库内容
@@ -50,7 +51,13 @@ vibebench/
 ├── src/
 │   ├── app/              # Next.js App Router pages & API routes
 │   ├── components/       # Shared UI components
-│   ├── lib/              # DB, auth, upload, constants
+│   ├── lib/
+│   │   ├── db.ts         # PostgreSQL 连接池
+│   │   ├── auth.ts       # JWT 认证
+│   │   ├── r2.ts         # Cloudflare R2 存储客户端
+│   │   ├── upload.ts     # 文件上传（→ R2）
+│   │   ├── constants.ts  # 环境变量 & 全局常量
+│   │   └── ...           # api-helpers, site-config
 │   └── middleware.ts     # Auth middleware
 ├── sql/
 │   ├── 001_initial_schema.sql
@@ -76,6 +83,7 @@ PostgreSQL 数据库结构与迁移脚本：
 |---|---|
 | 前端 | Next.js 16（App Router + TypeScript） |
 | 数据库 | PostgreSQL（Supabase） |
+| 对象存储 | Cloudflare R2（S3 兼容） |
 | 认证 | 单管理员密码 + JWT Cookie |
 
 ## 数据模型
@@ -117,7 +125,7 @@ psql "$DATABASE_URL" -f sql/001_initial_schema.sql
 
 ```bash
 cp .env.example .env.local
-# 编辑 .env.local 填入实际值
+# 编辑 .env.local 填入实际值（含 R2_* 系列变量）
 ```
 
 生成管理员密码哈希：
