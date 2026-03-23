@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Clock, RefreshCw, ExternalLink, AlertTriangle, Code2 } from "lucide-react";
+import { formatDuration } from "@/lib/formatDuration";
 import HtmlPreviewModal from "./HtmlPreviewModal";
 import PrdPreviewModal from "./PrdPreviewModal";
 import SourceCodePreviewModal from "./SourceCodePreviewModal";
@@ -67,10 +68,10 @@ function PhaseRow({
 
         {/* Stats */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          {data.duration_ms && (
+          {data.duration_ms && formatDuration(data.duration_ms) && (
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {(parseInt(data.duration_ms) / 1000).toFixed(1)}s
+              {formatDuration(data.duration_ms)}
             </span>
           )}
           {data.iteration_count != null && (
