@@ -37,6 +37,7 @@ prd/
 challenge/
 docs/
 management/
+tmp/
 deploy.ps1
 
 # AI agent config

@@ -155,11 +155,7 @@ export default async function ChallengeDetailPage({
   const submissions = await getAllSubmissions(id);
   const groupedModels = groupByModel(submissions);
 
-  const rawPrompt = challenge.prompt_markdown || "";
-  const phase2Step1 = `以下是一个设计需求：\n"${rawPrompt}"\n请你根据这个需求，撰写一份详细的产品需求文档（PRD），不要写代码，只输出 PRD。`;
-  const phase2Step2 = "根据你自己的 PRD 文档，请输出完整的HTML。";
 
-  const hasPhase2 = phases.some((p) => p.phase_key.startsWith("phase2"));
 
   return (
     <div className="relative">
@@ -233,65 +229,59 @@ export default async function ChallengeDetailPage({
                   </details>
                 );
               })()}
-              {challenge.prompt_markdown && (
-                <details className="card p-6 group" open>
-                  <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
-                    <MessageSquareText className="h-5 w-5 text-secondary" />
-                    Prompt
-                    <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
-                      ▼
-                    </span>
-                  </summary>
+              {challenge.prompt_markdown && (() => {
+                const promptStr = challenge.prompt_markdown;
+                const splitRegex = /^(?:#{1,6}\s+)([^\n]+)$/gm;
+                const parts = promptStr.split(splitRegex);
+                
+                const sections: { title: string, content: string }[] = [];
+                const preContent = parts[0].trim();
+                
+                if (preContent) {
+                  sections.push({ title: "Prompt", content: preContent });
+                }
+                
+                for (let i = 1; i < parts.length; i += 2) {
+                  const title = parts[i].trim();
+                  const content = (parts[i+1] || "").trim();
+                  if (title || content) {
+                    sections.push({ title, content });
+                  }
+                }
 
-                  <div className="mt-4 space-y-3">
-                    {/* Phase 1 prompt — expanded by default */}
-                    <details className="rounded-2xl border border-border/50 bg-muted/30" open>
-                      <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
-                        Phase 1（初版）提示词
-                        <CopyButton text={rawPrompt} />
-                        <span className="ml-auto text-muted-foreground text-xs">▼</span>
-                      </summary>
-                      <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                        {rawPrompt}
-                      </div>
-                    </details>
+                if (sections.length === 0) return null;
 
-                    {/* Phase 2 prompt — collapsed by default */}
-                    {hasPhase2 && (
-                      <details className="rounded-2xl border border-border/50 bg-muted/30">
-                        <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
-                          Phase 2（改版）提示词
-                          <span className="ml-auto text-muted-foreground text-xs">▼</span>
-                        </summary>
-                        <div className="px-4 pb-4 space-y-3">
-                          {/* Step 1 */}
-                          <div className="rounded-xl border border-border/30 bg-background/50 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">1</span>
-                              <span className="font-heading font-semibold text-sm">生成 PRD</span>
-                              <CopyButton text={phase2Step1} />
-                            </div>
-                            <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                              {phase2Step1}
-                            </div>
+                return (
+                  <details className="card p-6 group" open>
+                    <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
+                      <MessageSquareText className="h-5 w-5 text-secondary" />
+                      Prompt
+                      <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
+                        ▼
+                      </span>
+                    </summary>
+
+                    <div className="mt-4 space-y-3">
+                      {sections.map((sec, idx) => (
+                        <details 
+                          key={idx} 
+                          className="rounded-2xl border border-border/50 bg-muted/30" 
+                          open={idx === 0}
+                        >
+                          <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
+                            {sec.title}
+                            <CopyButton text={sec.content} />
+                            <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                          </summary>
+                          <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                            {sec.content}
                           </div>
-                          {/* Step 2 */}
-                          <div className="rounded-xl border border-border/30 bg-background/50 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
-                              <span className="font-heading font-semibold text-sm">根据 PRD 生成代码</span>
-                              <CopyButton text={phase2Step2} />
-                            </div>
-                            <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                              {phase2Step2}
-                            </div>
-                          </div>
-                        </div>
-                      </details>
-                    )}
-                  </div>
-                </details>
-              )}
+                        </details>
+                      ))}
+                    </div>
+                  </details>
+                );
+              })()}
             </div>
           )}
 
