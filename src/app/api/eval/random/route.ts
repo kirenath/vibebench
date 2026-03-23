@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const params: any[] = [];
+    const params: any[] = [voterToken];
     let phaseFilter = "";
 
     if (challengeId) {
@@ -37,9 +37,18 @@ export async function GET(request: NextRequest) {
         GROUP BY challenge_phase_id
         HAVING COUNT(DISTINCT model_variant_id) >= 2
       ),
+      UnvotedPhases AS (
+        SELECT challenge_phase_id
+        FROM EligiblePhases ep
+        WHERE NOT EXISTS (
+          SELECT 1 FROM public.eval_votes v
+          WHERE v.voter_token = $1
+            AND v.challenge_phase_id = ep.challenge_phase_id
+        )
+      ),
       SelectedPhase AS (
         SELECT challenge_phase_id
-        FROM EligiblePhases
+        FROM UnvotedPhases
         ORDER BY random()
         LIMIT 1
       ),
