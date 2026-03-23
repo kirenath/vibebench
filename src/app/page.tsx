@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { query } from "@/lib/db";
 import Blob from "@/components/Blob";
+
+export const dynamic = "force-dynamic";
 import {
   Trophy,
   Cpu,
