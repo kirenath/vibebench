@@ -201,20 +201,38 @@ export default async function ChallengeDetailPage({
           {/* Rules & Prompt accordion */}
           {(challenge.rules_markdown || challenge.prompt_markdown) && (
             <div className="grid md:grid-cols-2 gap-6 mb-12 items-start">
-              {challenge.rules_markdown && (
-                <details className="card p-6 group" open>
-                  <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
-                    <ClipboardList className="h-5 w-5 text-primary" />
-                    规则说明
-                    <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
-                      ▼
-                    </span>
-                  </summary>
-                  <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
-                    {challenge.rules_markdown}
-                  </div>
-                </details>
-              )}
+              {challenge.rules_markdown && (() => {
+                const detailMarker = /##\s*详细解析[：:]?\s*/;
+                const parts = challenge.rules_markdown.split(detailMarker);
+                const briefRules = parts[0]?.trimEnd() || "";
+                const detailedAnalysis = parts.length > 1 ? parts[1]?.trimStart() : null;
+
+                return (
+                  <details className="card p-6 group" open>
+                    <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
+                      <ClipboardList className="h-5 w-5 text-primary" />
+                      规则说明
+                      <span className="ml-auto text-muted-foreground group-open:rotate-180 transition-transform duration-300">
+                        ▼
+                      </span>
+                    </summary>
+                    <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
+                      {briefRules}
+                    </div>
+                    {detailedAnalysis && (
+                      <details className="mt-4 rounded-2xl border border-border/50 bg-muted/30">
+                        <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                          详细解析
+                          <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                        </summary>
+                        <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                          {detailedAnalysis}
+                        </div>
+                      </details>
+                    )}
+                  </details>
+                );
+              })()}
               {challenge.prompt_markdown && (
                 <details className="card p-6 group" open>
                   <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
