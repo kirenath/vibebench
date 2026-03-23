@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
 import { ArrowLeft, Building2, ExternalLink } from "lucide-react";
+import ModelSubmissionCard, { PhaseSubmission } from "@/components/ModelSubmissionCard";
 
 interface ModelRow {
   id: string;
@@ -15,10 +16,16 @@ interface SubmissionRow {
   submission_id: string;
   challenge_id: string;
   challenge_title: string;
+  phase_key: string;
   phase_label: string;
+  channel_id: string;
   channel_name: string;
   has_html: boolean;
+  has_prd: boolean;
+  duration_ms: string | null;
+  iteration_count: number | null;
   manual_touched: boolean;
+  manual_notes: string | null;
   updated_at: string;
 }
 
@@ -40,11 +47,12 @@ async function getModel(id: string) {
 async function getModelSubmissions(modelId: string) {
   try {
     return await query<SubmissionRow>(
-      `SELECT submission_id, challenge_id, challenge_title, phase_label,
-              channel_name, has_html, manual_touched, updated_at
+      `SELECT submission_id, challenge_id, challenge_title, phase_key, phase_label,
+              channel_id, channel_name, has_html, has_prd, duration_ms, iteration_count,
+              manual_touched, manual_notes, updated_at
        FROM submission_overview
        WHERE model_variant_id = $1 AND submission_is_published = true AND challenge_is_published = true
-       ORDER BY challenge_title, phase_label`,
+       ORDER BY challenge_title, channel_name, phase_key`,
       [modelId]
     );
   } catch {
@@ -76,6 +84,48 @@ export default async function ModelDetailPage({
   if (!model) notFound();
 
   const submissions = await getModelSubmissions(id);
+
+  const groupedTasks: Record<
+    string,
+    {
+      challengeId: string;
+      challengeTitle: string;
+      channelName: string;
+      phase1: PhaseSubmission | null;
+      phase2: PhaseSubmission | null;
+    }
+  > = {};
+
+  submissions.forEach((s) => {
+    const key = `${s.challenge_id}_${s.channel_id}`;
+    if (!groupedTasks[key]) {
+      groupedTasks[key] = {
+        challengeId: s.challenge_id,
+        challengeTitle: s.challenge_title,
+        channelName: s.channel_name,
+        phase1: null,
+        phase2: null,
+      };
+    }
+    const pData: PhaseSubmission = {
+      submission_id: s.submission_id,
+      duration_ms: s.duration_ms,
+      iteration_count: s.iteration_count,
+      has_html: s.has_html,
+      has_prd: s.has_prd,
+      manual_touched: s.manual_touched,
+      manual_notes: s.manual_notes,
+    };
+    if (s.phase_key.startsWith("phase2")) {
+      groupedTasks[key].phase2 = pData;
+    } else {
+      groupedTasks[key].phase1 = pData;
+    }
+  });
+
+  const cards = Object.values(groupedTasks).sort((a, b) =>
+    a.challengeTitle.localeCompare(b.challengeTitle)
+  );
 
   return (
     <div className="relative section pt-24">
@@ -113,44 +163,21 @@ export default async function ModelDetailPage({
 
         <h2 className="font-heading text-2xl font-bold mb-6">参赛作品</h2>
 
-        {submissions.length === 0 ? (
+        {cards.length === 0 ? (
           <div className="card p-12 text-center">
             <p className="text-muted-foreground">暂无已发布作品</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {submissions.map((s) => (
-              <div key={s.submission_id} className="card p-6 card-hover">
-                <h3 className="font-heading font-bold mb-1">
-                  {s.challenge_title}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {s.phase_label} · {s.channel_name}
-                </p>
-                {s.manual_touched && (
-                  <span className="badge-destructive text-xs mb-3 inline-block">
-                    人工修订
-                  </span>
-                )}
-                <div className="flex items-center gap-2">
-                  {s.has_html && (
-                    <Link
-                      href={`/s/${s.submission_id}/index.html`}
-                      target="_blank"
-                      className="btn-primary btn-sm !h-9 !px-4 text-xs"
-                    >
-                      查看效果
-                      <ExternalLink className="ml-1 h-3 w-3" />
-                    </Link>
-                  )}
-                  <Link
-                    href={`/challenges/${s.challenge_id}`}
-                    className="btn-ghost btn-sm !h-9 !px-4 text-xs"
-                  >
-                    赛题详情
-                  </Link>
-                </div>
-              </div>
+            {cards.map((c) => (
+              <ModelSubmissionCard
+                key={`${c.challengeId}_${c.channelName}`}
+                challengeId={c.challengeId}
+                challengeTitle={c.challengeTitle}
+                channelName={c.channelName}
+                phase1={c.phase1}
+                phase2={c.phase2}
+              />
             ))}
           </div>
         )}
