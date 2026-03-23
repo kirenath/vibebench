@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
     `;
     const rows = await query(detailsSql, [[left_submission_id, right_submission_id]]);
 
-    const leftData = rows.find((r: any) => r.submission_id === left_submission_id);
-    const rightData = rows.find((r: any) => r.submission_id === right_submission_id);
+    const leftData = rows.find((r: any) => String(r.submission_id) === String(left_submission_id));
+    const rightData = rows.find((r: any) => String(r.submission_id) === String(right_submission_id));
 
     if (!leftData || !rightData) {
       return jsonError("Invalid submission ids", 400);
