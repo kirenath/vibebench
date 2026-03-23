@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ExternalLink } from "lucide-react";
+import { X, ExternalLink, RefreshCw } from "lucide-react";
 
 interface Props {
   url: string;
@@ -11,6 +11,8 @@ interface Props {
 }
 
 export default function HtmlPreviewModal({ url, title, onClose }: Props) {
+  const [iframeKey, setIframeKey] = useState(0);
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -43,6 +45,13 @@ export default function HtmlPreviewModal({ url, title, onClose }: Props) {
             {title}
           </h3>
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setIframeKey((k) => k + 1)}
+              className="p-2 rounded-full hover:bg-primary/10 transition-colors"
+              title="刷新"
+            >
+              <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-primary" />
+            </button>
             <a
               href={url}
               target="_blank"
@@ -65,6 +74,7 @@ export default function HtmlPreviewModal({ url, title, onClose }: Props) {
         {/* iframe */}
         <div className="flex-1 bg-white">
           <iframe
+            key={iframeKey}
             src={url}
             className="w-full h-full border-0"
             title={title}
