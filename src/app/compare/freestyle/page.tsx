@@ -2,9 +2,10 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Shuffle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Shuffle, RefreshCw, Maximize2, ExternalLink } from "lucide-react";
 import CustomSelect from "@/components/CustomSelect";
 import Link from "next/link";
+import HtmlPreviewModal from "@/components/HtmlPreviewModal";
 
 interface Submission {
   submission_id: string;
@@ -38,6 +39,8 @@ function FreestyleContent() {
   const [loading, setLoading] = useState(true);
   const [selectedA, setSelectedA] = useState(searchParams.get("a") || "");
   const [selectedB, setSelectedB] = useState(searchParams.get("b") || "");
+  const [iframeKeys, setIframeKeys] = useState<Record<string, number>>({});
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Fetch ALL published submissions with HTML
   useEffect(() => {
@@ -167,14 +170,28 @@ function FreestyleContent() {
                           {s.vendor_name} · {s.channel_name} — {s.challenge_title} ({s.phase_label})
                         </p>
                       </div>
-                      {s.manual_touched && (
-                        <span className="badge-destructive flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          人工修订
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {s.manual_touched && (
+                          <span className="badge-destructive flex items-center gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            人工修订
+                          </span>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setIframeKeys(prev => ({ ...prev, [s.submission_id]: (prev[s.submission_id] || 0) + 1 }))} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
+                            <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                          </button>
+                          <button onClick={() => setPreviewUrl(`/s/${s.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                            <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                          </button>
+                          <a href={`/s/${s.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                            <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                          </a>
+                        </div>
+                      </div>
                     </div>
                     <iframe
+                      key={iframeKeys[s.submission_id] || 0}
                       src={`/s/${s.submission_id}/index.html`}
                       sandbox="allow-scripts"
                       className="w-full h-[600px] border-0"
@@ -201,6 +218,15 @@ function FreestyleContent() {
           </>
         )}
       </div>
+
+      {/* Preview Modal */}
+      {previewUrl && (
+        <HtmlPreviewModal
+          url={previewUrl}
+          title="作品预览"
+          onClose={() => setPreviewUrl(null)}
+        />
+      )}
     </div>
   );
 }

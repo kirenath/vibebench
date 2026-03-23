@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
+import HtmlPreviewModal from "@/components/HtmlPreviewModal";
 
 interface EvalData {
   challenge_phase_id: string;
@@ -46,6 +47,9 @@ export default function EvalPage() {
   const [revealRight, setRevealRight] = useState<RevealData | null>(null);
   const [startTime, setStartTime] = useState<number>(0);
   const [voteLoading, setVoteLoading] = useState(false);
+  const [iframeKeyLeft, setIframeKeyLeft] = useState(0);
+  const [iframeKeyRight, setIframeKeyRight] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/challenges")
@@ -220,7 +224,20 @@ export default function EvalPage() {
               {/* Left Side */}
               <div className="card overflow-hidden border-2 transition-colors duration-300 relative group">
                 <div className="p-3 border-b border-border/50 bg-muted/20 flex justify-between items-center h-14">
-                  <span className="font-heading font-bold text-lg">作品 A</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-heading font-bold text-lg">作品 A</span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setIframeKeyLeft(k => k + 1)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
+                        <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <button onClick={() => setPreviewUrl(`/s/${data.left.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                        <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <a href={`/s/${data.left.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                        <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </a>
+                    </div>
+                  </div>
                   {revealLeft && (
                     <div className="text-right flex items-center gap-2">
                       {revealLeft.manual_touched && <span title="人工干预" className="flex items-center"><AlertTriangle className="h-4 w-4 text-destructive" /></span>}
@@ -232,6 +249,7 @@ export default function EvalPage() {
                   )}
                 </div>
                 <iframe
+                  key={iframeKeyLeft}
                   src={`/s/${data.left.submission_id}/index.html`}
                   sandbox="allow-scripts"
                   className="w-full h-[600px] border-0 bg-white"
@@ -241,7 +259,20 @@ export default function EvalPage() {
               {/* Right Side */}
               <div className="card overflow-hidden border-2 transition-colors duration-300 relative group">
                 <div className="p-3 border-b border-border/50 bg-muted/20 flex justify-between items-center h-14">
-                  <span className="font-heading font-bold text-lg">作品 B</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-heading font-bold text-lg">作品 B</span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setIframeKeyRight(k => k + 1)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
+                        <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <button onClick={() => setPreviewUrl(`/s/${data.right.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                        <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <a href={`/s/${data.right.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                        <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </a>
+                    </div>
+                  </div>
                   {revealRight && (
                     <div className="text-right flex items-center gap-2">
                       {revealRight.manual_touched && <span title="人工干预" className="flex items-center"><AlertTriangle className="h-4 w-4 text-destructive" /></span>}
@@ -253,6 +284,7 @@ export default function EvalPage() {
                   )}
                 </div>
                 <iframe
+                  key={iframeKeyRight}
                   src={`/s/${data.right.submission_id}/index.html`}
                   sandbox="allow-scripts"
                   className="w-full h-[600px] border-0 bg-white"
@@ -271,8 +303,8 @@ export default function EvalPage() {
                     <button onClick={() => handleVote('both_good')} disabled={voteLoading} className="btn-secondary !rounded-full px-3 sm:px-6 hover:bg-success/20 hover:text-success transition-colors text-sm sm:text-base">
                       都好
                     </button>
-                    <button onClick={handleSkip} disabled={voteLoading} className="btn-ghost !rounded-full px-3 sm:px-6 text-muted-foreground hover:text-foreground text-sm sm:text-base">
-                      平手/跳过
+                    <button onClick={handleSkip} disabled={voteLoading} className="btn-secondary !rounded-full px-3 sm:px-6 border border-border hover:text-foreground transition-colors text-sm sm:text-base">
+                      跳过
                     </button>
                     <button onClick={() => handleVote('both_bad')} disabled={voteLoading} className="btn-secondary !rounded-full px-3 sm:px-6 hover:bg-destructive/20 hover:text-destructive transition-colors text-sm sm:text-base">
                       都差
@@ -288,6 +320,15 @@ export default function EvalPage() {
                 )}
               </div>
             </div>
+
+            {/* Preview Modal */}
+            {previewUrl && (
+              <HtmlPreviewModal
+                url={previewUrl}
+                title="作品预览"
+                onClose={() => setPreviewUrl(null)}
+              />
+            )}
           </div>
         ) : null}
       </div>

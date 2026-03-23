@@ -252,6 +252,35 @@ export default async function ChallengeDetailPage({
 
                 if (sections.length === 0) return null;
 
+                // Group multi-step phases: "phase2 step1", "phase2 step2" → group under "phase2"
+                type GroupItem = { type: 'single'; section: typeof sections[0]; idx: number } | { type: 'group'; groupTitle: string; children: { section: typeof sections[0]; idx: number }[] };
+                const grouped: GroupItem[] = [];
+                const phaseStepRegex = /^(phase\d+)\s+step\s*\d+/i;
+
+                let i = 0;
+                while (i < sections.length) {
+                  const match = sections[i].title.match(phaseStepRegex);
+                  if (match) {
+                    const prefix = match[1].toLowerCase();
+                    const children: { section: typeof sections[0]; idx: number }[] = [];
+                    while (i < sections.length) {
+                      const m = sections[i].title.match(phaseStepRegex);
+                      if (m && m[1].toLowerCase() === prefix) {
+                        children.push({ section: sections[i], idx: i });
+                        i++;
+                      } else break;
+                    }
+                    if (children.length > 1) {
+                      grouped.push({ type: 'group', groupTitle: prefix, children });
+                    } else {
+                      grouped.push({ type: 'single', section: children[0].section, idx: children[0].idx });
+                    }
+                  } else {
+                    grouped.push({ type: 'single', section: sections[i], idx: i });
+                    i++;
+                  }
+                }
+
                 return (
                   <details className="card p-6 group" open>
                     <summary className="cursor-pointer font-heading font-semibold text-lg flex items-center gap-2">
@@ -263,22 +292,56 @@ export default async function ChallengeDetailPage({
                     </summary>
 
                     <div className="mt-4 space-y-3">
-                      {sections.map((sec, idx) => (
-                        <details 
-                          key={idx} 
-                          className="rounded-2xl border border-border/50 bg-muted/30" 
-                          open={idx === 0}
-                        >
-                          <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
-                            {sec.title}
-                            <CopyButton text={sec.content} />
-                            <span className="ml-auto text-muted-foreground text-xs">▼</span>
-                          </summary>
-                          <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                            {sec.content}
-                          </div>
-                        </details>
-                      ))}
+                      {grouped.map((item, gIdx) => {
+                        if (item.type === 'single') {
+                          return (
+                            <details
+                              key={item.idx}
+                              className="rounded-2xl border border-border/50 bg-muted/30"
+                              open={item.idx === 0}
+                            >
+                              <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
+                                {item.section.title}
+                                <CopyButton text={item.section.content} />
+                                <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                              </summary>
+                              <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                                {item.section.content}
+                              </div>
+                            </details>
+                          );
+                        }
+                        // group with children
+                        return (
+                          <details
+                            key={`g-${gIdx}`}
+                            className="rounded-2xl border border-border/50 bg-muted/30"
+                          >
+                            <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
+                              {item.groupTitle}
+                              <span className="text-xs text-muted-foreground font-normal">({item.children.length} steps)</span>
+                              <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                            </summary>
+                            <div className="px-4 pb-3 space-y-2">
+                              {item.children.map((child) => (
+                                <details
+                                  key={child.idx}
+                                  className="rounded-xl border border-border/40 bg-background/50"
+                                >
+                                  <summary className="cursor-pointer px-3 py-2 flex items-center gap-2 text-sm font-heading font-semibold">
+                                    {child.section.title}
+                                    <CopyButton text={child.section.content} />
+                                    <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                                  </summary>
+                                  <div className="px-3 pb-3 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                                    {child.section.content}
+                                  </div>
+                                </details>
+                              ))}
+                            </div>
+                          </details>
+                        );
+                      })}
                     </div>
                   </details>
                 );
