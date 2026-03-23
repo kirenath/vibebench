@@ -15,12 +15,17 @@ export interface PhaseSubmission {
   manual_notes: string | null;
 }
 
+export interface PhaseData {
+  phase_key: string;
+  phase_label: string;
+  submission: PhaseSubmission | null;
+}
+
 interface Props {
   modelName: string;
   vendorName: string;
   channelName: string;
-  phase1: PhaseSubmission | null;
-  phase2: PhaseSubmission | null;
+  phases: PhaseData[];
 }
 
 function PhaseRow({
@@ -40,7 +45,7 @@ function PhaseRow({
   if (!data) {
     return (
       <div className="flex items-center gap-3 py-2">
-        <span className="text-xs font-semibold text-muted-foreground w-8 shrink-0">
+        <span className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate" title={label}>
           {label}
         </span>
         <span className="text-xs text-muted-foreground italic">暂无</span>
@@ -54,7 +59,7 @@ function PhaseRow({
   return (
     <>
       <div className="flex items-center gap-3 py-2 flex-wrap">
-        <span className="text-xs font-semibold text-muted-foreground w-8 shrink-0">
+        <span className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate" title={label}>
           {label}
         </span>
 
@@ -157,8 +162,7 @@ export default function SubmissionCard({
   modelName,
   vendorName,
   channelName,
-  phase1,
-  phase2,
+  phases,
 }: Props) {
   return (
     <div className="card p-6 card-hover group relative">
@@ -172,18 +176,15 @@ export default function SubmissionCard({
 
       {/* Phase rows */}
       <div className="space-y-1 border-t border-border/30 pt-3">
-        <PhaseRow
-          label="初版"
-          data={phase1}
-          modelName={modelName}
-          showPrd={false}
-        />
-        <PhaseRow
-          label="改版"
-          data={phase2}
-          modelName={modelName}
-          showPrd={true}
-        />
+        {phases.map((p) => (
+          <PhaseRow
+            key={p.phase_key}
+            label={p.phase_label}
+            data={p.submission}
+            modelName={modelName}
+            showPrd={true}
+          />
+        ))}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import {
   MessageSquareText,
 } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
-import SubmissionCard, { type PhaseSubmission } from "@/components/SubmissionCard";
+import SubmissionCard, { type PhaseSubmission, type PhaseData } from "@/components/SubmissionCard";
 
 interface ChallengeRow {
   id: string;
@@ -102,11 +102,10 @@ interface GroupedModel {
   modelName: string;
   vendorName: string;
   channelName: string;
-  phase1: PhaseSubmission | null;
-  phase2: PhaseSubmission | null;
+  phases: PhaseData[];
 }
 
-function groupByModel(submissions: SubmissionRow[]): GroupedModel[] {
+function groupByModel(submissions: SubmissionRow[], allPhases: PhaseRow[]): GroupedModel[] {
   const map = new Map<string, GroupedModel>();
 
   for (const s of submissions) {
@@ -116,8 +115,11 @@ function groupByModel(submissions: SubmissionRow[]): GroupedModel[] {
         modelName: s.model_variant_name,
         vendorName: s.vendor_name,
         channelName: s.channel_name,
-        phase1: null,
-        phase2: null,
+        phases: allPhases.map((p) => ({
+          phase_key: p.phase_key,
+          phase_label: p.phase_label,
+          submission: null,
+        })),
       });
     }
     const group = map.get(key)!;
@@ -131,10 +133,9 @@ function groupByModel(submissions: SubmissionRow[]): GroupedModel[] {
       manual_notes: s.manual_notes,
     };
 
-    if (s.phase_key.startsWith("phase2")) {
-      group.phase2 = sub;
-    } else {
-      group.phase1 = sub;
+    const phaseEntry = group.phases.find((p) => p.phase_key === s.phase_key);
+    if (phaseEntry) {
+      phaseEntry.submission = sub;
     }
   }
 
@@ -153,7 +154,7 @@ export default async function ChallengeDetailPage({
 
   const phases = await getPhases(id);
   const submissions = await getAllSubmissions(id);
-  const groupedModels = groupByModel(submissions);
+  const groupedModels = groupByModel(submissions, phases);
 
 
 
@@ -300,8 +301,7 @@ export default async function ChallengeDetailPage({
                   modelName={g.modelName}
                   vendorName={g.vendorName}
                   channelName={g.channelName}
-                  phase1={g.phase1}
-                  phase2={g.phase2}
+                  phases={g.phases}
                 />
               ))}
             </div>
