@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper, Code2 } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
+import SourceCodePreviewModal from "@/components/SourceCodePreviewModal";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 interface EvalData {
@@ -52,6 +53,7 @@ export default function EvalPage() {
   const [iframeKeyLeft, setIframeKeyLeft] = useState(0);
   const [iframeKeyRight, setIframeKeyRight] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [sourceCodeId, setSourceCodeId] = useState<string | null>(null);
   const [fingerprint, setFingerprint] = useState("");
 
   // Initialize FingerprintJS on mount
@@ -262,6 +264,9 @@ export default function EvalPage() {
                       <button onClick={() => setPreviewUrl(`/s/${data.left.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
                         <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
+                      <button onClick={() => setSourceCodeId(data.left.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
+                        <Code2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
                       <a href={`/s/${data.left.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                         <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </a>
@@ -296,6 +301,9 @@ export default function EvalPage() {
                       </button>
                       <button onClick={() => setPreviewUrl(`/s/${data.right.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
                         <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <button onClick={() => setSourceCodeId(data.right.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
+                        <Code2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
                       <a href={`/s/${data.right.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                         <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
@@ -356,6 +364,15 @@ export default function EvalPage() {
                 url={previewUrl}
                 title="作品预览"
                 onClose={() => setPreviewUrl(null)}
+              />
+            )}
+
+            {/* Source Code Modal */}
+            {sourceCodeId && (
+              <SourceCodePreviewModal
+                submissionId={sourceCodeId}
+                title="作品源码"
+                onClose={() => setSourceCodeId(null)}
               />
             )}
           </div>

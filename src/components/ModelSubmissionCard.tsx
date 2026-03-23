@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, RefreshCw, ExternalLink, AlertTriangle } from "lucide-react";
+import { Clock, RefreshCw, ExternalLink, AlertTriangle, Code2 } from "lucide-react";
 import Link from "next/link";
 import HtmlPreviewModal from "./HtmlPreviewModal";
 import PrdPreviewModal from "./PrdPreviewModal";
+import SourceCodePreviewModal from "./SourceCodePreviewModal";
 
 export interface PhaseSubmission {
   submission_id: string;
@@ -37,6 +38,7 @@ function PhaseRow({
 }) {
   const [htmlModal, setHtmlModal] = useState(false);
   const [prdModal, setPrdModal] = useState(false);
+  const [sourceModal, setSourceModal] = useState(false);
 
   if (!data) {
     return (
@@ -97,6 +99,16 @@ function PhaseRow({
             </span>
           )}
 
+          {data.has_html && (
+            <button
+              onClick={() => setSourceModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+            >
+              <Code2 className="h-3 w-3" />
+              源码
+            </button>
+          )}
+
           {showPrd && data.has_prd && (
             <span className="inline-flex items-center rounded-full border border-border/50 overflow-hidden">
               <button
@@ -140,6 +152,7 @@ function PhaseRow({
         <HtmlPreviewModal
           url={htmlUrl}
           title={challengeTitle}
+          submissionId={data.submission_id}
           onClose={() => setHtmlModal(false)}
         />
       )}
@@ -148,6 +161,13 @@ function PhaseRow({
           submissionId={data.submission_id}
           title={challengeTitle}
           onClose={() => setPrdModal(false)}
+        />
+      )}
+      {sourceModal && (
+        <SourceCodePreviewModal
+          submissionId={data.submission_id}
+          title={challengeTitle}
+          onClose={() => setSourceModal(false)}
         />
       )}
     </>

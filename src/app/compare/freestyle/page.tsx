@@ -2,10 +2,11 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Shuffle, RefreshCw, Maximize2, ExternalLink } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Shuffle, RefreshCw, Maximize2, ExternalLink, Code2 } from "lucide-react";
 import CustomSelect from "@/components/CustomSelect";
 import Link from "next/link";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
+import SourceCodePreviewModal from "@/components/SourceCodePreviewModal";
 
 interface Submission {
   submission_id: string;
@@ -41,6 +42,7 @@ function FreestyleContent() {
   const [selectedB, setSelectedB] = useState(searchParams.get("b") || "");
   const [iframeKeys, setIframeKeys] = useState<Record<string, number>>({});
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [sourceCodeId, setSourceCodeId] = useState<string | null>(null);
 
   // Fetch ALL published submissions with HTML
   useEffect(() => {
@@ -187,6 +189,9 @@ function FreestyleContent() {
                           <a href={`/s/${s.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                             <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                           </a>
+                          <button onClick={() => setSourceCodeId(s.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
+                            <Code2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -225,6 +230,15 @@ function FreestyleContent() {
           url={previewUrl}
           title="作品预览"
           onClose={() => setPreviewUrl(null)}
+        />
+      )}
+
+      {/* Source Code Modal */}
+      {sourceCodeId && (
+        <SourceCodePreviewModal
+          submissionId={sourceCodeId}
+          title="作品源码"
+          onClose={() => setSourceCodeId(null)}
         />
       )}
     </div>

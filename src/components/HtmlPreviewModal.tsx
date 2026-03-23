@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ExternalLink, RefreshCw } from "lucide-react";
+import { X, ExternalLink, RefreshCw, Code2 } from "lucide-react";
+import SourceCodePreviewModal from "./SourceCodePreviewModal";
 
 interface Props {
   url: string;
   title: string;
   onClose: () => void;
+  submissionId?: string;
 }
 
-export default function HtmlPreviewModal({ url, title, onClose }: Props) {
+export default function HtmlPreviewModal({ url, title, onClose, submissionId }: Props) {
   const [iframeKey, setIframeKey] = useState(0);
+  const [sourceModal, setSourceModal] = useState(false);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -45,6 +48,15 @@ export default function HtmlPreviewModal({ url, title, onClose }: Props) {
             {title}
           </h3>
           <div className="flex items-center gap-2 shrink-0">
+            {submissionId && (
+              <button
+                onClick={() => setSourceModal(true)}
+                className="p-2 rounded-full hover:bg-primary/10 transition-colors"
+                title="查看源码"
+              >
+                <Code2 className="h-4 w-4 text-muted-foreground hover:text-primary" />
+              </button>
+            )}
             <button
               onClick={() => setIframeKey((k) => k + 1)}
               className="p-2 rounded-full hover:bg-primary/10 transition-colors"
@@ -81,6 +93,15 @@ export default function HtmlPreviewModal({ url, title, onClose }: Props) {
             sandbox="allow-scripts allow-same-origin"
           />
         </div>
+
+        {/* Source code modal */}
+        {sourceModal && submissionId && (
+          <SourceCodePreviewModal
+            submissionId={submissionId}
+            title={title}
+            onClose={() => setSourceModal(false)}
+          />
+        )}
       </div>
     </div>,
     document.body
