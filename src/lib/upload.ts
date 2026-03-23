@@ -1,31 +1,23 @@
-import fs from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 import {
-  UPLOAD_DIR,
   UPLOAD_MAX_FILE_SIZE_BYTES,
   ALLOWED_EXTENSIONS,
 } from "./constants";
+import { uploadToR2, deleteR2Prefix } from "./r2";
 
-export function getUploadPath(
+/**
+ * Build the R2 object key prefix for a given submission's artifact.
+ * Format: {challengeId}/{modelVariantId}/{channelId}/{phaseKey}/{artifactType}
+ */
+export function getObjectKeyPrefix(
   challengeId: string,
   modelVariantId: string,
   channelId: string,
   phaseKey: string,
   artifactType: string
 ): string {
-  return path.join(
-    UPLOAD_DIR,
-    challengeId,
-    modelVariantId,
-    channelId,
-    phaseKey,
-    artifactType
-  );
-}
-
-export async function ensureDir(dirPath: string): Promise<void> {
-  await fs.mkdir(dirPath, { recursive: true });
+  return [challengeId, modelVariantId, channelId, phaseKey, artifactType].join("/");
 }
 
 export function computeChecksum(buffer: Buffer): string {
@@ -49,24 +41,25 @@ export function sanitizeFileName(fileName: string): string {
   return path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+/**
+ * Upload a file buffer to R2 and return the object key, checksum, and size.
+ */
 export async function saveFile(
   buffer: Buffer,
-  dirPath: string,
-  fileName: string
-): Promise<{ filePath: string; checksum: string; fileSize: number }> {
-  await ensureDir(dirPath);
+  objectKeyPrefix: string,
+  fileName: string,
+  mimeType: string
+): Promise<{ objectKey: string; checksum: string; fileSize: number }> {
   const safeName = sanitizeFileName(fileName);
-  const filePath = path.join(dirPath, safeName);
+  const objectKey = `${objectKeyPrefix}/${safeName}`;
   const checksum = computeChecksum(buffer);
-  await fs.writeFile(filePath, buffer);
-  // Always store forward slashes for cross-platform compatibility
-  return { filePath: filePath.replace(/\\/g, "/"), checksum, fileSize: buffer.length };
+  await uploadToR2(buffer, objectKey, mimeType);
+  return { objectKey, checksum, fileSize: buffer.length };
 }
 
-export async function deleteDir(dirPath: string): Promise<void> {
-  try {
-    await fs.rm(dirPath, { recursive: true, force: true });
-  } catch {
-    // ignore if doesn't exist
-  }
+/**
+ * Delete all R2 objects under a given prefix (e.g. a submission's artifact directory).
+ */
+export async function deleteDir(prefix: string): Promise<void> {
+  await deleteR2Prefix(prefix);
 }

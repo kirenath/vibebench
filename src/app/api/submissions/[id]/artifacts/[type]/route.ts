@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { queryOne } from "@/lib/db";
 import { jsonError } from "@/lib/api-helpers";
 import { ARTIFACT_TYPES } from "@/lib/constants";
-import fs from "fs/promises";
+import { getR2PublicUrl } from "@/lib/r2";
 
 export async function GET(
   _request: NextRequest,
@@ -31,19 +31,9 @@ export async function GET(
       return jsonError("Artifact not found", 404);
     }
 
-    const buffer = await fs.readFile(artifact.file_path);
-    const mime = artifact.mime_type || "application/octet-stream";
-    // Add charset for text-based content to avoid CJK garbled text
-    const contentType = mime.startsWith("text/") ? `${mime}; charset=utf-8` : mime;
-
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": `inline; filename="${artifact.file_name}"`,
-        "Cache-Control": "public, max-age=3600",
-      },
-    });
+    // 302 redirect to R2 public URL
+    const publicUrl = getR2PublicUrl(artifact.file_path);
+    return NextResponse.redirect(publicUrl, 302);
   } catch (e) {
     return jsonError("Failed to read artifact: " + (e as Error).message, 500);
   }

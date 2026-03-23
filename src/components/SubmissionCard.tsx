@@ -55,7 +55,7 @@ function PhaseRow({
     );
   }
 
-  const htmlUrl = `/s/${data.submission_id}/index.html`;
+  const htmlUrl = `/api/submissions/${data.submission_id}/artifacts/html`;
   const prdApiUrl = `/api/submissions/${data.submission_id}/artifacts/prd`;
 
   return (

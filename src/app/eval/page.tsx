@@ -261,13 +261,13 @@ export default function EvalPage() {
                       <button onClick={() => setIframeKeyLeft(k => k + 1)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
                         <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <button onClick={() => setPreviewUrl(`/s/${data.left.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                      <button onClick={() => setPreviewUrl(`/api/submissions/${data.left.submission_id}/artifacts/html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
                         <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
                       <button onClick={() => setSourceCodeId(data.left.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
                         <Code2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <a href={`/s/${data.left.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                      <a href={`/api/submissions/${data.left.submission_id}/artifacts/html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                         <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </a>
                     </div>
@@ -284,7 +284,7 @@ export default function EvalPage() {
                 </div>
                 <iframe
                   key={iframeKeyLeft}
-                  src={`/s/${data.left.submission_id}/index.html`}
+                  src={`/api/submissions/${data.left.submission_id}/artifacts/html`}
                   sandbox="allow-scripts"
                   className="w-full h-[600px] border-0 bg-white"
                 />
@@ -299,13 +299,13 @@ export default function EvalPage() {
                       <button onClick={() => setIframeKeyRight(k => k + 1)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
                         <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <button onClick={() => setPreviewUrl(`/s/${data.right.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                      <button onClick={() => setPreviewUrl(`/api/submissions/${data.right.submission_id}/artifacts/html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
                         <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
                       <button onClick={() => setSourceCodeId(data.right.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
                         <Code2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <a href={`/s/${data.right.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                      <a href={`/api/submissions/${data.right.submission_id}/artifacts/html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                         <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </a>
                     </div>
@@ -322,7 +322,7 @@ export default function EvalPage() {
                 </div>
                 <iframe
                   key={iframeKeyRight}
-                  src={`/s/${data.right.submission_id}/index.html`}
+                  src={`/api/submissions/${data.right.submission_id}/artifacts/html`}
                   sandbox="allow-scripts"
                   className="w-full h-[600px] border-0 bg-white"
                 />

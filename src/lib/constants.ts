@@ -11,6 +11,13 @@ export const UPLOAD_MAX_FILE_SIZE_MB = parseInt(
 );
 export const UPLOAD_MAX_FILE_SIZE_BYTES = UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024;
 
+// Cloudflare R2 Storage
+export const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID || "";
+export const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID || "";
+export const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY || "";
+export const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || "vibebench-assets";
+export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || "https://assets.vibebench.app";
+
 export const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 export const JWT_EXPIRY = "7d";
 

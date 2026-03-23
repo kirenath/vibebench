@@ -233,10 +233,10 @@ function CompareContent() {
                       <button onClick={() => setIframeKeys(prev => ({ ...prev, [s.submission_id]: (prev[s.submission_id] || 0) + 1 }))} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="刷新">
                         <RefreshCw className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <button onClick={() => setPreviewUrl(`/s/${s.submission_id}/index.html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
+                      <button onClick={() => setPreviewUrl(`/api/submissions/${s.submission_id}/artifacts/html`)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="预览">
                         <Maximize2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </button>
-                      <a href={`/s/${s.submission_id}/index.html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
+                      <a href={`/api/submissions/${s.submission_id}/artifacts/html`} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="新窗口打开">
                         <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                       </a>
                       <button onClick={() => setSourceCodeId(s.submission_id)} className="p-1 rounded-md hover:bg-primary/10 transition-colors" title="查看源码">
@@ -247,7 +247,7 @@ function CompareContent() {
                 </div>
                 <iframe
                   key={iframeKeys[s.submission_id] || 0}
-                  src={`/s/${s.submission_id}/index.html`}
+                  src={`/api/submissions/${s.submission_id}/artifacts/html`}
                   sandbox="allow-scripts"
                   className="w-full h-[600px] border-0"
                   title={s.model_variant_name}

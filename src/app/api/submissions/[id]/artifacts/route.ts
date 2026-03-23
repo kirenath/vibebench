@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { query, queryOne } from "@/lib/db";
 import { jsonOk, jsonError, requireAdmin } from "@/lib/api-helpers";
-import { saveFile, getUploadPath, validateExtension, validateFileSize } from "@/lib/upload";
+import { saveFile, getObjectKeyPrefix, validateExtension, validateFileSize } from "@/lib/upload";
 import { ARTIFACT_TYPES } from "@/lib/constants";
 
 export async function POST(
@@ -38,14 +38,14 @@ export async function POST(
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const dirPath = getUploadPath(
+    const keyPrefix = getObjectKeyPrefix(
       (submission as Record<string, string>).challenge_id,
       (submission as Record<string, string>).model_variant_id,
       (submission as Record<string, string>).channel_id,
       (submission as Record<string, string>).phase_key,
       type
     );
-    const { filePath, checksum, fileSize } = await saveFile(buffer, dirPath, file.name);
+    const { objectKey, checksum, fileSize } = await saveFile(buffer, keyPrefix, file.name, file.type);
 
     const row = await query(
       `INSERT INTO submission_artifacts (submission_id, type, file_path, file_name, mime_type, checksum, file_size)
@@ -53,7 +53,7 @@ export async function POST(
        ON CONFLICT (submission_id, type)
        DO UPDATE SET file_path=EXCLUDED.file_path, file_name=EXCLUDED.file_name, mime_type=EXCLUDED.mime_type, checksum=EXCLUDED.checksum, file_size=EXCLUDED.file_size
        RETURNING *`,
-      [id, type, filePath, file.name, file.type, checksum, fileSize]
+      [id, type, objectKey, file.name, file.type, checksum, fileSize]
     );
     return jsonOk(row[0], 201);
   } catch (e) {
