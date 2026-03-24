@@ -10,6 +10,8 @@ import {
 import CopyButton from "@/components/CopyButton";
 import SubmissionCard, { type PhaseSubmission, type PhaseData } from "@/components/SubmissionCard";
 
+export const dynamic = "force-dynamic";
+
 interface ChallengeRow {
   id: string;
   title: string;

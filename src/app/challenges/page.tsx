@@ -4,6 +4,8 @@ import Blob from "@/components/Blob";
 import ChallengeIcon from "@/components/ChallengeIcon";
 import { ArrowRight } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "赛题列表 — VibeBench",
   description: "浏览所有已发布的 AI Vibe Coding 赛题",
