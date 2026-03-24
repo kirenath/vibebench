@@ -60,8 +60,8 @@ export default function AdminSubmissionsPage() {
   const [filterModel, setFilterModel] = useState("");
   const [filterChannel, setFilterChannel] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [sortField, setSortField] = useState<SortField>("");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [sortField, setSortField] = useState<SortField>("time");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
