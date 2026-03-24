@@ -5,7 +5,12 @@ import AdminPageHeader from "@/components/AdminPageHeader";
 import Drawer from "@/components/Drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
-import { Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2, ClipboardPaste, File as FileIcon, Pencil } from "lucide-react";
+import {
+  Trash2, Eye, EyeOff, Upload, AlertTriangle, FileCode2,
+  ClipboardPaste, File as FileIcon, Pencil, Search, X,
+  ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight,
+  LayoutList, FolderOpen, Layers,
+} from "lucide-react";
 import CustomSelect from "@/components/CustomSelect";
 
 interface Challenge { id: string; title: string; }
@@ -27,6 +32,12 @@ interface Submission {
   created_at: string;
 }
 
+type SortField = "model" | "challenge" | "time" | "";
+type SortDir = "asc" | "desc";
+type ViewMode = "table" | "groupByChallenge" | "groupByModel";
+
+const PAGE_SIZE = 20;
+
 export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -42,6 +53,18 @@ export default function AdminSubmissionsPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // --- Filter / Search / Sort / Pagination state ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterChallenge, setFilterChallenge] = useState("");
+  const [filterModel, setFilterModel] = useState("");
+  const [filterChannel, setFilterChannel] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [sortField, setSortField] = useState<SortField>("");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const [form, setForm] = useState({
     challenge_phase_id: "", model_variant_id: "", channel_id: "",
@@ -73,7 +96,6 @@ export default function AdminSubmissionsPage() {
   const [artifactType, setArtifactType] = useState("html");
   const defaultFileNames: Record<string, string> = { html: "index.html", prd: "prd.md", screenshot: "screenshot.png" };
   const handleArtifactTypeChange = (v: string) => {
-    // Auto-update filename only if it's still a default name
     if (Object.values(defaultFileNames).includes(pasteFileName)) {
       setPasteFileName(defaultFileNames[v] || "index.html");
     }
@@ -84,7 +106,7 @@ export default function AdminSubmissionsPage() {
   const [pasteFileName, setPasteFileName] = useState("index.html");
   const [pastedImage, setPastedImage] = useState<File | null>(null);
   const [pastedImageUrl, setPastedImageUrl] = useState<string | null>(null);
-  const [filePickerKey, setFilePickerKey] = useState(0); // force re-render on file change
+  const [filePickerKey, setFilePickerKey] = useState(0);
 
   const handleImagePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -121,6 +143,161 @@ export default function AdminSubmissionsPage() {
       .then(r => r.json()).then(d => setPhases(d.data || [])).catch(() => {});
   }, [selectedChallenge]);
 
+  // --- Filtered + Sorted submissions ---
+  const filteredSubmissions = useMemo(() => {
+    let result = [...submissions];
+
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(s =>
+        s.model_variant_name.toLowerCase().includes(q) ||
+        s.vendor_name.toLowerCase().includes(q) ||
+        s.challenge_title.toLowerCase().includes(q) ||
+        s.channel_name.toLowerCase().includes(q)
+      );
+    }
+
+    // Filters
+    if (filterChallenge) {
+      result = result.filter(s => s.challenge_title === filterChallenge);
+    }
+    if (filterModel) {
+      result = result.filter(s => s.model_variant_name === filterModel);
+    }
+    if (filterChannel) {
+      result = result.filter(s => s.channel_name === filterChannel);
+    }
+    if (filterStatus === "published") {
+      result = result.filter(s => s.submission_is_published);
+    } else if (filterStatus === "draft") {
+      result = result.filter(s => !s.submission_is_published);
+    }
+
+    // Sort
+    if (sortField) {
+      result.sort((a, b) => {
+        let cmp = 0;
+        if (sortField === "model") {
+          cmp = a.model_variant_name.localeCompare(b.model_variant_name);
+        } else if (sortField === "challenge") {
+          cmp = a.challenge_title.localeCompare(b.challenge_title);
+        } else if (sortField === "time") {
+          cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        }
+        return sortDir === "desc" ? -cmp : cmp;
+      });
+    }
+
+    return result;
+  }, [submissions, searchQuery, filterChallenge, filterModel, filterChannel, filterStatus, sortField, sortDir]);
+
+  // Reset page when filters change
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, filterChallenge, filterModel, filterChannel, filterStatus]);
+
+  // Stats
+  const stats = useMemo(() => {
+    const total = filteredSubmissions.length;
+    const published = filteredSubmissions.filter(s => s.submission_is_published).length;
+    return { total, published, draft: total - published };
+  }, [filteredSubmissions]);
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filteredSubmissions.length / PAGE_SIZE));
+  const paginatedSubmissions = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredSubmissions.slice(start, start + PAGE_SIZE);
+  }, [filteredSubmissions, currentPage]);
+
+  // Grouped views
+  const groupedByChallenge = useMemo(() => {
+    const map = new Map<string, Submission[]>();
+    filteredSubmissions.forEach(s => {
+      const key = s.challenge_title;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(s);
+    });
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filteredSubmissions]);
+
+  const groupedByModel = useMemo(() => {
+    const map = new Map<string, Submission[]>();
+    filteredSubmissions.forEach(s => {
+      const key = `${s.vendor_name} / ${s.model_variant_name}`;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(s);
+    });
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filteredSubmissions]);
+
+  const toggleGroup = (key: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const expandAllGroups = (groups: [string, Submission[]][]) => {
+    setExpandedGroups(new Set(groups.map(([key]) => key)));
+  };
+
+  const collapseAllGroups = () => {
+    setExpandedGroups(new Set());
+  };
+
+  // Unique filter options from data
+  const challengeOptions = useMemo(() => {
+    const set = new Set(submissions.map(s => s.challenge_title));
+    return [{ value: "", label: "全部赛题" }, ...Array.from(set).sort().map(v => ({ value: v, label: v }))];
+  }, [submissions]);
+
+  const modelOptions = useMemo(() => {
+    const set = new Set(submissions.map(s => s.model_variant_name));
+    return [{ value: "", label: "全部模型" }, ...Array.from(set).sort().map(v => ({ value: v, label: v }))];
+  }, [submissions]);
+
+  const channelOptions = useMemo(() => {
+    const set = new Set(submissions.map(s => s.channel_name));
+    return [{ value: "", label: "全部渠道" }, ...Array.from(set).sort().map(v => ({ value: v, label: v }))];
+  }, [submissions]);
+
+  const statusOptions = [
+    { value: "", label: "全部状态" },
+    { value: "published", label: "已发布" },
+    { value: "draft", label: "草稿" },
+  ];
+
+  // Sort handler
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortDir === "asc") setSortDir("desc");
+      else { setSortField(""); setSortDir("asc"); }
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="h-3 w-3 ml-1 text-primary" />
+      : <ArrowDown className="h-3 w-3 ml-1 text-primary" />;
+  };
+
+  // Clear all filters
+  const hasActiveFilters = searchQuery || filterChallenge || filterModel || filterChannel || filterStatus;
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setFilterChallenge("");
+    setFilterModel("");
+    setFilterChannel("");
+    setFilterStatus("");
+  };
+
+  // --- Original handlers (unchanged) ---
   const handleSave = async () => {
     const { duration_min, duration_sec, ...rest } = form;
     const body = {
@@ -211,7 +388,6 @@ export default function AdminSubmissionsPage() {
     load();
   };
 
-  // --- Parse HTML from pasted input ---
   function parseHtmlFromInput(raw: string): { html: string; source: "codeblock" | "raw" } | null {
     const codeBlockMatch = raw.match(/```(?:html)?\s*\n([\s\S]*?)\n```/);
     if (codeBlockMatch) {
@@ -248,9 +424,7 @@ export default function AdminSubmissionsPage() {
       if (!fileRef.current?.files?.[0]) return;
       fileToUpload = fileRef.current.files[0];
     } else {
-      // paste mode
       if (artifactType === "screenshot") {
-        // Screenshot: use pasted image
         if (!pastedImage) {
           toast("请粘贴截图", "error");
           return;
@@ -258,7 +432,6 @@ export default function AdminSubmissionsPage() {
         const fileName = pasteFileName.trim() || "screenshot.png";
         fileToUpload = new File([pastedImage], fileName, { type: pastedImage.type });
       } else if (artifactType === "prd") {
-        // PRD: accept raw text directly
         if (!pasteContent.trim()) {
           toast("请输入 PRD 文本", "error");
           return;
@@ -266,7 +439,6 @@ export default function AdminSubmissionsPage() {
         const fileName = pasteFileName.trim() || "prd.md";
         fileToUpload = new File([pasteContent], fileName, { type: "text/markdown" });
       } else {
-        // HTML: parse and validate
         if (!parseResult) {
           toast("未检测到有效的 HTML 内容", "error");
           return;
@@ -296,9 +468,224 @@ export default function AdminSubmissionsPage() {
     } catch { return dateStr; }
   };
 
+  // --- Shared row renderer ---
+  const renderRow = (s: Submission) => (
+    <tr key={s.submission_id}>
+      <td>
+        <div className="flex items-center gap-2">
+          <span className="font-heading font-bold text-sm">{s.model_variant_name}</span>
+          {s.manual_touched && (
+            <span className="badge-destructive text-[10px] flex items-center gap-0.5">
+              <AlertTriangle className="h-3 w-3" />修订
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">{s.vendor_name}</p>
+      </td>
+      <td className="text-sm">{s.challenge_title}</td>
+      <td className="text-sm">{s.phase_label}</td>
+      <td className="text-sm">{s.channel_name}</td>
+      <td>
+        {s.submission_is_published
+          ? <span className="badge-primary text-xs">已发布</span>
+          : <span className="badge-muted text-xs">草稿</span>
+        }
+      </td>
+      <td>
+        <div className="flex gap-1">
+          {s.has_html && <span className="badge-primary text-[10px]">HTML</span>}
+          {s.has_prd && <span className="badge-secondary text-[10px]">PRD</span>}
+          {s.has_screenshot && <span className="badge-muted text-[10px]">截图</span>}
+          {!s.has_html && !s.has_prd && !s.has_screenshot && (
+            <span className="text-xs text-muted-foreground">—</span>
+          )}
+        </div>
+      </td>
+      <td className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(s.created_at)}</td>
+      <td>
+        <div className="flex items-center justify-end gap-1">
+          <button onClick={() => openUpload(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="上传 Artifact">
+            <Upload className="h-4 w-4" />
+          </button>
+          <button onClick={() => openEdit(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="编辑">
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button onClick={() => handleToggle(s)} className="btn-ghost btn-sm !h-8 !px-2" title={s.submission_is_published ? "取消发布" : "发布"}>
+            {s.submission_is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+          <button onClick={() => requestDelete(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2 text-destructive">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+
+  // --- Shared table head ---
+  const renderTableHead = () => (
+    <thead>
+      <tr>
+        <th className="cursor-pointer select-none" onClick={() => handleSort("model")}>
+          <span className="inline-flex items-center">模型<SortIcon field="model" /></span>
+        </th>
+        <th className="cursor-pointer select-none" onClick={() => handleSort("challenge")}>
+          <span className="inline-flex items-center">赛题<SortIcon field="challenge" /></span>
+        </th>
+        <th>Phase</th>
+        <th>渠道</th>
+        <th>状态</th>
+        <th>Artifacts</th>
+        <th className="cursor-pointer select-none" onClick={() => handleSort("time")}>
+          <span className="inline-flex items-center">时间<SortIcon field="time" /></span>
+        </th>
+        <th className="text-right">操作</th>
+      </tr>
+    </thead>
+  );
+
+  // --- Grouped view renderer ---
+  const renderGroupedView = (groups: [string, Submission[]][]) => (
+    <div className="space-y-3">
+      {/* Expand / Collapse all */}
+      <div className="flex items-center justify-end gap-2">
+        <button
+          onClick={() => expandAllGroups(groups)}
+          className="btn-ghost btn-sm !h-8 !px-3 text-xs"
+        >
+          全部展开
+        </button>
+        <button
+          onClick={collapseAllGroups}
+          className="btn-ghost btn-sm !h-8 !px-3 text-xs"
+        >
+          全部折叠
+        </button>
+      </div>
+      {groups.map(([groupName, items]) => {
+        const isExpanded = expandedGroups.has(groupName);
+        const publishedCount = items.filter(s => s.submission_is_published).length;
+        return (
+          <div key={groupName} className="card overflow-hidden">
+            {/* Group header */}
+            <button
+              onClick={() => toggleGroup(groupName)}
+              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-muted/30 transition-colors duration-200 cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                {isExpanded
+                  ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                }
+                <span className="font-heading font-bold text-sm">{groupName}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="badge-primary text-[10px]">{publishedCount} 已发布</span>
+                <span className="badge-muted text-[10px]">{items.length - publishedCount} 草稿</span>
+                <span className="text-xs text-muted-foreground ml-1">共 {items.length}</span>
+              </div>
+            </button>
+            {/* Group body */}
+            {isExpanded && (
+              <div className="border-t border-border/30 overflow-x-auto">
+                <table className="admin-table">
+                  {renderTableHead()}
+                  <tbody>{items.map(renderRow)}</tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {groups.length === 0 && (
+        <div className="card p-12 text-center">
+          <p className="text-sm text-muted-foreground">无匹配结果</p>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       <AdminPageHeader title="作品管理" onAdd={() => setDrawerOpen(true)} addLabel="新建作品" />
+
+      {/* Toolbar: Search + Filters + View switcher */}
+      {submissions.length > 0 && (
+        <div className="space-y-3 mb-6">
+          {/* Search + View switcher row */}
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                className="input !pl-11 !pr-9"
+                placeholder="搜索模型、赛题、渠道..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full flex items-center justify-center
+                             text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex rounded-full bg-muted/60 p-1 gap-0.5">
+              {([
+                { mode: "table" as ViewMode, icon: LayoutList, label: "表格" },
+                { mode: "groupByChallenge" as ViewMode, icon: FolderOpen, label: "按赛题" },
+                { mode: "groupByModel" as ViewMode, icon: Layers, label: "按模型" },
+              ]).map(({ mode, icon: Icon, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => { setViewMode(mode); setExpandedGroups(new Set()); }}
+                  className={`flex items-center gap-1.5 rounded-full h-9 px-4 text-sm font-bold
+                    transition-all duration-300 cursor-pointer
+                    ${viewMode === mode
+                      ? "bg-white text-primary shadow-soft"
+                      : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Filter row */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="w-44">
+              <CustomSelect options={challengeOptions} value={filterChallenge} onChange={setFilterChallenge} placeholder="全部赛题" />
+            </div>
+            <div className="w-44">
+              <CustomSelect options={modelOptions} value={filterModel} onChange={setFilterModel} placeholder="全部模型" />
+            </div>
+            <div className="w-40">
+              <CustomSelect options={channelOptions} value={filterChannel} onChange={setFilterChannel} placeholder="全部渠道" />
+            </div>
+            <div className="w-36">
+              <CustomSelect options={statusOptions} value={filterStatus} onChange={setFilterStatus} placeholder="全部状态" />
+            </div>
+            {hasActiveFilters && (
+              <button onClick={clearAllFilters} className="btn-ghost btn-sm !h-10 !px-4 text-xs text-muted-foreground">
+                <X className="h-3.5 w-3.5 mr-1" />清除筛选
+              </button>
+            )}
+          </div>
+
+          {/* Stats row */}
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span>共 <strong className="text-foreground">{stats.total}</strong> 条</span>
+            <span>已发布 <strong className="text-primary">{stats.published}</strong></span>
+            <span>草稿 <strong className="text-muted-foreground">{stats.draft}</strong></span>
+            {hasActiveFilters && submissions.length !== filteredSubmissions.length && (
+              <span className="text-xs">(全部 {submissions.length} 条中筛选)</span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Empty state */}
       {submissions.length === 0 && (
@@ -315,79 +702,77 @@ export default function AdminSubmissionsPage() {
       )}
 
       {/* Table view */}
-      {submissions.length > 0 && (
-        <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>模型</th>
-                  <th>赛题</th>
-                  <th>Phase</th>
-                  <th>渠道</th>
-                  <th>状态</th>
-                  <th>Artifacts</th>
-                  <th>时间</th>
-                  <th className="text-right">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map(s => (
-                  <tr key={s.submission_id}>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <span className="font-heading font-bold text-sm">{s.model_variant_name}</span>
-                        {s.manual_touched && (
-                          <span className="badge-destructive text-[10px] flex items-center gap-0.5">
-                            <AlertTriangle className="h-3 w-3" />修订
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">{s.vendor_name}</p>
-                    </td>
-                    <td className="text-sm">{s.challenge_title}</td>
-                    <td className="text-sm">{s.phase_label}</td>
-                    <td className="text-sm">{s.channel_name}</td>
-                    <td>
-                      {s.submission_is_published
-                        ? <span className="badge-primary text-xs">已发布</span>
-                        : <span className="badge-muted text-xs">草稿</span>
-                      }
-                    </td>
-                    <td>
-                      <div className="flex gap-1">
-                        {s.has_html && <span className="badge-primary text-[10px]">HTML</span>}
-                        {s.has_prd && <span className="badge-secondary text-[10px]">PRD</span>}
-                        {s.has_screenshot && <span className="badge-muted text-[10px]">截图</span>}
-                        {!s.has_html && !s.has_prd && !s.has_screenshot && (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(s.created_at)}</td>
-                    <td>
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => openUpload(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="上传 Artifact">
-                          <Upload className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => openEdit(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2" title="编辑">
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleToggle(s)} className="btn-ghost btn-sm !h-8 !px-2" title={s.submission_is_published ? "取消发布" : "发布"}>
-                          {s.submission_is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                        <button onClick={() => requestDelete(s.submission_id)} className="btn-ghost btn-sm !h-8 !px-2 text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {submissions.length > 0 && viewMode === "table" && (
+        <>
+          {filteredSubmissions.length > 0 ? (
+            <div className="card overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="admin-table">
+                  {renderTableHead()}
+                  <tbody>{paginatedSubmissions.map(renderRow)}</tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="card p-12 text-center">
+              <p className="text-sm text-muted-foreground mb-3">无匹配结果</p>
+              <button onClick={clearAllFilters} className="btn-ghost btn-sm text-xs">清除筛选</button>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="btn-ghost btn-sm !h-9 !px-4 text-sm disabled:opacity-30"
+              >
+                上一页
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                  .reduce<(number | "...")[]>((acc, p, i, arr) => {
+                    if (i > 0 && p - (arr[i - 1]) > 1) acc.push("...");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, i) =>
+                    p === "..." ? (
+                      <span key={`dot-${i}`} className="px-2 text-muted-foreground text-sm">…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p as number)}
+                        className={`h-9 w-9 rounded-full text-sm font-bold transition-all duration-200 cursor-pointer
+                          ${currentPage === p
+                            ? "bg-primary text-primary-foreground shadow-soft"
+                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          }`}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+              </div>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="btn-ghost btn-sm !h-9 !px-4 text-sm disabled:opacity-30"
+              >
+                下一页
+              </button>
+            </div>
+          )}
+        </>
       )}
+
+      {/* Grouped by challenge */}
+      {submissions.length > 0 && viewMode === "groupByChallenge" && renderGroupedView(groupedByChallenge)}
+
+      {/* Grouped by model */}
+      {submissions.length > 0 && viewMode === "groupByModel" && renderGroupedView(groupedByModel)}
 
       {/* New submission drawer */}
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="新建作品">
@@ -598,7 +983,6 @@ export default function AdminSubmissionsPage() {
               {pasteContent.trim() && (
                 <div className="rounded-2xl border border-border/50 bg-muted/30 p-4 space-y-2">
                   {artifactType === "prd" ? (
-                    /* PRD: accept any text, no HTML parsing needed */
                     <>
                       <div className="flex items-center gap-2">
                         <span className="badge-primary text-xs">文本预览</span>
