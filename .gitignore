@@ -41,5 +41,6 @@ tmp/
 deploy.ps1
 
 # AI agent config
+.agent/
 AGENTS.md
 CLAUDE.md
