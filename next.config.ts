@@ -6,6 +6,19 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "20mb",
     },
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Permissions-Policy",
+            value: "clipboard-read=*, clipboard-write=*",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
