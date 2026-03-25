@@ -53,7 +53,7 @@ async function getChallenges() {
         ) as submission_count
       FROM challenges c
       WHERE c.is_published = true
-      ORDER BY c.sort_order, c.published_at DESC NULLS LAST
+      ORDER BY RANDOM()
     `);
   } catch {
     return [];
