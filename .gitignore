@@ -39,6 +39,7 @@ docs/
 management/
 tmp/
 deploy.ps1
+test/
 
 # AI agent config
 .agent/
