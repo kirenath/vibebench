@@ -167,7 +167,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {challenges.map((c, i) => (
+              {challenges.slice(0, 5).map((c, i) => (
                 <Link
                   key={c.id}
                   href={`/challenges/${c.id}`}
@@ -209,6 +209,27 @@ export default async function HomePage() {
                   </div>
                 </Link>
               ))}
+
+              {/* "View All" card */}
+              <Link
+                href="/challenges"
+                className="card card-hover p-0 overflow-hidden group border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors duration-300"
+                style={{ borderRadius: "2rem 1rem 2rem 2rem" }}
+              >
+                <div className="h-full flex flex-col items-center justify-center min-h-[320px] gap-6">
+                  <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                    <ArrowRight className="h-8 w-8 text-primary group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                  <div className="text-center px-6">
+                    <h3 className="font-heading text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                      查看全部赛题
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      共 {challenges.length} 道赛题，探索更多挑战
+                    </p>
+                  </div>
+                </div>
+              </Link>
             </div>
           )}
         </div>
