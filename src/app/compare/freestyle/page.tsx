@@ -198,7 +198,8 @@ function FreestyleContent() {
                     <iframe
                       key={iframeKeys[s.submission_id] || 0}
                       src={`/api/submissions/${s.submission_id}/artifacts/html`}
-                      sandbox="allow-scripts allow-same-origin allow-modals"
+                      sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"
+                      allow="clipboard-read; clipboard-write"
                       className="w-full h-[600px] border-0"
                       title={s.model_variant_name}
                     />
