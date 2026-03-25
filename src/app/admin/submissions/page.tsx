@@ -68,8 +68,8 @@ export default function AdminSubmissionsPage() {
 
   const [form, setForm] = useState({
     challenge_phase_id: "", model_variant_id: "", channel_id: "",
-    is_published: false, manual_touched: false, manual_notes: "",
-    iteration_count: "", duration_min: "", duration_sec: "", timing_method: "", notes: "",
+    is_published: true, manual_touched: false, manual_notes: "",
+    iteration_count: "1", duration_min: "", duration_sec: "", timing_method: "", notes: "",
   });
 
   const [editForm, setEditForm] = useState({
@@ -798,6 +798,7 @@ export default function AdminSubmissionsPage() {
           <div>
             <label className="label mb-1 block">模型版本</label>
             <CustomSelect
+              searchable
               options={variants.map(v => ({ value: v.id, label: `${v.vendor_name} / ${v.name}` }))}
               value={form.model_variant_id}
               onChange={v => setForm({...form, model_variant_id: v})}
@@ -807,6 +808,7 @@ export default function AdminSubmissionsPage() {
           <div>
             <label className="label mb-1 block">渠道</label>
             <CustomSelect
+              searchable
               options={channels.map(c => ({ value: c.id, label: c.name }))}
               value={form.channel_id}
               onChange={v => setForm({...form, channel_id: v})}

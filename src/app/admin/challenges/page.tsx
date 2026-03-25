@@ -32,7 +32,7 @@ interface Phase {
 
 const emptyForm = {
   id: "", title: "", description: "", rules_markdown: "",
-  prompt_markdown: "", is_published: false, sort_order: 0, icon: "",
+  prompt_markdown: "", is_published: true, sort_order: 0, icon: "",
 };
 
 const emptyPhaseForm = {
