@@ -285,7 +285,7 @@ export default function EvalPage() {
                 <iframe
                   key={iframeKeyLeft}
                   src={`/api/submissions/${data.left.submission_id}/artifacts/html`}
-                  sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"
+                  sandbox="allow-scripts allow-same-origin allow-modals allow-downloads allow-forms"
                   allow="clipboard-read; clipboard-write"
                   className="w-full h-[600px] border-0 bg-white"
                 />
@@ -324,7 +324,7 @@ export default function EvalPage() {
                 <iframe
                   key={iframeKeyRight}
                   src={`/api/submissions/${data.right.submission_id}/artifacts/html`}
-                  sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"
+                  sandbox="allow-scripts allow-same-origin allow-modals allow-downloads allow-forms"
                   allow="clipboard-read; clipboard-write"
                   className="w-full h-[600px] border-0 bg-white"
                 />
