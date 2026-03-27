@@ -4,6 +4,8 @@ import { query, queryOne } from "@/lib/db";
 import { ArrowLeft, Building2, ExternalLink } from "lucide-react";
 import ModelSubmissionCard, { PhaseSubmission } from "@/components/ModelSubmissionCard";
 
+export const dynamic = "force-dynamic";
+
 interface ModelRow {
   id: string;
   name: string;

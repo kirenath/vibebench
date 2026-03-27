@@ -3,6 +3,8 @@ import { query } from "@/lib/db";
 import Blob from "@/components/Blob";
 import { Cpu, ArrowRight, Building2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "模型目录 — VibeBench",
   description: "浏览所有已注册的 AI 模型版本",
