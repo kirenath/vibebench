@@ -129,6 +129,7 @@ function FreestyleContent() {
               <div>
                 <label className="label mb-2 block">作品 A</label>
                 <CustomSelect
+                  searchable
                   options={buildOptions(selectedB)}
                   value={selectedA}
                   onChange={setSelectedA}
@@ -144,6 +145,7 @@ function FreestyleContent() {
               <div>
                 <label className="label mb-2 block">作品 B</label>
                 <CustomSelect
+                  searchable
                   options={buildOptions(selectedA)}
                   value={selectedB}
                   onChange={setSelectedB}
