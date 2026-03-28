@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Nunito:wght@300..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ── Organic / Natural Color Palette ── */
+  --color-background: #FDFCF8;
+  --color-foreground: #2C2C24;
+  --color-primary: #5D7052;
+  --color-primary-foreground: #F3F4F1;
+  --color-secondary: #C18C5D;
+  --color-secondary-foreground: #FFFFFF;
+  --color-accent: #E6DCCD;
+  --color-accent-foreground: #4A4A40;
+  --color-muted: #F0EBE5;
+  --color-muted-foreground: #78786C;
+  --color-border: #DED8CF;
+  --color-destructive: #A85448;
+  --color-card: #FEFEFA;
+
+  /* ── Semantic aliases ── */
+  --color-rice-paper: #FDFCF8;
+  --color-deep-loam: #2C2C24;
+  --color-moss: #5D7052;
+  --color-pale-mist: #F3F4F1;
+  --color-terracotta: #C18C5D;
+  --color-sand: #E6DCCD;
+  --color-bark: #4A4A40;
+  --color-stone: #F0EBE5;
+  --color-dried-grass: #78786C;
+  --color-timber: #DED8CF;
+  --color-burnt-sienna: #A85448;
+
+  /* ── Shadows ── */
+  --shadow-soft: 0 4px 20px -2px rgba(93, 112, 82, 0.15);
+  --shadow-float: 0 10px 40px -10px rgba(193, 140, 93, 0.2);
+  --shadow-lift: 0 20px 40px -10px rgba(93, 112, 82, 0.15);
+
+  /* ── Border Radii ── */
+  --radius-organic: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  --radius-organic-alt: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  --radius-organic-soft: 40% 60% 50% 50% / 50% 40% 60% 50%;
+  --radius-card: 2rem;
+
+  /* ── Fonts ── */
+  --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Base Styles ── */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Global Grain Texture Overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: multiply;
+}
+
+/* ── Heading Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ── Organic utility classes ── */
+@utility organic-blob {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+}
+
+@utility organic-blob-alt {
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+@utility organic-blob-soft {
+  border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+}
+
+@utility shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(93, 112, 82, 0.15);
+}
+
+@utility shadow-float {
+  box-shadow: 0 10px 40px -10px rgba(193, 140, 93, 0.2);
+}
+
+@utility shadow-lift {
+  box-shadow: 0 20px 40px -10px rgba(93, 112, 82, 0.15);
+}
+
+@utility grain-overlay {
+  position: relative;
+}
+
+.grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: multiply;
+}
