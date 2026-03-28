@@ -18,12 +18,17 @@ export interface PhaseSubmission {
   manual_notes: string | null;
 }
 
+export interface PhaseEntry {
+  label: string;
+  data: PhaseSubmission | null;
+  showPrd: boolean;
+}
+
 interface Props {
   challengeId: string;
   challengeTitle: string;
   channelName: string;
-  phase1: PhaseSubmission | null;
-  phase2: PhaseSubmission | null;
+  phases: PhaseEntry[];
 }
 
 function PhaseRow({
@@ -44,7 +49,7 @@ function PhaseRow({
   if (!data) {
     return (
       <div className="flex items-center gap-3 py-2">
-        <span className="text-xs font-semibold text-muted-foreground w-8 shrink-0">
+        <span className="text-xs font-semibold text-muted-foreground shrink-0">
           {label}
         </span>
         <span className="text-xs text-muted-foreground italic">暂无</span>
@@ -58,7 +63,7 @@ function PhaseRow({
   return (
     <>
       <div className="flex items-center gap-3 py-2 flex-wrap">
-        <span className="text-xs font-semibold text-muted-foreground w-8 shrink-0">
+        <span className="text-xs font-semibold text-muted-foreground shrink-0">
           {label}
         </span>
 
@@ -179,8 +184,7 @@ export default function ModelSubmissionCard({
   challengeId,
   challengeTitle,
   channelName,
-  phase1,
-  phase2,
+  phases,
 }: Props) {
   return (
     <div className="card p-6 card-hover group relative flex flex-col h-full">
@@ -194,18 +198,15 @@ export default function ModelSubmissionCard({
 
       {/* Phase rows */}
       <div className="space-y-1 border-t border-border/30 pt-3 flex-grow">
-        <PhaseRow
-          label="初版"
-          data={phase1}
-          challengeTitle={challengeTitle}
-          showPrd={false}
-        />
-        <PhaseRow
-          label="改版"
-          data={phase2}
-          challengeTitle={challengeTitle}
-          showPrd={true}
-        />
+        {phases.map((phase, i) => (
+          <PhaseRow
+            key={i}
+            label={phase.label}
+            data={phase.data}
+            challengeTitle={challengeTitle}
+            showPrd={phase.showPrd}
+          />
+        ))}
       </div>
 
       {/* Footer */}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
 import { ArrowLeft, Building2, ExternalLink } from "lucide-react";
-import ModelSubmissionCard, { PhaseSubmission } from "@/components/ModelSubmissionCard";
+import ModelSubmissionCard, { PhaseSubmission, PhaseEntry } from "@/components/ModelSubmissionCard";
 
 export const dynamic = "force-dynamic";
 
@@ -87,14 +87,14 @@ export default async function ModelDetailPage({
 
   const submissions = await getModelSubmissions(id);
 
+  // Group submissions by challenge + channel, collecting all phases dynamically
   const groupedTasks: Record<
     string,
     {
       challengeId: string;
       challengeTitle: string;
       channelName: string;
-      phase1: PhaseSubmission | null;
-      phase2: PhaseSubmission | null;
+      phases: Map<string, { label: string; data: PhaseSubmission }>;
     }
   > = {};
 
@@ -105,8 +105,7 @@ export default async function ModelDetailPage({
         challengeId: s.challenge_id,
         challengeTitle: s.challenge_title,
         channelName: s.channel_name,
-        phase1: null,
-        phase2: null,
+        phases: new Map(),
       };
     }
     const pData: PhaseSubmission = {
@@ -118,16 +117,30 @@ export default async function ModelDetailPage({
       manual_touched: s.manual_touched,
       manual_notes: s.manual_notes,
     };
-    if (s.phase_key.startsWith("phase2")) {
-      groupedTasks[key].phase2 = pData;
-    } else {
-      groupedTasks[key].phase1 = pData;
-    }
+    groupedTasks[key].phases.set(s.phase_key, {
+      label: s.phase_label,
+      data: pData,
+    });
   });
 
-  const cards = Object.values(groupedTasks).sort((a, b) =>
-    a.challengeTitle.localeCompare(b.challengeTitle)
-  );
+  const cards = Object.values(groupedTasks)
+    .map((g) => {
+      // Convert phases Map to sorted array; first phase hides PRD, the rest show it
+      const sortedPhases = Array.from(g.phases.entries())
+        .sort(([a], [b]) => a.localeCompare(b));
+      const phaseEntries: PhaseEntry[] = sortedPhases.map(([, v], idx) => ({
+        label: v.label,
+        data: v.data,
+        showPrd: idx > 0,
+      }));
+      return {
+        challengeId: g.challengeId,
+        challengeTitle: g.challengeTitle,
+        channelName: g.channelName,
+        phases: phaseEntries,
+      };
+    })
+    .sort((a, b) => a.challengeTitle.localeCompare(b.challengeTitle));
 
   return (
     <div className="relative section pt-24">
@@ -177,8 +190,7 @@ export default async function ModelDetailPage({
                 challengeId={c.challengeId}
                 challengeTitle={c.challengeTitle}
                 channelName={c.channelName}
-                phase1={c.phase1}
-                phase2={c.phase2}
+                phases={c.phases}
               />
             ))}
           </div>
