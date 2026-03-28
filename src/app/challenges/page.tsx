@@ -2,7 +2,7 @@ import Link from "next/link";
 import { query } from "@/lib/db";
 import Blob from "@/components/Blob";
 import ChallengeIcon from "@/components/ChallengeIcon";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +59,13 @@ export default async function ChallengesPage() {
           shapeIndex={2}
         />
         <div className="max-w-7xl mx-auto">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-12"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            返回首页
+          </Link>
           <div className="mb-16">
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
               赛题列表
