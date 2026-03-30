@@ -31,8 +31,26 @@ export async function GET(
       return jsonError("Artifact not found", 404);
     }
 
-    // 302 redirect to R2 public URL
     const publicUrl = getR2PublicUrl(artifact.file_path);
+
+    // HTML artifacts: proxy content so we can set Permissions-Policy header
+    // (allows Clipboard API to work inside sandboxed iframes)
+    if (type === "html") {
+      const r2Res = await fetch(publicUrl);
+      if (!r2Res.ok) {
+        return jsonError("Failed to fetch artifact from storage", 502);
+      }
+      const html = await r2Res.text();
+      return new NextResponse(html, {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Permissions-Policy": "clipboard-read=(*), clipboard-write=(*)",
+          "Cache-Control": "public, max-age=3600, s-maxage=86400",
+        },
+      });
+    }
+
+    // Other artifacts (screenshot, prd): 302 redirect to R2
     return NextResponse.redirect(publicUrl, 302);
   } catch (e) {
     return jsonError("Failed to read artifact: " + (e as Error).message, 500);
