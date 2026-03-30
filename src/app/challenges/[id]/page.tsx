@@ -234,21 +234,40 @@ export default async function ChallengeDetailPage({
               })()}
               {challenge.prompt_markdown && (() => {
                 const promptStr = challenge.prompt_markdown;
-                const splitRegex = /^(?:#{1,6}\s+)([^\n]+)$/gm;
-                const parts = promptStr.split(splitRegex);
-                
-                const sections: { title: string, content: string }[] = [];
-                const preContent = parts[0].trim();
-                
-                if (preContent) {
-                  sections.push({ title: "Prompt", content: preContent });
+
+                // Split by top-level headings only (skip headings inside code fences)
+                // 1. Find all code fence regions so we can ignore headings within them
+                const codeFenceRegex = /^(`{3,})[^\n]*\n[\s\S]*?^\1\s*$/gm;
+                const fenceRanges: [number, number][] = [];
+                let fenceMatch: RegExpExecArray | null;
+                while ((fenceMatch = codeFenceRegex.exec(promptStr)) !== null) {
+                  fenceRanges.push([fenceMatch.index, fenceMatch.index + fenceMatch[0].length]);
                 }
-                
-                for (let i = 1; i < parts.length; i += 2) {
-                  const title = parts[i].trim();
-                  const content = (parts[i+1] || "").trim();
-                  if (title || content) {
-                    sections.push({ title, content });
+                const isInsideFence = (pos: number) => fenceRanges.some(([s, e]) => pos >= s && pos < e);
+
+                // 2. Find heading positions that are NOT inside code fences
+                const headingRegex = /^(#{1,6})\s+([^\n]+)$/gm;
+                const headings: { level: number; title: string; index: number; fullMatchLen: number }[] = [];
+                let hMatch: RegExpExecArray | null;
+                while ((hMatch = headingRegex.exec(promptStr)) !== null) {
+                  if (!isInsideFence(hMatch.index)) {
+                    headings.push({ level: hMatch[1].length, title: hMatch[2].trim(), index: hMatch.index, fullMatchLen: hMatch[0].length });
+                  }
+                }
+
+                // 3. Build sections from heading positions
+                const sections: { title: string; content: string }[] = [];
+                if (headings.length === 0) {
+                  const trimmed = promptStr.trim();
+                  if (trimmed) sections.push({ title: "Prompt", content: trimmed });
+                } else {
+                  const preContent = promptStr.slice(0, headings[0].index).trim();
+                  if (preContent) sections.push({ title: "Prompt", content: preContent });
+                  for (let i = 0; i < headings.length; i++) {
+                    const contentStart = headings[i].index + headings[i].fullMatchLen;
+                    const contentEnd = i + 1 < headings.length ? headings[i + 1].index : promptStr.length;
+                    const content = promptStr.slice(contentStart, contentEnd).trim();
+                    sections.push({ title: headings[i].title, content });
                   }
                 }
 
