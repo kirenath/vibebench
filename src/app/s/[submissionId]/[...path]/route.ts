@@ -67,7 +67,7 @@ export async function GET(
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "ALLOWALL",
         "Content-Security-Policy":
-          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors *;",
+          "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; font-src * data:; img-src * data: blob:; frame-ancestors *;",
       },
     });
   } catch {
