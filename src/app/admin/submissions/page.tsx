@@ -314,7 +314,8 @@ export default function AdminSubmissionsPage() {
     if (res.ok) toast("作品已创建", "success");
     else toast("创建失败", "error");
     setDrawerOpen(false);
-    setForm({ challenge_phase_id: "", model_variant_id: "", channel_id: "", is_published: false, manual_touched: false, manual_notes: "", iteration_count: "", duration_min: "", duration_sec: "", timing_method: "", notes: "" });
+    setForm({ challenge_phase_id: "", model_variant_id: "", channel_id: "", is_published: true, manual_touched: false, manual_notes: "", iteration_count: "1", duration_min: "", duration_sec: "", timing_method: "", notes: "" });
+    setSelectedChallenge("");
     load();
   };
 
@@ -775,7 +776,11 @@ export default function AdminSubmissionsPage() {
       {submissions.length > 0 && viewMode === "groupByModel" && renderGroupedView(groupedByModel)}
 
       {/* New submission drawer */}
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="新建作品">
+      <Drawer open={drawerOpen} onClose={() => {
+        setDrawerOpen(false);
+        setForm({ challenge_phase_id: "", model_variant_id: "", channel_id: "", is_published: true, manual_touched: false, manual_notes: "", iteration_count: "1", duration_min: "", duration_sec: "", timing_method: "", notes: "" });
+        setSelectedChallenge("");
+      }} title="新建作品">
         <div className="space-y-4">
           <div>
             <label className="label mb-1 block">赛题</label>
