@@ -64,6 +64,7 @@ export async function GET(
     return new NextResponse(content, {
       headers: {
         "Content-Type": mime,
+        "Cache-Control": "no-cache",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "ALLOWALL",
         "Content-Security-Policy":
