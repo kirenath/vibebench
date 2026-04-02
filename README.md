@@ -5,6 +5,7 @@
 
 <p align="center">
   <a href="#这是什么">这是什么</a> ·
+  <a href="#宣言">宣言</a> ·
   <a href="#当前状态">当前状态</a> ·
   <a href="#仓库内容">仓库内容</a> ·
   <a href="#数据模型">数据模型</a> ·
@@ -28,6 +29,30 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 > 这不是论文仓库，表达会偏轻松和可分享。  
 > 这是一个把不同 AI "手艺"摆到一起看的展示橱窗。
 
+## 宣言
+
+> **No scores. Just works. You judge.**
+>
+> 没有分数，只有作品，你来评判。
+
+不是为 AI 研究者，而是为 **AI 消费者**——真正为 AI 付费的人只关心一件事：**"我让它帮我干活，它到底行不行？"**
+
+**四大核心原则：**
+
+- 📱 **真实渠道** — 测 Web 端、AI IDE，不只测 API
+- 👁️ **完全透明** — 题目公开，作品公开，没有黑盒评分
+- 🎯 **一次定生死** — 每个模型只跑一次，不搞 Pass@N 统计粉饰
+- 👤 **消费者视角** — 作品并排呈现，你来看、你来判、你来选
+
+| | 传统 AI 榜单 | VibeBench |
+|---|---|---|
+| **受众** | AI 研究者 | AI 消费者 |
+| **题目** | 闭源题库 | 完全公开 |
+| **评分** | 黑盒自动评分 | 作品直接呈现，你来判断 |
+| **测试次数** | Pass@N 取最优 | 一次定生死 |
+| **测试渠道** | 纯 API 调用 | Web / IDE / API 多渠道 |
+| **结果呈现** | ELO 分数 | 可视化作品对比 |
+
 ## 当前状态
 
 项目已完成 MVP 阶段，具备较完整的展示与评测能力：
@@ -41,7 +66,7 @@ VibeBench 是一个 **AI Vibe Coding 展览与横评平台**。
 - 完整 REST API（CRUD for challenges, models, submissions, artifacts）
 - HTML 作品沙箱渲染 + 源代码预览
 - Organic/Natural 设计系统
-- **Cloudflare R2 对象存储**：静态资源（HTML 作品、PRD、截图）托管于 R2，经 CDN 全球分发
+- Cloudflare R2 对象存储：静态资源（HTML 作品、PRD、截图）托管于 R2，经 CDN 全球分发
 - PostgreSQL Schema（含安全加固）+ 环境变量模板
 
 ## 仓库内容
@@ -186,3 +211,9 @@ pnpm dev
 - **品牌与第三方素材**：分别归属于各自的权利人
 
 详见 [许可与版权](https://vibebench.app/license) 页面。
+
+---
+
+### 友情链接
+
+🐧 **[Linux.do](https://linux.do)**
