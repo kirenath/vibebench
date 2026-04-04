@@ -45,7 +45,7 @@ export async function GET(
       // Inject <base> tag so relative/root URLs resolve against the R2 origin,
       // plus a script to patch pushState/replaceState (they throw SecurityError
       // when <base> causes hash/relative URLs to resolve to a cross-origin URL).
-      const patchScript = `<script>(function(){var o=history.pushState,r=history.replaceState;function f(u){if(u!=null){try{var x=new URL(u,document.baseURI);if(x.origin!==location.origin)return x.pathname+x.search+x.hash}catch(e){}}return u}history.pushState=function(s,t,u){return o.call(this,s,t,f(u))};history.replaceState=function(s,t,u){return r.call(this,s,t,f(u))}})()<\/script>`;
+      const patchScript = `<script>(function(){var o=history.pushState,r=history.replaceState;function f(u){if(u!=null){try{var x=new URL(u,document.baseURI);if(x.origin!==location.origin)return location.origin+x.pathname+x.search+x.hash}catch(e){}}return u}history.pushState=function(s,t,u){return o.call(this,s,t,f(u))};history.replaceState=function(s,t,u){return r.call(this,s,t,f(u))}})()<\/script>`;
       const baseTag = `<base href="${publicUrl}">`;
       const injection = patchScript + baseTag;
       if (/<head[\s>]/i.test(html)) {
