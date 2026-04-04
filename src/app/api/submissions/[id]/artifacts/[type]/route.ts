@@ -40,7 +40,19 @@ export async function GET(
       if (!r2Res.ok) {
         return jsonError("Failed to fetch artifact from storage", 502);
       }
-      const html = await r2Res.text();
+      let html = await r2Res.text();
+
+      // Inject <base> tag so relative/root URLs resolve against the R2 origin
+      // instead of the main app domain (prevents "/" navigating to vibebench.app)
+      const baseTag = `<base href="${publicUrl}">`;
+      if (/<head[\s>]/i.test(html)) {
+        html = html.replace(/(<head[\s>])/i, `$1${baseTag}`);
+      } else if (/<html[\s>]/i.test(html)) {
+        html = html.replace(/(<html[^>]*>)/i, `$1<head>${baseTag}</head>`);
+      } else {
+        html = baseTag + html;
+      }
+
       return new NextResponse(html, {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
