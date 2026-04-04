@@ -42,15 +42,18 @@ export async function GET(
       }
       let html = await r2Res.text();
 
-      // Inject <base> tag so relative/root URLs resolve against the R2 origin
-      // instead of the main app domain (prevents "/" navigating to vibebench.app)
+      // Inject <base> tag so relative/root URLs resolve against the R2 origin,
+      // plus a script to patch pushState/replaceState (they throw SecurityError
+      // when <base> causes hash/relative URLs to resolve to a cross-origin URL).
+      const patchScript = `<script>(function(){var o=history.pushState,r=history.replaceState;function f(u){if(u!=null){try{var x=new URL(u,document.baseURI);if(x.origin!==location.origin)return x.pathname+x.search+x.hash}catch(e){}}return u}history.pushState=function(s,t,u){return o.call(this,s,t,f(u))};history.replaceState=function(s,t,u){return r.call(this,s,t,f(u))}})()<\/script>`;
       const baseTag = `<base href="${publicUrl}">`;
+      const injection = patchScript + baseTag;
       if (/<head[\s>]/i.test(html)) {
-        html = html.replace(/(<head[\s>])/i, `$1${baseTag}`);
+        html = html.replace(/(<head[\s>])/i, `$1${injection}`);
       } else if (/<html[\s>]/i.test(html)) {
-        html = html.replace(/(<html[^>]*>)/i, `$1<head>${baseTag}</head>`);
+        html = html.replace(/(<html[^>]*>)/i, `$1<head>${injection}</head>`);
       } else {
-        html = baseTag + html;
+        html = injection + html;
       }
 
       return new NextResponse(html, {
