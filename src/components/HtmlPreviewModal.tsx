@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, ExternalLink, RefreshCw, Code2 } from "lucide-react";
 import SourceCodePreviewModal from "./SourceCodePreviewModal";
@@ -15,6 +15,7 @@ interface Props {
 export default function HtmlPreviewModal({ url, title, onClose, submissionId }: Props) {
   const [iframeKey, setIframeKey] = useState(0);
   const [sourceModal, setSourceModal] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -27,6 +28,11 @@ export default function HtmlPreviewModal({ url, title, onClose, submissionId }: 
       document.body.style.overflow = "";
     };
   }, [onClose]);
+
+  const handleIframeLoad = () => {
+    // Auto-focus the iframe so keyboard events (game controls, etc.) work immediately
+    iframeRef.current?.focus();
+  };
 
   return createPortal(
     <div
@@ -86,12 +92,15 @@ export default function HtmlPreviewModal({ url, title, onClose, submissionId }: 
         {/* iframe */}
         <div className="flex-1 bg-white">
           <iframe
+            ref={iframeRef}
             key={iframeKey}
             src={url}
             className="w-full h-full border-0"
             title={title}
             sandbox="allow-scripts allow-same-origin allow-modals allow-downloads allow-forms"
             allow="clipboard-read; clipboard-write"
+            tabIndex={0}
+            onLoad={handleIframeLoad}
           />
         </div>
 
