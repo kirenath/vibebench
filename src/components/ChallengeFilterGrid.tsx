@@ -139,14 +139,7 @@ export default function ChallengeFilterGrid({ challenges }: { challenges: Challe
             <Link
               key={c.id}
               href={`/challenges/${c.id}`}
-              className="card card-hover p-0 overflow-hidden group"
-              style={{
-                borderRadius: [
-                  "2rem 2rem 1rem 2rem",
-                  "1rem 2rem 2rem 1rem",
-                  "2rem 1rem 2rem 2rem",
-                ][i % 3],
-              }}
+              className="card card-hover p-0 overflow-hidden group rounded-2xl"
             >
               <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                 {c.cover_image ? (
