@@ -1,8 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { query } from "@/lib/db";
 import Blob from "@/components/Blob";
-import ChallengeIcon from "@/components/ChallengeIcon";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import ChallengeFilterGrid, { type ChallengeRow } from "@/components/ChallengeFilterGrid";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -10,16 +11,6 @@ export const metadata = {
   title: "赛题列表 — VibeBench",
   description: "浏览所有已发布的 AI Vibe Coding 赛题",
 };
-
-interface ChallengeRow {
-  id: string;
-  title: string;
-  description: string | null;
-  cover_image: string | null;
-  published_at: string | null;
-  submission_count: string;
-  metadata: Record<string, string> | null;
-}
 
 async function getChallenges() {
   try {
@@ -75,56 +66,9 @@ export default async function ChallengesPage() {
             </p>
           </div>
 
-          {challenges.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-muted-foreground">暂无已发布赛题</p>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {challenges.map((c, i) => (
-                <Link
-                  key={c.id}
-                  href={`/challenges/${c.id}`}
-                  className="card card-hover p-0 overflow-hidden group"
-                  style={{
-                    borderRadius: [
-                      "2rem 2rem 1rem 2rem",
-                      "1rem 2rem 2rem 1rem",
-                      "2rem 1rem 2rem 2rem",
-                    ][i % 3],
-                  }}
-                >
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    {c.cover_image ? (
-                      <img
-                        src={c.cover_image}
-                        alt={c.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                    ) : (
-                      <ChallengeIcon iconName={(c.metadata as Record<string, string> | null)?.icon} className="h-16 w-16 text-primary/40" />
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-heading text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-                      {c.title}
-                    </h3>
-                    {c.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {c.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="badge-primary">
-                        {c.submission_count} 个作品
-                      </span>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+          <Suspense fallback={null}>
+            <ChallengeFilterGrid challenges={challenges} />
+          </Suspense>
         </div>
       </section>
     </div>

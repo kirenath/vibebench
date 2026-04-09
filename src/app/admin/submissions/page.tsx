@@ -785,10 +785,12 @@ export default function AdminSubmissionsPage() {
           <div>
             <label className="label mb-1 block">赛题</label>
             <CustomSelect
+              searchable
+              pinyinSearch
               options={challenges.map(c => ({ value: c.id, label: c.title }))}
               value={selectedChallenge}
               onChange={setSelectedChallenge}
-              placeholder="选择赛题..."
+              placeholder="搜索赛题（支持拼音/首字母）..."
             />
           </div>
           <div>

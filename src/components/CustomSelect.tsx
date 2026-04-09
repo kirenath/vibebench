@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown, Check, Search } from "lucide-react";
+import PinyinMatch from "pinyin-match";
 
 export interface SelectOption {
   value: string;
@@ -16,6 +17,8 @@ interface CustomSelectProps {
   disabled?: boolean;
   className?: string;
   searchable?: boolean;
+  /** Enable pinyin / initial-letter fuzzy search for Chinese text */
+  pinyinSearch?: boolean;
 }
 
 export default function CustomSelect({
@@ -26,6 +29,7 @@ export default function CustomSelect({
   disabled = false,
   className = "",
   searchable = false,
+  pinyinSearch = false,
 }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,8 +41,17 @@ export default function CustomSelect({
   const filteredOptions = useMemo(() => {
     if (!searchable || !searchQuery.trim()) return options;
     const q = searchQuery.trim().toLowerCase();
-    return options.filter((o) => o.label.toLowerCase().includes(q));
-  }, [options, searchQuery, searchable]);
+    return options.filter((o) => {
+      // Standard text match
+      if (o.label.toLowerCase().includes(q)) return true;
+      // Pinyin / initial-letter match
+      if (pinyinSearch) {
+        const result = PinyinMatch.match(o.label, q);
+        if (result) return true;
+      }
+      return false;
+    });
+  }, [options, searchQuery, searchable, pinyinSearch]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

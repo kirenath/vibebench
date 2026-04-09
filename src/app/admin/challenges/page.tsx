@@ -9,6 +9,7 @@ import { Pencil, Trash2, Eye, EyeOff, ChevronDown, ChevronUp, Trophy, X, Search 
 import ChallengeIcon from "@/components/ChallengeIcon";
 import { PRESET_ICONS } from "@/components/ChallengeIcon";
 import { icons as allLucideIcons } from "lucide-react";
+import { TAG_DEFINITIONS } from "@/lib/tags";
 
 interface Challenge {
   id: string;
@@ -19,7 +20,7 @@ interface Challenge {
   is_published: boolean;
   sort_order: number;
   submission_count: string;
-  metadata: Record<string, string> | null;
+  metadata: Record<string, unknown> | null;
 }
 
 interface Phase {
@@ -33,6 +34,7 @@ interface Phase {
 const emptyForm = {
   id: "", title: "", description: "", rules_markdown: "",
   prompt_markdown: "", is_published: true, sort_order: 0, icon: "",
+  tags: [] as string[],
 };
 
 const emptyPhaseForm = {
@@ -70,8 +72,10 @@ export default function AdminChallengesPage() {
   const handleSave = async () => {
     const method = editId ? "PUT" : "POST";
     const url = editId ? `/api/challenges/${editId}` : "/api/challenges";
-    const { icon, ...rest } = form;
-    const metadata = icon ? { icon } : {};
+    const { icon, tags, ...rest } = form;
+    const metadata: Record<string, unknown> = {};
+    if (icon) metadata.icon = icon;
+    if (tags.length > 0) metadata.tags = tags;
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -115,11 +119,13 @@ export default function AdminChallengesPage() {
 
   const handleEdit = (c: Challenge) => {
     setEditId(c.id);
+    const meta = c.metadata as Record<string, unknown> | null;
     setForm({
       id: c.id, title: c.title, description: c.description || "",
       rules_markdown: c.rules_markdown || "", prompt_markdown: c.prompt_markdown || "",
       is_published: c.is_published, sort_order: c.sort_order,
-      icon: (c.metadata as Record<string, string> | null)?.icon || "",
+      icon: (meta?.icon as string) || "",
+      tags: (Array.isArray(meta?.tags) ? meta.tags : []) as string[],
     });
     setDrawerOpen(true);
   };
@@ -279,6 +285,10 @@ export default function AdminChallengesPage() {
           <div>
             <label className="label mb-1 block">图标</label>
             <IconPicker value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
+          </div>
+          <div>
+            <label className="label mb-1 block">标签</label>
+            <TagPicker value={form.tags} onChange={(tags) => setForm({ ...form, tags })} />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="published" checked={form.is_published}
@@ -492,3 +502,31 @@ function IconPicker({ value, onChange }: { value: string; onChange: (v: string) 
   );
 }
 
+function TagPicker({ value, onChange }: { value: string[]; onChange: (tags: string[]) => void }) {
+  const toggle = (key: string) => {
+    onChange(
+      value.includes(key)
+        ? value.filter((t) => t !== key)
+        : [...value, key]
+    );
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {TAG_DEFINITIONS.map((tag) => (
+        <button
+          key={tag.key}
+          type="button"
+          onClick={() => toggle(tag.key)}
+          className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+            value.includes(tag.key)
+              ? "bg-primary/15 text-primary ring-1 ring-primary/30"
+              : "bg-muted/50 text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          {tag.emoji} {tag.label}
+        </button>
+      ))}
+    </div>
+  );
+}

@@ -29,6 +29,9 @@ importers:
       pg:
         specifier: ^8.13.1
         version: 8.20.0
+      pinyin-match:
+        specifier: ^1.2.10
+        version: 1.2.10
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -2299,6 +2302,9 @@ packages:
   pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
+
+  pinyin-match@1.2.10:
+    resolution: {integrity: sha512-Xo1uMd9n56/xP2EAn7yfApnTmAGCLGqxFIm1fuOnSMty0xhqRF3+ZwVjp2yWFD/alv60RUWa/cZoQSeTSp1HxA==}
 
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
@@ -5760,6 +5766,8 @@ snapshots:
   picomatch@4.0.3: {}
 
   pify@2.3.0: {}
+
+  pinyin-match@1.2.10: {}
 
   pirates@4.0.7: {}
 
