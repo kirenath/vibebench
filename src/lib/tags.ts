@@ -10,6 +10,7 @@ export const TAG_DEFINITIONS = [
   { key: 'physics',   label: '物理', emoji: '⚛️' },
   { key: 'fix',       label: '修复', emoji: '🔧' },
   { key: 'enhance',   label: '增强', emoji: '✨' },
+  { key: 'reality',   label: '复刻', emoji: '🌐' },
 ] as const;
 
 export type TagKey = typeof TAG_DEFINITIONS[number]['key'];
