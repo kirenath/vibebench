@@ -43,5 +43,6 @@ test/
 
 # AI agent config
 .agent/
+.kiro/
 AGENTS.md
 CLAUDE.md
