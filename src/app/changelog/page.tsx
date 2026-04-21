@@ -12,8 +12,15 @@ export default function ChangelogPage() {
       eyebrow="Changelog"
       title="更新日志"
       description="VibeBench 平台功能迭代、基础设施变更与内容更新的完整时间线。"
-      updatedAt="2026 年 4 月 10 日"
+      updatedAt="2026 年 4 月 21 日"
     >
+      <h2>2026 年 4 月 21 日</h2>
+      <ul>
+        <li>新增赛题难度分级系统：支持入门 / 进阶 / 挑战三级难度标注，由维护者在 Admin 后台手动评定。</li>
+        <li>赛题列表页新增难度筛选栏与难度排序，卡片和详情页展示难度标签。</li>
+        <li>Admin 后台赛题编辑增加难度选择器，难度存储于 <code>metadata.difficulty</code>。</li>
+      </ul>
+
       <h2>2026 年 4 月 9 日 – 10 日</h2>
       <ul>
         <li>新增赛题多标签分类体系：定义 <code>tags.ts</code> 标签数据源，覆盖工具、游戏、创意、设计、数据可视化等类别。</li>

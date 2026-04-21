@@ -9,7 +9,7 @@ import { Pencil, Trash2, Eye, EyeOff, ChevronDown, ChevronUp, Trophy, X, Search 
 import ChallengeIcon from "@/components/ChallengeIcon";
 import { PRESET_ICONS } from "@/components/ChallengeIcon";
 import { icons as allLucideIcons } from "lucide-react";
-import { TAG_DEFINITIONS } from "@/lib/tags";
+import { TAG_DEFINITIONS, DIFFICULTY_DEFINITIONS } from "@/lib/tags";
 
 interface Challenge {
   id: string;
@@ -34,7 +34,7 @@ interface Phase {
 const emptyForm = {
   id: "", title: "", description: "", rules_markdown: "",
   prompt_markdown: "", is_published: true, sort_order: 0, icon: "",
-  tags: [] as string[],
+  tags: [] as string[], difficulty: "" as string,
 };
 
 const emptyPhaseForm = {
@@ -72,10 +72,11 @@ export default function AdminChallengesPage() {
   const handleSave = async () => {
     const method = editId ? "PUT" : "POST";
     const url = editId ? `/api/challenges/${editId}` : "/api/challenges";
-    const { icon, tags, ...rest } = form;
+    const { icon, tags, difficulty, ...rest } = form;
     const metadata: Record<string, unknown> = {};
     if (icon) metadata.icon = icon;
     if (tags.length > 0) metadata.tags = tags;
+    if (difficulty) metadata.difficulty = difficulty;
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -126,6 +127,7 @@ export default function AdminChallengesPage() {
       is_published: c.is_published, sort_order: c.sort_order,
       icon: (meta?.icon as string) || "",
       tags: (Array.isArray(meta?.tags) ? meta.tags : []) as string[],
+      difficulty: (meta?.difficulty as string) || "",
     });
     setDrawerOpen(true);
   };
@@ -188,6 +190,15 @@ export default function AdminChallengesPage() {
                 ) : (
                   <span className="badge-muted text-xs">草稿</span>
                 )}
+                {(() => {
+                  const d = (c.metadata as Record<string, unknown> | null)?.difficulty as string | undefined;
+                  const def = d ? DIFFICULTY_DEFINITIONS.find((dd) => dd.key === d) : null;
+                  return def ? (
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${def.colorClass}`}>
+                      {def.label}
+                    </span>
+                  ) : null;
+                })()}
               </div>
               <div className="flex items-center gap-1">
                 <button onClick={() => handleTogglePublish(c)} className="btn-ghost btn-sm !h-8 !px-3" title={c.is_published ? "取消发布" : "发布"}>
@@ -289,6 +300,10 @@ export default function AdminChallengesPage() {
           <div>
             <label className="label mb-1 block">标签</label>
             <TagPicker value={form.tags} onChange={(tags) => setForm({ ...form, tags })} />
+          </div>
+          <div>
+            <label className="label mb-1 block">难度</label>
+            <DifficultyPicker value={form.difficulty} onChange={(v) => setForm({ ...form, difficulty: v })} />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="published" checked={form.is_published}
@@ -525,6 +540,38 @@ function TagPicker({ value, onChange }: { value: string[]; onChange: (tags: stri
           }`}
         >
           {tag.emoji} {tag.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function DifficultyPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onClick={() => onChange("")}
+        className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+          !value
+            ? "bg-primary/15 text-primary ring-1 ring-primary/30"
+            : "bg-muted/50 text-muted-foreground hover:bg-muted"
+        }`}
+      >
+        未设置
+      </button>
+      {DIFFICULTY_DEFINITIONS.map((d) => (
+        <button
+          key={d.key}
+          type="button"
+          onClick={() => onChange(d.key)}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ring-1 ring-inset ${
+            value === d.key
+              ? d.colorClass
+              : "bg-muted/50 text-muted-foreground ring-transparent hover:bg-muted"
+          }`}
+        >
+          {d.label}
         </button>
       ))}
     </div>

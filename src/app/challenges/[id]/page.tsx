@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
 import SubmissionCard, { type PhaseSubmission, type PhaseData } from "@/components/SubmissionCard";
+import { DIFFICULTY_DEFINITIONS } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ interface ChallengeRow {
   rules_markdown: string | null;
   prompt_markdown: string | null;
   cover_image: string | null;
+  metadata: Record<string, unknown> | null;
 }
 
 interface PhaseRow {
@@ -49,7 +51,7 @@ interface SubmissionRow {
 async function getChallenge(id: string) {
   try {
     return await queryOne<ChallengeRow>(
-      "SELECT id, title, description, rules_markdown, prompt_markdown, cover_image FROM challenges WHERE id = $1 AND is_published = true",
+      "SELECT id, title, description, rules_markdown, prompt_markdown, cover_image, metadata FROM challenges WHERE id = $1 AND is_published = true",
       [id]
     );
   } catch {
@@ -187,9 +189,20 @@ export default async function ChallengeDetailPage({
           </Link>
 
           <div className="mb-12">
-            <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
-              {challenge.title}
-            </h1>
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">
+                {challenge.title}
+              </h1>
+              {(() => {
+                const d = challenge.metadata?.difficulty as string | undefined;
+                const def = d ? DIFFICULTY_DEFINITIONS.find((dd) => dd.key === d) : null;
+                return def ? (
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 ring-inset ${def.colorClass}`}>
+                    {def.label}
+                  </span>
+                ) : null;
+              })()}
+            </div>
             {challenge.description && (
               <p className="text-lg text-muted-foreground max-w-3xl">
                 {challenge.description}
