@@ -8,6 +8,7 @@ import {
   MessageSquareText,
 } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import SubmissionCard, { type PhaseSubmission, type PhaseData } from "@/components/SubmissionCard";
 import { DIFFICULTY_DEFINITIONS } from "@/lib/tags";
 
@@ -228,8 +229,8 @@ export default async function ChallengeDetailPage({
                         ▼
                       </span>
                     </summary>
-                    <div className="mt-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap">
-                      {briefRules}
+                    <div className="mt-4">
+                      <MarkdownRenderer content={briefRules} />
                     </div>
                     {detailedAnalysis && (
                       <details className="mt-4 rounded-2xl border border-border/50 bg-muted/30">
@@ -237,8 +238,8 @@ export default async function ChallengeDetailPage({
                           详细解析
                           <span className="ml-auto text-muted-foreground text-xs">▼</span>
                         </summary>
-                        <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
-                          {detailedAnalysis}
+                        <div className="px-4 pb-4">
+                          <MarkdownRenderer content={detailedAnalysis} className="text-sm" />
                         </div>
                       </details>
                     )}
