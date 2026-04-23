@@ -3,7 +3,7 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, ArrowUpDown, ChevronDown, Check } from "lucide-react";
+import { ArrowRight, ArrowUpDown, ChevronDown, Check, Search, X } from "lucide-react";
 import ChallengeIcon from "@/components/ChallengeIcon";
 import { TAG_DEFINITIONS, DIFFICULTY_DEFINITIONS, type DifficultyKey } from "@/lib/tags";
 
@@ -74,6 +74,8 @@ export default function ChallengeFilterGrid({ challenges }: { challenges: Challe
     return counts;
   }, [challenges]);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const filtered = useMemo(() => {
     let list =
       activeTag === "all"
@@ -82,6 +84,15 @@ export default function ChallengeFilterGrid({ challenges }: { challenges: Challe
 
     if (activeDifficulty !== "all") {
       list = list.filter((c) => c.metadata?.difficulty === activeDifficulty);
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      list = list.filter(
+        (c) =>
+          c.title.toLowerCase().includes(q) ||
+          (c.description ?? "").toLowerCase().includes(q)
+      );
     }
 
     if (activeSort === "newest") {
@@ -99,7 +110,7 @@ export default function ChallengeFilterGrid({ challenges }: { challenges: Challe
     }
 
     return list;
-  }, [challenges, activeTag, activeDifficulty, activeSort]);
+  }, [challenges, activeTag, activeDifficulty, activeSort, searchQuery]);
 
   const updateParams = (key: string, value: string, defaultValue: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -178,12 +189,33 @@ export default function ChallengeFilterGrid({ challenges }: { challenges: Challe
         </div>
       )}
 
-      {/* Sort selector */}
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted-foreground">
-          {filtered.length} 道赛题
-        </p>
-        <SortDropdown value={activeSort} onChange={setSort} />
+      {/* Search + Sort bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div className="relative flex-shrink-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索赛题..."
+            className="w-full sm:w-64 pl-9 pr-8 py-2 rounded-full text-sm bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <div className="flex items-center justify-between sm:justify-end gap-3">
+          <p className="text-sm text-muted-foreground">
+            {filtered.length} 道赛题
+          </p>
+          <SortDropdown value={activeSort} onChange={setSort} />
+        </div>
       </div>
 
       {/* Card grid */}
