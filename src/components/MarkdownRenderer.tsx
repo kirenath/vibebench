@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 
 interface MarkdownRendererProps {
   /** Markdown 源文本 */
@@ -29,7 +30,7 @@ const proseClasses = [
 export default function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
   return (
     <div className={className ? `${proseClasses} ${className}` : proseClasses}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{content}</ReactMarkdown>
     </div>
   );
 }
