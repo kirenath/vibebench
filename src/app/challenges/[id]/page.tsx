@@ -233,10 +233,10 @@ export default async function ChallengeDetailPage({
                       <MarkdownRenderer content={briefRules} />
                     </div>
                     {detailedAnalysis && (
-                      <details className="mt-4 rounded-2xl border border-border/50 bg-muted/30">
+                      <details className="group/analysis mt-4 rounded-2xl border border-border/50 bg-muted/30">
                         <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold text-muted-foreground hover:text-foreground transition-colors">
                           详细解析
-                          <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                          <span className="ml-auto text-muted-foreground text-xs group-open/analysis:rotate-180 transition-transform duration-300">▼</span>
                         </summary>
                         <div className="px-4 pb-4">
                           <MarkdownRenderer content={detailedAnalysis} className="text-sm" />
@@ -332,13 +332,13 @@ export default async function ChallengeDetailPage({
                           return (
                             <details
                               key={item.idx}
-                              className="rounded-2xl border border-border/50 bg-muted/30"
+                              className="group/item rounded-2xl border border-border/50 bg-muted/30"
                               open={item.idx === 0}
                             >
                               <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
                                 {item.section.title}
                                 <CopyButton text={item.section.content} />
-                                <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                                <span className="ml-auto text-muted-foreground text-xs group-open/item:rotate-180 transition-transform duration-300">▼</span>
                               </summary>
                               <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
                                 {item.section.content}
@@ -350,23 +350,23 @@ export default async function ChallengeDetailPage({
                         return (
                           <details
                             key={`g-${gIdx}`}
-                            className="rounded-2xl border border-border/50 bg-muted/30"
+                            className="group/grp rounded-2xl border border-border/50 bg-muted/30"
                           >
                             <summary className="cursor-pointer px-4 py-3 flex items-center gap-2 text-sm font-heading font-semibold">
                               {item.groupTitle}
                               <span className="text-xs text-muted-foreground font-normal">({item.children.length} steps)</span>
-                              <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                              <span className="ml-auto text-muted-foreground text-xs group-open/grp:rotate-180 transition-transform duration-300">▼</span>
                             </summary>
                             <div className="px-4 pb-3 space-y-2">
                               {item.children.map((child) => (
                                 <details
                                   key={child.idx}
-                                  className="rounded-xl border border-border/40 bg-background/50"
+                                  className="group/child rounded-xl border border-border/40 bg-background/50"
                                 >
                                   <summary className="cursor-pointer px-3 py-2 flex items-center gap-2 text-sm font-heading font-semibold">
                                     {child.section.title}
                                     <CopyButton text={child.section.content} />
-                                    <span className="ml-auto text-muted-foreground text-xs">▼</span>
+                                    <span className="ml-auto text-muted-foreground text-xs group-open/child:rotate-180 transition-transform duration-300">▼</span>
                                   </summary>
                                   <div className="px-3 pb-3 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
                                     {child.section.content}
