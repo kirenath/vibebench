@@ -409,8 +409,9 @@ export default function AdminSubmissionsPage() {
   const openUpload = (subId: string) => {
     setUploadSubId(subId);
     setUploadDrawerOpen(true);
+    setArtifactType("html");
     setPasteContent("");
-    setPasteFileName("index.html");
+    setPasteFileName(defaultFileNames.html);
     setUploadMode("paste");
     setPastedImage(null);
     setPastedImageUrl(null);
