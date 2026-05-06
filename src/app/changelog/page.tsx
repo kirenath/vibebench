@@ -20,6 +20,7 @@ export default function ChangelogPage() {
         <li>右下角新增悬浮主题切换按钮，三态循环（跟随系统 / 浅色 / 深色），偏好持久化于 <code>localStorage</code>，默认跟随系统；<code>&lt;head&gt;</code> 注入同步内联脚本消除首屏白闪。</li>
         <li>整套色板改为 Tailwind <code>class</code> 策略 + CSS 变量驱动，所有 <code>bg-background</code> / <code>text-foreground</code> / <code>bg-card</code> 等语义化类零改动自动跟随；Markdown 长文加 <code>dark:prose-invert</code>、链接色统一为 primary。</li>
         <li>Admin 后台暂不做暗色适配；用户作品 iframe 不受站点主题影响。</li>
+        <li>修复移动端右侧出现可滚动空白条的问题</li>
       </ul>
 
       <h2>2026 年 4 月 23 日</h2>
