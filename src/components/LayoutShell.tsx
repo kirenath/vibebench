@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FloatingThemeToggle from "@/components/FloatingThemeToggle";
 
 export default function LayoutShell({
   children,
@@ -21,6 +22,7 @@ export default function LayoutShell({
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <FloatingThemeToggle />
     </>
   );
 }

@@ -23,7 +23,7 @@ export default function StaticPageLayout({
         className="absolute inset-0 -top-24 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 20% 50%, rgba(93,112,82,0.10) 0%, transparent 70%), radial-gradient(ellipse 60% 60% at 85% 30%, rgba(193,140,93,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse 80% 50% at 20% 50%, var(--hero-primary-medium) 0%, transparent 70%), radial-gradient(ellipse 60% 60% at 85% 30%, var(--hero-secondary-soft) 0%, transparent 70%)",
         }}
       />
       <Blob
@@ -57,7 +57,7 @@ export default function StaticPageLayout({
           </div>
 
           <div className="card rounded-[2rem] border-border/60 bg-card/80 p-8 backdrop-blur-sm md:p-10">
-            <div className="prose prose-stone max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-secondary">
+            <div className="prose prose-stone dark:prose-invert max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-secondary">
               {children}
             </div>
           </div>

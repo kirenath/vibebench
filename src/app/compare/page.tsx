@@ -11,7 +11,7 @@ export default function CompareGatewayPage() {
         className="absolute inset-0 -top-24 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% 30%, rgba(93,112,82,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse 80% 50% at 50% 30%, var(--hero-primary-soft) 0%, transparent 70%)",
         }}
       />
       <div className="max-w-4xl mx-auto">

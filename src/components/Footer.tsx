@@ -48,7 +48,7 @@ export default function Footer() {
                 href="https://github.com/kirenath/vibebench"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-background/50 border border-border shadow-sm"
+                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-card/50 border border-border shadow-sm"
                 title="GitHub"
               >
                 <Github className="h-4 w-4" />
@@ -57,14 +57,14 @@ export default function Footer() {
                 href="https://linux.do"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-background/50 border border-border shadow-sm"
+                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-card/50 border border-border shadow-sm"
                 title="Linux.do" 
               >
                 <MessageSquare className="h-4 w-4" />
               </a>
               <a
                 href="mailto:kirenath@tuta.io"
-                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-background/50 border border-border shadow-sm"
+                className="text-muted-foreground hover:text-primary transition-transform hover:scale-110 active:scale-95 flex items-center justify-center w-9 h-9 rounded-full bg-card/50 border border-border shadow-sm"
                 title="Email" 
               >
                 <Mail className="h-4 w-4" />
@@ -165,7 +165,7 @@ export default function Footer() {
           <div className="absolute left-1/2 -translate-x-1/2 -top-5">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all hover:-translate-y-1 shadow-sm"
+              className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all hover:-translate-y-1 shadow-sm"
               aria-label="回到顶部"
             >
               <ChevronUp className="h-5 w-5" />
@@ -187,7 +187,7 @@ export default function Footer() {
 
           <button
             onClick={checkHealth}
-            className="flex items-center gap-3 text-sm text-muted-foreground order-1 md:order-3 bg-background/50 border border-border/50 px-4 py-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-all cursor-pointer select-none"
+            className="flex items-center gap-3 text-sm text-muted-foreground order-1 md:order-3 bg-card/50 border border-border/50 px-4 py-2 rounded-full shadow-sm hover:bg-card active:scale-95 transition-all cursor-pointer select-none"
             title="点击重新检测系统状态"
           >
             <span className="relative flex h-2 w-2">

@@ -34,13 +34,31 @@ export const metadata: Metadata = {
     "同一道前端题，不同 AI 各展风格。浏览、对比、分享不同模型的前端作品。",
 };
 
+/**
+ * Anti-FOUC: synchronously resolve the active theme and apply the `dark`
+ * class to <html> *before* any stylesheet paints. Touching localStorage and
+ * matchMedia inline avoids a flash on hard reload. Kept tiny and standalone
+ * — must NOT depend on any module/runtime.
+ */
+const themeBootScript = `(function(){try{var k='vibebench:theme';var p=localStorage.getItem(k);var s=window.matchMedia('(prefers-color-scheme: dark)').matches;var d=p==='dark'||((!p||p==='system')&&s);var c=document.documentElement.classList;if(d)c.add('dark');else c.remove('dark');}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={`${fraunces.variable} ${displayFont.variable} ${nunito.variable} ${notoSansSC.variable}`}>
+    <html
+      lang="zh-CN"
+      suppressHydrationWarning
+      className={`${fraunces.variable} ${displayFont.variable} ${nunito.variable} ${notoSansSC.variable}`}
+    >
+      <head>
+        <meta name="color-scheme" content="light dark" />
+        <script
+          dangerouslySetInnerHTML={{ __html: themeBootScript }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col">
         <LayoutShell>{children}</LayoutShell>
       </body>

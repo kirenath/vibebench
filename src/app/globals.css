@@ -4,11 +4,107 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ────────────────────────────────────────────────────────────────
+ * Theme tokens
+ * ----------------------------------------------------------------
+ * Colors are stored as space-separated `R G B` triples so Tailwind
+ * can compose them with arbitrary alpha via `rgb(var(--x) / <a>)`.
+ * Shadows are stored as full CSS values; Tailwind config references
+ * them by name (e.g. `boxShadow.soft → var(--shadow-soft)`).
+ * ──────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  --color-background: 253 252 248;
+  --color-foreground: 44 44 36;
+  --color-card: 254 254 250;
+  --color-muted: 240 235 229;
+  --color-muted-foreground: 120 120 108;
+  --color-accent: 230 220 205;
+  --color-accent-foreground: 74 74 64;
+  --color-border: 222 216 207;
+  --color-primary: 93 112 82;
+  --color-primary-foreground: 243 244 241;
+  --color-secondary: 193 140 93;
+  --color-secondary-foreground: 255 255 255;
+  --color-destructive: 168 84 72;
+
+  --shadow-soft: 0 4px 20px -2px rgba(93, 112, 82, 0.15);
+  --shadow-soft-lg: 0 6px 24px -4px rgba(93, 112, 82, 0.25);
+  --shadow-soft-hover: 0 20px 40px -10px rgba(93, 112, 82, 0.15);
+  --shadow-float: 0 10px 40px -10px rgba(193, 140, 93, 0.2);
+
+  /* Hero radial gradient washes (used as inline `style.background` on
+   * landing-style sections). Dark uses dimmer alphas + the dark-tuned
+   * primary/secondary so the wash stays a hint, not a glare. */
+  --hero-primary-soft: rgba(93, 112, 82, 0.08);
+  --hero-primary-medium: rgba(93, 112, 82, 0.10);
+  --hero-secondary-soft: rgba(193, 140, 93, 0.08);
+
+  /* Source-code preview token palette (GitHub light) */
+  --code-tag: #22863a;
+  --code-attr-name: #6f42c1;
+  --code-attr-value: #032f62;
+  --code-comment: #6a737d;
+  --code-doctype: #22863a;
+  --code-entity: #e36209;
+  --code-text: #24292e;
+  --code-line-number: #bbbbbb;
+}
+
+/* Forest Night — see PRD §5.1 */
+.dark {
+  color-scheme: dark;
+
+  --color-background: 19 24 20;
+  --color-foreground: 221 227 213;
+  --color-card: 26 32 26;
+  --color-muted: 32 38 31;
+  --color-muted-foreground: 139 151 133;
+  --color-accent: 42 49 42;
+  --color-accent-foreground: 200 210 190;
+  --color-border: 45 54 44;
+  --color-primary: 157 186 134;
+  --color-primary-foreground: 19 24 20;
+  --color-secondary: 218 165 123;
+  --color-secondary-foreground: 19 24 20;
+  --color-destructive: 201 118 104;
+
+  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+  --shadow-soft-lg: 0 6px 24px -4px rgba(0, 0, 0, 0.7);
+  --shadow-soft-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.55);
+
+  --hero-primary-soft: rgba(157, 186, 134, 0.05);
+  --hero-primary-medium: rgba(157, 186, 134, 0.06);
+  --hero-secondary-soft: rgba(218, 165, 123, 0.05);
+
+  /* Source-code preview token palette (GitHub dark) */
+  --code-tag: #7ee787;
+  --code-attr-name: #d2a8ff;
+  --code-attr-value: #a5d6ff;
+  --code-comment: #8b949e;
+  --code-doctype: #7ee787;
+  --code-entity: #ffa657;
+  --code-text: #c9d1d9;
+  --code-line-number: #6e7681;
+}
+
+/* Suppress transitions during theme flip to avoid the cross-tree
+ * "ripple" caused by dozens of elements animating colors at once. */
+.disable-transitions,
+.disable-transitions *,
+.disable-transitions *::before,
+.disable-transitions *::after {
+  transition: none !important;
+}
+
 @layer base {
   body {
     @apply bg-background text-foreground font-body antialiased;
     position: relative;
     overflow-x: hidden;
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
   /* Grain texture overlay */
@@ -26,6 +122,13 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 256px 256px;
+  }
+
+  /* In dark mode, multiply on a near-black base just kills the texture.
+   * Switch to `screen` so the noise reads as faint highlights instead. */
+  .dark body::after {
+    opacity: 0.05;
+    mix-blend-mode: screen;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -47,7 +150,7 @@
 
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-full border-2 border-secondary text-secondary
-           bg-white/60 font-bold px-8 h-12 text-base shadow-soft cursor-pointer
+           bg-card/60 font-bold px-8 h-12 text-base shadow-soft cursor-pointer
            hover:bg-secondary/10 hover:scale-105 hover:-translate-y-0.5 hover:shadow-soft-lg
            active:scale-95 transition-all duration-300;
   }
@@ -83,19 +186,19 @@
   }
 
   .input {
-    @apply w-full rounded-full border border-border bg-white/50 px-5 h-12 text-sm font-body
+    @apply w-full rounded-full border border-border bg-card/50 px-5 h-12 text-sm font-body
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
            transition-all duration-300 placeholder:text-muted-foreground;
   }
 
   .textarea {
-    @apply w-full rounded-3xl border border-border bg-white/50 px-5 py-3 text-sm font-body min-h-[120px]
+    @apply w-full rounded-3xl border border-border bg-card/50 px-5 py-3 text-sm font-body min-h-[120px]
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
            transition-all duration-300 placeholder:text-muted-foreground resize-y;
   }
 
   .select {
-    @apply w-full rounded-full border border-border bg-white/50 px-5 h-12 text-sm font-body appearance-none
+    @apply w-full rounded-full border border-border bg-card/50 px-5 h-12 text-sm font-body appearance-none
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
            transition-all duration-300;
   }

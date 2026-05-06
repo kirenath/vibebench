@@ -171,7 +171,7 @@ export default async function ChallengeDetailPage({
           className="absolute inset-0 -top-24 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 70% 50% at 80% 30%, rgba(193,140,93,0.08) 0%, transparent 70%)",
+              "radial-gradient(ellipse 70% 50% at 80% 30%, var(--hero-secondary-soft) 0%, transparent 70%)",
           }}
         />
         <Blob
@@ -340,7 +340,7 @@ export default async function ChallengeDetailPage({
                                 <CopyButton text={item.section.content} />
                                 <span className="ml-auto text-muted-foreground text-xs group-open/item:rotate-180 transition-transform duration-300">▼</span>
                               </summary>
-                              <div className="px-4 pb-4 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                              <div className="px-4 pb-4 prose prose-sm dark:prose-invert max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
                                 {item.section.content}
                               </div>
                             </details>
@@ -368,7 +368,7 @@ export default async function ChallengeDetailPage({
                                     <CopyButton text={child.section.content} />
                                     <span className="ml-auto text-muted-foreground text-xs group-open/child:rotate-180 transition-transform duration-300">▼</span>
                                   </summary>
-                                  <div className="px-3 pb-3 prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
+                                  <div className="px-3 pb-3 prose prose-sm dark:prose-invert max-w-none text-foreground/80 whitespace-pre-wrap text-sm">
                                     {child.section.content}
                                   </div>
                                 </details>

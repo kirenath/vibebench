@@ -12,8 +12,16 @@ export default function ChangelogPage() {
       eyebrow="Changelog"
       title="更新日志"
       description="VibeBench 平台功能迭代、基础设施变更与内容更新的完整时间线。"
-      updatedAt="2026 年 4 月 23 日"
+      updatedAt="2026 年 5 月 6 日"
     >
+      <h2>2026 年 5 月 6 日</h2>
+      <ul>
+        <li>站点上线 Dark Mode：「森林夜晚」配色（深墨绿黑底 + 月色苔白前景 + 月下地衣绿 primary + 篝火暖橙 secondary），保留品牌「自然 / 有机」调性，不做纯黑。</li>
+        <li>右下角新增悬浮主题切换按钮，三态循环（跟随系统 / 浅色 / 深色），偏好持久化于 <code>localStorage</code>，默认跟随系统；<code>&lt;head&gt;</code> 注入同步内联脚本消除首屏白闪。</li>
+        <li>整套色板改为 Tailwind <code>class</code> 策略 + CSS 变量驱动，所有 <code>bg-background</code> / <code>text-foreground</code> / <code>bg-card</code> 等语义化类零改动自动跟随；Markdown 长文加 <code>dark:prose-invert</code>、链接色统一为 primary。</li>
+        <li>Admin 后台暂不做暗色适配；用户作品 iframe 不受站点主题影响。</li>
+      </ul>
+
       <h2>2026 年 4 月 23 日</h2>
       <ul>
         <li>赛题列表页新增关键词搜索框，支持按标题和描述实时过滤，与标签、难度筛选叠加生效。</li>

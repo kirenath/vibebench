@@ -91,7 +91,7 @@ export default function PrdPreviewModal({ submissionId, title, onClose }: Props)
               加载中…
             </div>
           ) : (
-            <div className="prose prose-sm max-w-none text-foreground/90">
+            <div className="prose prose-sm dark:prose-invert max-w-none text-foreground/90 prose-a:text-primary hover:prose-a:text-primary/80">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {content}
               </ReactMarkdown>

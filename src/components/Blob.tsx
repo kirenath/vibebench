@@ -23,7 +23,7 @@ export default function Blob({
   const shape = SHAPES[shapeIndex % SHAPES.length];
   return (
     <div
-      className={`absolute blur-3xl opacity-20 pointer-events-none ${color} ${size} ${className}`}
+      className={`absolute blur-3xl opacity-20 dark:opacity-[0.22] pointer-events-none ${color} ${size} ${className}`}
       style={{ borderRadius: shape }}
     />
   );

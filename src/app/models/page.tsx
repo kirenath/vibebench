@@ -40,7 +40,7 @@ export default async function ModelsPage() {
           className="absolute inset-0 -top-24 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 80% 50% at 20% 40%, rgba(93,112,82,0.10) 0%, transparent 70%)",
+              "radial-gradient(ellipse 80% 50% at 20% 40%, var(--hero-primary-medium) 0%, transparent 70%)",
           }}
         />
         <Blob

@@ -4,7 +4,7 @@ import { Leaf } from "lucide-react";
 export default function Navbar() {
   return (
     <nav className="sticky top-4 z-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="rounded-full bg-white/70 backdrop-blur-md border border-border/50 shadow-soft px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div className="rounded-full bg-card/70 backdrop-blur-md border border-border/50 shadow-soft px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo icon always visible, text hidden on small screens */}
         <Link href="/" className="flex items-center gap-2 group">
           <span className="h-9 w-9 rounded-full bg-primary flex items-center justify-center group-hover:scale-105 transition-transform duration-300">

@@ -99,14 +99,16 @@ function tokenizeHtml(src: string): Token[] {
   return tokens;
 }
 
-const TOKEN_COLORS: Record<Token["type"], string> = {
-  tag: "#22863a",
-  "attr-name": "#6f42c1",
-  "attr-value": "#032f62",
-  comment: "#6a737d",
-  doctype: "#22863a",
-  entity: "#e36209",
-  text: "#24292e",
+/* Token type → CSS variable. The vars are defined in globals.css for both
+ * light (GitHub light) and dark (GitHub dark) palettes — see PRD §5.1. */
+const TOKEN_VARS: Record<Token["type"], string> = {
+  tag: "var(--code-tag)",
+  "attr-name": "var(--code-attr-name)",
+  "attr-value": "var(--code-attr-value)",
+  comment: "var(--code-comment)",
+  doctype: "var(--code-doctype)",
+  entity: "var(--code-entity)",
+  text: "var(--code-text)",
 };
 
 function HighlightedCode({ code }: { code: string }) {
@@ -115,12 +117,9 @@ function HighlightedCode({ code }: { code: string }) {
   return (
     <div className="flex text-[13px] leading-6 font-mono">
       {/* Line numbers */}
-      <div
-        className="select-none text-right pr-4 border-r border-border/30 shrink-0 sticky left-0 z-10"
-        style={{ background: "#fafbfc" }}
-      >
+      <div className="select-none text-right pr-4 border-r border-border/30 shrink-0 sticky left-0 z-10 bg-card">
         {lines.map((_, i) => (
-          <div key={i} className="px-3" style={{ color: "#bbb" }}>
+          <div key={i} className="px-3" style={{ color: "var(--code-line-number)" }}>
             {i + 1}
           </div>
         ))}
@@ -132,12 +131,12 @@ function HighlightedCode({ code }: { code: string }) {
           {lines.map((line, i) => {
             const tokens = tokenizeHtml(line);
             return (
-              <div key={i} className="hover:bg-black/[0.03] transition-colors pr-4">
+              <div key={i} className="hover:bg-foreground/[0.04] transition-colors pr-4">
                 {tokens.length === 0 ? (
                   "\n"
                 ) : (
                   tokens.map((t, j) => (
-                    <span key={j} style={{ color: TOKEN_COLORS[t.type] }}>
+                    <span key={j} style={{ color: TOKEN_VARS[t.type] }}>
                       {t.value}
                     </span>
                   ))
@@ -223,47 +222,47 @@ export default function SourceCodePreviewModal({
 
       {/* Modal */}
       <div
-        className="relative w-[95vw] h-[90vh] rounded-3xl shadow-2xl border border-border/50 flex flex-col overflow-hidden"
-        style={{ animation: "scaleIn 0.2s ease-out", background: "#fafbfc" }}
+        className="relative w-[95vw] h-[90vh] rounded-3xl shadow-2xl border border-border/50 flex flex-col overflow-hidden bg-card"
+        style={{ animation: "scaleIn 0.2s ease-out" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 shrink-0" style={{ background: "#f6f8fa" }}>
-          <h3 className="font-heading font-bold text-lg truncate pr-4" style={{ color: "#24292e" }}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 shrink-0 bg-muted/40">
+          <h3 className="font-heading font-bold text-lg truncate pr-4 text-foreground">
             {title} — 源码
           </h3>
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleCopy}
-              className="p-2 rounded-full hover:bg-black/5 transition-colors"
+              className="p-2 rounded-full hover:bg-foreground/5 transition-colors"
               title={copied ? "已复制" : "复制代码"}
             >
               {copied ? (
-                <Check className="h-4 w-4 text-green-600" />
+                <Check className="h-4 w-4 text-primary" />
               ) : (
-                <Copy className="h-4 w-4 text-gray-500 hover:text-gray-800" />
+                <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
               )}
             </button>
             <button
               onClick={handleDownload}
-              className="p-2 rounded-full hover:bg-black/5 transition-colors"
+              className="p-2 rounded-full hover:bg-foreground/5 transition-colors"
               title="下载源码"
             >
-              <Download className="h-4 w-4 text-gray-500 hover:text-gray-800" />
+              <Download className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
             <button
               onClick={handleOpenPlainText}
-              className="p-2 rounded-full hover:bg-black/5 transition-colors"
+              className="p-2 rounded-full hover:bg-foreground/5 transition-colors"
               title="在新标签页中打开源码"
             >
-              <ExternalLink className="h-4 w-4 text-gray-500 hover:text-gray-800" />
+              <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-red-500/10 transition-colors"
+              className="p-2 rounded-full hover:bg-destructive/10 transition-colors"
               title="关闭"
             >
-              <X className="h-4 w-4 text-gray-500 hover:text-red-500" />
+              <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
             </button>
           </div>
         </div>
@@ -271,11 +270,11 @@ export default function SourceCodePreviewModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {error ? (
-            <div className="text-red-600 text-center py-12">
+            <div className="text-destructive text-center py-12">
               加载失败：{error}
             </div>
           ) : code === null ? (
-            <div className="flex items-center justify-center py-12 text-gray-400">
+            <div className="flex items-center justify-center py-12 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
               加载中…
             </div>

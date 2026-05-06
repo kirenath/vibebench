@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,27 +10,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#FDFCF8",
-        foreground: "#2C2C24",
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        foreground: "rgb(var(--color-foreground) / <alpha-value>)",
         primary: {
-          DEFAULT: "#5D7052",
-          foreground: "#F3F4F1",
+          DEFAULT: "rgb(var(--color-primary) / <alpha-value>)",
+          foreground: "rgb(var(--color-primary-foreground) / <alpha-value>)",
         },
         secondary: {
-          DEFAULT: "#C18C5D",
-          foreground: "#FFFFFF",
+          DEFAULT: "rgb(var(--color-secondary) / <alpha-value>)",
+          foreground: "rgb(var(--color-secondary-foreground) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "#E6DCCD",
-          foreground: "#4A4A40",
+          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+          foreground: "rgb(var(--color-accent-foreground) / <alpha-value>)",
         },
         muted: {
-          DEFAULT: "#F0EBE5",
-          foreground: "#78786C",
+          DEFAULT: "rgb(var(--color-muted) / <alpha-value>)",
+          foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)",
         },
-        border: "#DED8CF",
-        destructive: "#A85448",
-        card: "#FEFEFA",
+        border: "rgb(var(--color-border) / <alpha-value>)",
+        destructive: "rgb(var(--color-destructive) / <alpha-value>)",
+        card: "rgb(var(--color-card) / <alpha-value>)",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif", "var(--font-cjk)"],
@@ -43,10 +44,10 @@ const config: Config = {
         "5xl": "2.5rem",
       },
       boxShadow: {
-        soft: "0 4px 20px -2px rgba(93, 112, 82, 0.15)",
-        float: "0 10px 40px -10px rgba(193, 140, 93, 0.2)",
-        "soft-hover": "0 20px 40px -10px rgba(93, 112, 82, 0.15)",
-        "soft-lg": "0 6px 24px -4px rgba(93, 112, 82, 0.25)",
+        soft: "var(--shadow-soft)",
+        float: "var(--shadow-float)",
+        "soft-hover": "var(--shadow-soft-hover)",
+        "soft-lg": "var(--shadow-soft-lg)",
       },
       animation: {
         "float-slow": "float 8s ease-in-out infinite",

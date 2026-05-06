@@ -90,7 +90,7 @@ export default function CustomSelect({
         type="button"
         disabled={disabled}
         onClick={() => setOpen(!open)}
-        className={`w-full rounded-full border border-border bg-white/50 px-5 h-12 text-sm font-body
+        className={`w-full rounded-full border border-border bg-card/50 px-5 h-12 text-sm font-body
           text-left flex items-center justify-between gap-2
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2
           transition-all duration-300

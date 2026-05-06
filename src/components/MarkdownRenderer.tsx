@@ -11,8 +11,11 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
+// Per PRD §0 / §6.2: dark adaptation is intentionally minimal —
+// add `dark:prose-invert` and keep the primary-colored links; do
+// NOT touch type scale, line-height, or blockquote layout here.
 const proseClasses = [
-  "prose prose-sm max-w-none",
+  "prose prose-sm dark:prose-invert max-w-none",
   "text-foreground/80",
   "prose-headings:font-heading prose-headings:text-foreground",
   "prose-p:text-foreground/80",
