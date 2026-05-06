@@ -100,10 +100,20 @@
 }
 
 @layer base {
+  /* Clip horizontal overflow on both <html> and <body>. Decorative <Blob>
+   * elements are intentionally positioned with negative offsets (e.g.
+   * `-right-20`) so they bleed off-screen; without this clip, mobile
+   * Safari treats those as horizontally scrollable content and shows a
+   * sliver of empty space on the right. `clip` (vs `hidden`) avoids
+   * creating a scroll container, so the sticky <Navbar> keeps working. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
     position: relative;
-    overflow-x: hidden;
     transition: background-color 200ms ease, color 200ms ease;
   }
 
