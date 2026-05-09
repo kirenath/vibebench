@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, RefreshCw, ExternalLink, AlertTriangle, Code2 } from "lucide-react";
+import {
+  CalendarDays,
+  Clock,
+  RefreshCw,
+  ExternalLink,
+  AlertTriangle,
+  Code2,
+} from "lucide-react";
 import { formatDuration } from "@/lib/formatDuration";
 import HtmlPreviewModal from "./HtmlPreviewModal";
 import PrdPreviewModal from "./PrdPreviewModal";
@@ -11,6 +18,7 @@ export interface PhaseSubmission {
   submission_id: string;
   duration_ms: string | null;
   iteration_count: number | null;
+  submitted_at: string;
   has_html: boolean;
   has_prd: boolean;
   manual_touched: boolean;
@@ -28,6 +36,19 @@ interface Props {
   vendorName: string;
   channelName: string;
   phases: PhaseData[];
+}
+
+function formatSubmittedDate(dateStr: string) {
+  try {
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  } catch {
+    return dateStr;
+  }
 }
 
 function PhaseRow({
@@ -48,7 +69,10 @@ function PhaseRow({
   if (!data) {
     return (
       <div className="flex items-center gap-3 py-2">
-        <span className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate" title={label}>
+        <span
+          className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate"
+          title={label}
+        >
           {label}
         </span>
         <span className="text-xs text-muted-foreground italic">暂无</span>
@@ -62,7 +86,10 @@ function PhaseRow({
   return (
     <>
       <div className="flex items-center gap-3 py-2 flex-wrap">
-        <span className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate" title={label}>
+        <span
+          className="text-xs font-semibold text-muted-foreground w-20 shrink-0 truncate"
+          title={label}
+        >
           {label}
         </span>
 
@@ -80,6 +107,10 @@ function PhaseRow({
               {data.iteration_count} 次迭代
             </span>
           )}
+          <span className="flex items-center gap-1" title="提交日期">
+            <CalendarDays className="h-3 w-3" />
+            {formatSubmittedDate(data.submitted_at)}
+          </span>
         </div>
 
         {/* Button groups */}
