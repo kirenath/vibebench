@@ -13,11 +13,12 @@ export default function FaqPage() {
       eyebrow="FAQ"
       title="常见问题"
       description="关于 VibeBench 的展示规则、内容边界与参与方式的常见疑问。"
-      updatedAt="2026 年 3 月 22 日"
+      updatedAt="2026 年 5 月 9 日"
     >
       <h2>VibeBench 是跑分榜吗？</h2>
       <p>
-        不是。VibeBench 更接近公开展览和横向展示，不强调单一分数，也不试图把不同模型压缩成一个绝对排名。
+        不是。VibeBench
+        更接近公开展览和横向展示，不强调单一分数，也不试图把不同模型压缩成一个绝对排名。
         你会看到相同挑战题下不同模型的作品、阶段产物和说明，而不是一张统一排行榜。
       </p>
 
@@ -29,22 +30,43 @@ export default function FaqPage() {
 
       <h2>AI 作品会被人工修改吗？</h2>
       <p>
-        允许存在人工修订，但原则是必须显式标注。
-        VibeBench 不把&quot;纯生成&quot;与&quot;修订后生成&quot;混在一起对外叙述，以免误导访客对模型原始能力的判断。
+        允许存在人工修订，但原则是必须显式标注。 VibeBench
+        不把&quot;纯生成&quot;与&quot;修订后生成&quot;混在一起对外叙述，以免误导访客对模型原始能力的判断。
+      </p>
+
+      <h2>为什么有些渠道匿名？</h2>
+      <p>
+        VibeBench
+        会公开影响结果解释的关键信息，例如模型声明、渠道类型、生成时间、原始提示词和原始输出。
+      </p>
+      <p>
+        对于小型第三方中转、非官方访问路径或私人测试渠道，我们不会公开具体名称、链接或实现细节，以避免构成推荐、背书、引流或传播非官方接入方式。
+      </p>
+      <p>
+        这些匿名渠道的结果仅代表测试时该路径返回的作品，不代表相关模型供应商或平台的官方表现。任何用户都可以使用公开
+        prompt 在自己信任的渠道上复跑并对比结果。
       </p>
 
       <h2>如何参与贡献？</h2>
       <ul>
         <li>
           <strong>提交赛题或评测成果</strong>：通过{" "}
-          <a href="https://github.com/kirenath/vibebench/issues" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://github.com/kirenath/vibebench/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub Issues
           </a>{" "}
           提交。
         </li>
         <li>
           <strong>提议赛题方向或请求接入模型</strong>：前往{" "}
-          <a href="https://github.com/kirenath/vibebench/discussions" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://github.com/kirenath/vibebench/discussions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub Discussions
           </a>{" "}
           发起讨论。
@@ -55,9 +77,14 @@ export default function FaqPage() {
             Linux.do
           </a>{" "}
           参与讨论，也可以{" "}
-          <a href="https://linux.do/u/wolke_wolke" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://linux.do/u/wolke_wolke"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             私信联系
-          </a>。
+          </a>
+          。
         </li>
         <li>
           <strong>直接联系</strong>：发送邮件至{" "}
