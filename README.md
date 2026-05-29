@@ -216,4 +216,5 @@ pnpm dev
 
 ### 友情链接
 
-##  **[Linux.do](https://linux.do)**
+
+## ![alt text](https://linux.do/logo-24.svg)  **[Linux.do](https://linux.do)**
