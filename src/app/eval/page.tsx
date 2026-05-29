@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper, Code2 } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, Sparkles, Maximize2, ExternalLink, Equal, SkipForward, PartyPopper, Code2, MessageSquareText, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import CustomSelect from "@/components/CustomSelect";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
 import SourceCodePreviewModal from "@/components/SourceCodePreviewModal";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 interface EvalData {
   challenge_phase_id: string;
   challenge_title: string;
   phase_label: string;
+  phase_prompt: string | null;
   left: { submission_id: string };
   right: { submission_id: string };
 }
@@ -55,6 +57,7 @@ export default function EvalPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [sourceCodeId, setSourceCodeId] = useState<string | null>(null);
   const [fingerprint, setFingerprint] = useState("");
+  const [promptExpanded, setPromptExpanded] = useState(false);
 
   // Initialize FingerprintJS on mount
   useEffect(() => {
@@ -251,6 +254,33 @@ export default function EvalPage() {
           </div>
         ) : data ? (
           <div className="flex flex-col gap-6">
+            {/* Current phase prompt — collapsible, height-limited for very long prompts */}
+            {data.phase_prompt && (
+              <div className="card border border-border/50 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setPromptExpanded((v) => !v)}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-muted/20 transition-colors"
+                  aria-expanded={promptExpanded}
+                >
+                  <MessageSquareText className="h-5 w-5 text-secondary shrink-0" />
+                  <span className="font-heading font-semibold text-sm">本题提示词</span>
+                  <span className="text-xs text-muted-foreground">{data.phase_label}</span>
+                  <ChevronDown
+                    className={`ml-auto h-4 w-4 text-muted-foreground transition-transform duration-300 ${promptExpanded ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {promptExpanded && (
+                  <div className="border-t border-border/50 px-4 py-4 max-h-[300px] overflow-y-auto">
+                    <MarkdownRenderer
+                      content={data.phase_prompt}
+                      className="[&_code]:text-sm [&_pre]:text-sm [&_pre]:whitespace-pre-wrap [&_pre]:break-words"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4">
               {/* Left Side */}
               <div className="card overflow-hidden border-2 transition-colors duration-300 relative group">
