@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { X, Download, Copy, Link2, Share2, Check } from "lucide-react";
 import ShareCard from "./ShareCard";
 import { getShareStyleList } from "./share/registry";
+import { CARD_WIDTH, CARD_HEIGHT } from "./share/types";
 import { DEFAULT_SHARE_STYLE, type ShareStyleId } from "@/lib/shareStyles";
 import type { GuessDifficulty } from "@/lib/guessToken";
 
@@ -75,6 +76,25 @@ export default function ShareCardModal({
   const [copiedLink, setCopiedLink] = useState(false);
   const [busy, setBusy] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  // Fit the fixed-size card into the available preview width so portrait /
+  // narrow screens scale it down instead of cropping it. The off-screen
+  // cardRef stays at full CARD_WIDTH for a crisp PNG export.
+  useEffect(() => {
+    if (!open) return;
+    const el = previewRef.current;
+    if (!el) return;
+    const update = () => {
+      const avail = el.clientWidth;
+      setScale(Math.min(1, avail / CARD_WIDTH));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [open]);
 
   const renderPng = useCallback(async (): Promise<Blob | null> => {
     if (!cardRef.current) return null;
@@ -218,18 +238,33 @@ export default function ShareCardModal({
           ))}
         </div>
 
-        {/* Card preview (scaled on small screens) */}
-        <div className="flex justify-center mb-5 overflow-x-auto">
-          <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg">
-            <div ref={cardRef}>
-              <ShareCard
-                styleId={styleId}
-                nickname={nickname}
-                difficulty={difficulty}
-                correct={correct}
-                total={total}
-                authorRate={authorRate}
-              />
+        {/* Card preview (scaled to fit narrow / portrait screens) */}
+        <div ref={previewRef} className="flex justify-center mb-5">
+          <div
+            style={{
+              width: CARD_WIDTH * scale,
+              height: CARD_HEIGHT * scale,
+            }}
+          >
+            <div
+              className="rounded-xl overflow-hidden border border-border/50 shadow-lg"
+              style={{
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                transform: `scale(${scale})`,
+                transformOrigin: "top left",
+              }}
+            >
+              <div ref={cardRef}>
+                <ShareCard
+                  styleId={styleId}
+                  nickname={nickname}
+                  difficulty={difficulty}
+                  correct={correct}
+                  total={total}
+                  authorRate={authorRate}
+                />
+              </div>
             </div>
           </div>
         </div>
