@@ -29,6 +29,9 @@ export default function Navbar() {
           <Link href="/compare" className="btn-ghost btn-sm !px-3 sm:!px-4 !h-9 text-sm">
             对比
           </Link>
+          <Link href="/guess" className="btn-ghost btn-sm !px-3 sm:!px-4 !h-9 text-sm">
+            猜模型
+          </Link>
         </div>
       </div>
     </nav>
