@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "./constants";
 import type { GuessDifficulty } from "./guessToken";
-import type { ShareTemplate, ShareHighlight } from "./guessRank";
+import { normalizeShareStyle, type ShareStyleId } from "./shareStyles";
 
-export type { ShareTemplate, ShareHighlight } from "./guessRank";
 export {
   DIFFICULTY_LABELS,
   rankTitle,
@@ -17,8 +16,7 @@ export interface ShareResultPayload {
   c: number; // correct
   t: number; // total
   a?: number; // author baseline win rate (%)
-  tpl: ShareTemplate;
-  h?: ShareHighlight; // highlight wrong guess
+  s: ShareStyleId; // visual style id
 }
 
 const SHARE_EXPIRY = "30d";
@@ -44,8 +42,7 @@ export function verifyResult(token: string): ShareResultPayload | null {
       c: decoded.c,
       t: decoded.t,
       a: decoded.a,
-      tpl: decoded.tpl ?? "scoreboard",
-      h: decoded.h,
+      s: normalizeShareStyle(decoded.s),
     };
   } catch {
     return null;

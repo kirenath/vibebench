@@ -69,13 +69,12 @@ export default async function GuessSharePage({ searchParams }: PageProps) {
           <div className="flex justify-center mb-8">
             <div className="rounded-2xl overflow-hidden border border-border/50 shadow-lg">
               <ShareCard
+                styleId={result.s}
                 nickname={result.n || "匿名玩家"}
                 difficulty={result.d}
                 correct={result.c}
                 total={result.t}
                 authorRate={result.a}
-                template={result.tpl}
-                highlight={result.h}
               />
             </div>
           </div>

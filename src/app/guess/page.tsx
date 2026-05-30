@@ -22,12 +22,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import HtmlPreviewModal from "@/components/HtmlPreviewModal";
 import ShareCardModal from "@/components/guess/ShareCardModal";
 import type { GuessDifficulty, GuessOption } from "@/lib/guessToken";
-import {
-  DIFFICULTY_LABELS,
-  rankTitle,
-  winRateOf,
-  type ShareHighlight,
-} from "@/lib/guessRank";
+import { DIFFICULTY_LABELS, rankTitle, winRateOf } from "@/lib/guessRank";
 
 type Phase = "start" | "quiz" | "result";
 type Count = number | "zen";
@@ -285,18 +280,6 @@ export default function GuessPage() {
   const correct = history.filter((h) => h.is_correct).length;
   const winRate = winRateOf(correct, total);
   const rank = rankTitle(winRate, difficulty);
-  const firstWrong = history.find((h) => !h.is_correct);
-  const clientHighlight: ShareHighlight | undefined = firstWrong
-    ? {
-        shown:
-          firstWrong.difficulty === "easy"
-            ? firstWrong.reveal.model_family_name
-            : firstWrong.reveal.model_variant_name,
-        guessed:
-          firstWrong.options.find((o) => o.value === firstWrong.guessed_value)
-            ?.label ?? firstWrong.guessed_value,
-      }
-    : undefined;
 
   const showEndButton =
     phase === "quiz" && (count === "zen" || (typeof count === "number" && count > 10));
@@ -622,8 +605,10 @@ export default function GuessPage() {
             {authorRate !== undefined && (
               <p className="text-sm mb-6">
                 作者基准：{authorRate}% —{" "}
-                {winRate >= authorRate ? (
+                {winRate > authorRate ? (
                   <span className="text-success font-semibold">你超过作者 👏</span>
+                ) : winRate === authorRate ? (
+                  <span className="text-primary font-semibold">与作者持平 🤝</span>
                 ) : (
                   <span className="text-muted-foreground">再接再厉！</span>
                 )}
@@ -643,11 +628,16 @@ export default function GuessPage() {
                         <XCircle className="h-4 w-4 text-destructive shrink-0" />
                       )}
                       <span className="text-muted-foreground">
-                        猜 {labelOf(h.guessed_value, h.options)} ·
+                        猜 {labelOf(h.guessed_value, h.options)}
                       </span>
-                      <span>
-                        真实 {labelOf(h.correct_value, h.options)}
-                      </span>
+                      {!h.is_correct && (
+                        <>
+                          <span className="text-muted-foreground">·</span>
+                          <span>
+                            实为 {labelOf(h.correct_value, h.options)}
+                          </span>
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -695,7 +685,6 @@ export default function GuessPage() {
             correct={correct}
             total={total}
             authorRate={authorRate}
-            highlight={clientHighlight}
             sessionId={sessionId}
             playerToken={fingerprint}
           />

@@ -1,12 +1,5 @@
 import type { GuessDifficulty } from "./guessToken";
 
-export type ShareTemplate = "scoreboard" | "rank" | "vs_author" | "highlight";
-
-export interface ShareHighlight {
-  shown: string;
-  guessed: string;
-}
-
 export const DIFFICULTY_LABELS: Record<GuessDifficulty, string> = {
   easy: "简单",
   medium: "中等",

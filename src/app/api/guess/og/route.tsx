@@ -41,76 +41,30 @@ export async function GET(request: NextRequest) {
   const rank = rankTitle(winRate, result.d);
   const diffLabel = DIFFICULTY_LABELS[result.d] ?? result.d;
   const nickname = result.n || "匿名玩家";
+  const beatAuthor = result.a !== undefined && winRate > result.a;
+  const tieAuthor = result.a !== undefined && winRate === result.a;
 
-  let center: React.ReactNode;
-  if (result.tpl === "rank") {
-    center = (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ fontSize: 140, lineHeight: 1 }}>{rank.emoji}</div>
-        <div style={{ fontSize: 84, fontWeight: 800, color: "#a78bfa" }}>
-          {rank.title}
-        </div>
-        <div style={{ fontSize: 40, color: "#94a3b8", marginTop: 12 }}>
-          {diffLabel} · 胜率 {winRate}%
-        </div>
+  const center = (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ fontSize: 180, fontWeight: 900, color: "#a78bfa", lineHeight: 1 }}>
+        {winRate}%
       </div>
-    );
-  } else if (result.tpl === "vs_author") {
-    const authorRate = result.a ?? 0;
-    const beat = winRate >= authorRate;
-    center = (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 60 }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ fontSize: 96, fontWeight: 800, color: "#34d399" }}>
-              {winRate}%
-            </div>
-            <div style={{ fontSize: 34, color: "#94a3b8" }}>你</div>
-          </div>
-          <div style={{ fontSize: 60, color: "#64748b", paddingBottom: 30 }}>vs</div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ fontSize: 96, fontWeight: 800, color: "#f472b6" }}>
-              {authorRate}%
-            </div>
-            <div style={{ fontSize: 34, color: "#94a3b8" }}>作者</div>
-          </div>
-        </div>
-        <div style={{ fontSize: 44, color: "#e2e8f0", marginTop: 28 }}>
-          {beat ? "超过作者 👏" : "略逊作者，再战！"}
-        </div>
+      <div style={{ fontSize: 48, color: "#e2e8f0", marginTop: 8 }}>
+        {result.c} / {result.t} 正确
       </div>
-    );
-  } else if (result.tpl === "highlight" && result.h) {
-    center = (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px", textAlign: "center" }}>
-        <div style={{ fontSize: 120 }}>😵</div>
-        <div style={{ fontSize: 52, fontWeight: 700, color: "#e2e8f0", lineHeight: 1.3 }}>
-          我把 <span style={{ color: "#f472b6" }}>{result.h.shown}</span> 的作品
-        </div>
-        <div style={{ fontSize: 52, fontWeight: 700, color: "#e2e8f0", lineHeight: 1.3 }}>
-          认成了 <span style={{ color: "#a78bfa" }}>{result.h.guessed}</span>
-        </div>
-        <div style={{ fontSize: 38, color: "#94a3b8", marginTop: 24 }}>
-          {diffLabel} · 胜率 {winRate}%
-        </div>
+      <div style={{ fontSize: 36, color: "#94a3b8", marginTop: 8 }}>
+        {diffLabel}难度 · {rank.emoji} {rank.title}
       </div>
-    );
-  } else {
-    // scoreboard (default)
-    center = (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ fontSize: 200, fontWeight: 900, color: "#a78bfa", lineHeight: 1 }}>
-          {winRate}%
+      {result.a !== undefined && (
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 20, fontSize: 34 }}>
+          <span style={{ color: "#94a3b8" }}>作者基准 {result.a}%</span>
+          <span style={{ color: beatAuthor ? "#34d399" : tieAuthor ? "#a78bfa" : "#cbd5e1", fontWeight: beatAuthor || tieAuthor ? 700 : 400 }}>
+            {beatAuthor ? "超过作者 👏" : tieAuthor ? "与作者持平 🤝" : "逼近作者，再战！"}
+          </span>
         </div>
-        <div style={{ fontSize: 48, color: "#e2e8f0", marginTop: 8 }}>
-          {result.c} / {result.t} 正确
-        </div>
-        <div style={{ fontSize: 36, color: "#94a3b8", marginTop: 8 }}>
-          {diffLabel}难度 · {rank.emoji} {rank.title}
-        </div>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
 
   return new ImageResponse(
     (

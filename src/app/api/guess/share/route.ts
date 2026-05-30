@@ -1,23 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, queryOne } from "@/lib/db";
+import { queryOne } from "@/lib/db";
 import { jsonError } from "@/lib/api-helpers";
 import { APP_URL } from "@/lib/constants";
-import {
-  signResult,
-  winRateOf,
-  type ShareTemplate,
-  type ShareHighlight,
-} from "@/lib/guessShare";
-import type { GuessDifficulty, GuessOption } from "@/lib/guessToken";
+import { signResult, winRateOf } from "@/lib/guessShare";
+import { normalizeShareStyle } from "@/lib/shareStyles";
+import type { GuessDifficulty } from "@/lib/guessToken";
 
 export const dynamic = "force-dynamic";
-
-const TEMPLATES: ShareTemplate[] = [
-  "scoreboard",
-  "rank",
-  "vs_author",
-  "highlight",
-];
 
 interface SessionRow {
   difficulty: GuessDifficulty;
@@ -25,19 +14,11 @@ interface SessionRow {
   correct: number;
 }
 
-interface HighlightRow {
-  difficulty: GuessDifficulty;
-  options: GuessOption[];
-  guessed_value: string;
-  variant_name: string;
-  family_name: string;
-}
-
 export async function POST(request: NextRequest) {
   const token = request.headers.get("x-player-token") || "";
   if (!token) return jsonError("Missing player token", 403);
 
-  let body: { session_id?: string; tpl?: ShareTemplate };
+  let body: { session_id?: string; style?: string };
   try {
     body = await request.json();
   } catch {
@@ -45,9 +26,8 @@ export async function POST(request: NextRequest) {
   }
 
   const sessionId = body.session_id;
-  const tpl: ShareTemplate =
-    body.tpl && TEMPLATES.includes(body.tpl) ? body.tpl : "scoreboard";
   if (!sessionId) return jsonError("Missing session_id", 400);
+  const style = normalizeShareStyle(body.style);
 
   try {
     const session = await queryOne<SessionRow>(
@@ -78,36 +58,13 @@ export async function POST(request: NextRequest) {
       [session.difficulty]
     );
 
-    let highlight: ShareHighlight | undefined;
-    const hl = await queryOne<HighlightRow>(
-      `select a.difficulty, a.options, a.guessed_value,
-              mv.name as variant_name, mf.name as family_name
-       from public.guess_attempts a
-       join public.model_variants mv on mv.id = a.correct_variant_id
-       join public.model_families mf on mf.id = mv.family_id
-       where a.player_token = $1 and a.session_id = $2 and not a.is_correct
-       order by random()
-       limit 1`,
-      [token, sessionId]
-    );
-    if (hl) {
-      const guessedLabel =
-        hl.options.find((o) => o.value === hl.guessed_value)?.label ??
-        hl.guessed_value;
-      highlight = {
-        shown: hl.difficulty === "easy" ? hl.family_name : hl.variant_name,
-        guessed: guessedLabel,
-      };
-    }
-
     const shareToken = signResult({
       n: player?.display_name ?? "匿名玩家",
       d: session.difficulty,
       c: session.correct,
       t: session.total,
       a: authorRow?.win_rate ?? undefined,
-      tpl,
-      h: highlight,
+      s: style,
     });
 
     return NextResponse.json({

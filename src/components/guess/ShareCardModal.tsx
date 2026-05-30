@@ -4,8 +4,48 @@ import { useRef, useState, useCallback } from "react";
 import { toPng } from "html-to-image";
 import { X, Download, Copy, Link2, Share2, Check } from "lucide-react";
 import ShareCard from "./ShareCard";
-import type { ShareTemplate, ShareHighlight } from "@/lib/guessRank";
+import { getShareStyleList } from "./share/registry";
+import { DEFAULT_SHARE_STYLE, type ShareStyleId } from "@/lib/shareStyles";
 import type { GuessDifficulty } from "@/lib/guessToken";
+
+const STYLE_LIST = getShareStyleList();
+
+// Clean short link for the "复制链接" button. The result itself lives in the
+// shared image (which prints this URL), so the copied link only needs to send
+// people to the game. (The signed share-token landing page is still used by
+// the system-level Web Share flow for rich link previews.)
+const SHORT_GUESS_URL = "https://vibebench.app/guess";
+
+// Robust text copy. `navigator.clipboard.writeText` rejects with
+// "Document is not focused" when focus is elsewhere (e.g. DevTools open) at
+// the time of the async write. Fall back to a hidden <textarea> + execCommand,
+// which is not subject to the focus requirement.
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (typeof window !== "undefined") window.focus();
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // fall through to legacy path
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-9999px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
 
 interface ShareCardModalProps {
   open: boolean;
@@ -15,17 +55,9 @@ interface ShareCardModalProps {
   correct: number;
   total: number;
   authorRate?: number;
-  highlight?: ShareHighlight;
   sessionId: string;
   playerToken: string;
 }
-
-const TEMPLATES: { value: ShareTemplate; label: string }[] = [
-  { value: "scoreboard", label: "成绩单" },
-  { value: "rank", label: "段位称号" },
-  { value: "vs_author", label: "挑战作者" },
-  { value: "highlight", label: "高光时刻" },
-];
 
 export default function ShareCardModal({
   open,
@@ -35,19 +67,14 @@ export default function ShareCardModal({
   correct,
   total,
   authorRate,
-  highlight,
   sessionId,
   playerToken,
 }: ShareCardModalProps) {
-  const [template, setTemplate] = useState<ShareTemplate>("scoreboard");
+  const [styleId, setStyleId] = useState<ShareStyleId>(DEFAULT_SHARE_STYLE);
   const [copiedImg, setCopiedImg] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [busy, setBusy] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  const available = TEMPLATES.filter(
-    (t) => t.value !== "highlight" || highlight
-  );
 
   const renderPng = useCallback(async (): Promise<Blob | null> => {
     if (!cardRef.current) return null;
@@ -67,7 +94,7 @@ export default function ShareCardModal({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `vibebench-guess-${template}.png`;
+      a.download = "vibebench-guess.png";
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -102,24 +129,24 @@ export default function ShareCardModal({
         "Content-Type": "application/json",
         "X-Player-Token": playerToken,
       },
-      body: JSON.stringify({ session_id: sessionId, tpl: template }),
+      body: JSON.stringify({ session_id: sessionId, style: styleId }),
     });
     const json = await res.json();
     if (!res.ok || !json.success) return null;
     return json.data.share_url as string;
-  }, [playerToken, sessionId, template]);
+  }, [playerToken, sessionId, styleId]);
 
   const handleCopyLink = async () => {
     setBusy(true);
     try {
-      const url = await fetchShareUrl();
-      if (!url) {
-        alert("生成链接失败");
-        return;
+      const ok = await copyText(SHORT_GUESS_URL);
+      if (ok) {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      } else {
+        // Last resort: surface the link so the user can copy manually.
+        window.prompt("复制此链接：", SHORT_GUESS_URL);
       }
-      await navigator.clipboard.writeText(url);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
     } catch (e) {
       console.error(e);
     } finally {
@@ -171,19 +198,22 @@ export default function ShareCardModal({
           </button>
         </div>
 
-        {/* Template tabs */}
+        {/* Style switcher */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {available.map((t) => (
+          {STYLE_LIST.map((s) => (
             <button
-              key={t.value}
-              onClick={() => setTemplate(t.value)}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                template === t.value
+              key={s.id}
+              onClick={() => setStyleId(s.id)}
+              className={`px-3 py-1.5 rounded-full text-sm transition-colors inline-flex items-center gap-1 ${
+                styleId === s.id
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
               }`}
             >
-              {t.label}
+              {s.label}
+              {!s.ready && (
+                <span className="text-[10px] opacity-70">制作中</span>
+              )}
             </button>
           ))}
         </div>
@@ -193,13 +223,12 @@ export default function ShareCardModal({
           <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg">
             <div ref={cardRef}>
               <ShareCard
+                styleId={styleId}
                 nickname={nickname}
                 difficulty={difficulty}
                 correct={correct}
                 total={total}
                 authorRate={authorRate}
-                template={template}
-                highlight={highlight}
               />
             </div>
           </div>
